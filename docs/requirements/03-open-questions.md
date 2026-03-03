@@ -1,7 +1,7 @@
 # Open Questions and Clarifications
 
 ## Still Open for Milestone 1
-1. Which stack option from `04-tech-stack-decision-memo.md` should be selected for implementation?
+1. Which concrete application stack on Cloudflare should be used (frameworks/libraries/ORM/testing stack)?
 2. Should accepted image MIME types be validated strictly at upload and server side (`image/jpeg`, `image/png`)?
 
 ## Deferred to Milestone 2

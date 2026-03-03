@@ -17,6 +17,8 @@ There is no application code yet.
   - Remaining open and deferred decisions (technical, governance, later milestones).
 - `docs/requirements/04-tech-stack-decision-memo.md`
   - Research-based comparison of two deployment/stack options with M1-free and M2-cost outlook.
+- `docs/requirements/05-agent-tooling-and-local-flow.md`
+  - Multi-agent tooling setup, read-first MCP usage, and manual-only release policy.
 
 ## Project Focus (now)
 
@@ -28,6 +30,6 @@ The current focus is Milestone 1 (MVP):
 
 ## Next Steps
 
-1. Confirm stack choice based on `04-tech-stack-decision-memo.md`.
+1. Finalize Cloudflare-compatible application tech stack.
 2. Define API/data model from the M1 requirements.
-3. Start implementation once technical decisions are locked.
+3. Start implementation with local-first quality gates and manual release.

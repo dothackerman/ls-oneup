@@ -3,6 +3,10 @@
 ## Purpose
 Compare two deployable, low-ops stack options for Milestone 1 under strict cost constraints, while considering likely costs for Milestone 2 if usage grows.
 
+## Decision Status
+1. Accepted for M1 deployment platform: Cloudflare end-to-end (Option A).
+2. Application-layer framework/library choices remain open.
+
 ## Scope Context
 This memo assumes the currently agreed requirements in:
 - `01-customer-wishes.md`
