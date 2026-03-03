@@ -136,7 +136,7 @@ select:focus-visible {
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 1080px;
+  min-width: 980px;
 }
 
 th,

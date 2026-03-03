@@ -368,6 +368,9 @@ function AdminPage(): JSX.Element {
       <section className="card">
         <h2>Proben</h2>
         {error && <p className="error">{error}</p>}
+        <p className="block">
+          Hinweis: Bei kleinem Bildschirm kann die Tabelle horizontal gescrollt werden.
+        </p>
         <div className="table-wrapper">
           <table>
             <thead>
@@ -376,15 +379,14 @@ function AdminPage(): JSX.Element {
                 <th>Auftrag</th>
                 <th>Probe</th>
                 <th>Status</th>
-                <th>Erstellt</th>
-                <th>Ablauf</th>
-                <th>Eingereicht</th>
                 <th>Kultur</th>
                 <th>Pflanzenvitalität</th>
-                <th>Bodenfeuchte</th>
+                <th>Bodennässe</th>
                 <th>GPS</th>
-                <th>GPS erfasst</th>
                 <th>Bild</th>
+                <th>Erstellt</th>
+                <th>Eingereicht</th>
+                <th>Ablauf</th>
               </tr>
             </thead>
             <tbody>
@@ -396,9 +398,6 @@ function AdminPage(): JSX.Element {
                   <td>
                     <span className={statusBadge(probe.status)}>{probe.status}</span>
                   </td>
-                  <td>{formatDate(probe.created_at)}</td>
-                  <td>{formatDate(probe.expire_by)}</td>
-                  <td>{formatDate(probe.submitted_at)}</td>
                   <td>
                     {overrideEditingProbeId === probe.probe_id ? (
                       <div className="inline-edit">
@@ -453,7 +452,6 @@ function AdminPage(): JSX.Element {
                       ? `${probe.gps_lat.toFixed(5)}, ${probe.gps_lon.toFixed(5)}`
                       : "-"}
                   </td>
-                  <td>{formatDate(probe.gps_captured_at)}</td>
                   <td>
                     {probe.image_url ? (
                       <button type="button" onClick={() => openPreview(probe)}>
@@ -463,6 +461,9 @@ function AdminPage(): JSX.Element {
                       "-"
                     )}
                   </td>
+                  <td>{formatDate(probe.created_at)}</td>
+                  <td>{formatDate(probe.submitted_at)}</td>
+                  <td>{formatDate(probe.expire_by)}</td>
                 </tr>
               ))}
             </tbody>

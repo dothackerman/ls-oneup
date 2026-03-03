@@ -125,6 +125,24 @@ test("E2E-ADMIN-003 shows submitted probes with status eingereicht", async ({ pa
   expect(submitStatus).toBe(201);
 
   await page.goto("/admin");
+  const headers = await page
+    .locator("thead th")
+    .evaluateAll((nodes) => nodes.map((node) => node.textContent?.trim() ?? ""));
+  expect(headers).toEqual([
+    "Kunde",
+    "Auftrag",
+    "Probe",
+    "Status",
+    "Kultur",
+    "Pflanzenvitalität",
+    "Bodennässe",
+    "GPS",
+    "Bild",
+    "Erstellt",
+    "Eingereicht",
+    "Ablauf",
+  ]);
+
   const row = page.locator("tbody tr", { hasText: orderNumber });
   await expect(row).toHaveCount(1);
   await expect(row.locator(".status")).toHaveText("eingereicht");
@@ -214,6 +232,14 @@ test("E2E-ADMIN-005 stores and shows crop override timestamp", async ({ page, re
   await page.goto("/admin");
   const row = page.locator("tbody tr", { hasText: orderNumber });
   await expect(row).toHaveCount(1);
+  await expect(row.locator(".status")).toHaveText("offen");
+
+  const cells = row.locator("td");
+  await expect(cells.nth(5)).toHaveText("-");
+  await expect(cells.nth(6)).toHaveText("-");
+  await expect(cells.nth(7)).toHaveText("-");
+  await expect(cells.nth(8)).toHaveText("-");
+  await expect(cells.nth(10)).toHaveText("-");
 
   await expect(page.getByRole("columnheader", { name: "Override" })).toHaveCount(0);
   await row.getByRole("button", { name: "Bearbeiten" }).click();
