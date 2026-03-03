@@ -1,8 +1,8 @@
 # Open Questions and Clarifications
 
 ## Still Open for Milestone 1
-1. Which concrete application stack on Cloudflare should be used (frameworks/libraries/ORM/testing stack)?
-2. Should accepted image MIME types be validated strictly at upload and server side (`image/jpeg`, `image/png`)?
+1. Do we keep the fallback stack (`Astro + direct D1 SQL`) as an active contingency, or freeze on primary stack only?
+2. Do we enforce MIME validation strictly both client-side and server-side for `image/jpeg` and `image/png` from day one?
 
 ## Deferred to Milestone 2
 1. Will revoke/regenerate links be included in M2 initial release or moved further?

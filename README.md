@@ -19,6 +19,8 @@ There is no application code yet.
   - Research-based comparison of two deployment/stack options with M1-free and M2-cost outlook.
 - `docs/requirements/05-agent-tooling-and-local-flow.md`
   - Multi-agent tooling setup, read-first MCP usage, and manual-only release policy.
+- `docs/requirements/06-application-tech-stack-memo.md`
+  - Selected application stack on Cloudflare (SPA-first) with architecture and risk baseline.
 
 ## Project Focus (now)
 
@@ -30,6 +32,6 @@ The current focus is Milestone 1 (MVP):
 
 ## Next Steps
 
-1. Finalize Cloudflare-compatible application tech stack.
+1. Translate the selected application stack into concrete implementation tickets.
 2. Define API/data model from the M1 requirements.
 3. Start implementation with local-first quality gates and manual release.
