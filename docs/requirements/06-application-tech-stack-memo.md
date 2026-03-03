@@ -63,7 +63,12 @@ Fallback stack (`Astro + Hono + direct D1 SQL + Wrangler migrations + Workers Vi
    - `abgelaufen` when expired and not submitted
    - `offen` otherwise
 
-## API Surface (M1)
+## Route Surface (M1)
+
+UI routes:
+1. `GET /admin` (Access-protected)
+2. `GET /admin/*` (Access-protected)
+3. `GET /p/:token` (public farmer entry)
 
 Admin:
 1. `POST /api/admin/probes`
@@ -71,9 +76,8 @@ Admin:
 3. `PATCH /api/admin/probes/:id/crop-override`
 
 Public:
-1. `GET /p/:token`
-2. `GET /api/probe/:token`
-3. `POST /api/probe/:token/submit`
+1. `GET /api/probe/:token`
+2. `POST /api/probe/:token/submit`
 
 ## Risk Register (from Research)
 1. Runtime/library compatibility drift.
