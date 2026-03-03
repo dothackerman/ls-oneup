@@ -31,7 +31,8 @@ This file is orchestration-only:
    - linter
    - integration tests (Workers-runtime semantics where applicable)
 4. If all green: commit and push.
-5. If a step fails: do not commit; fix and rerun from the failed step.
+5. One commit per requirement-linked slice after green checks.
+6. If a step fails: do not commit; fix and rerun from the failed step.
 
 ## Subagent Structure (Default)
 1. `research-subagent`
