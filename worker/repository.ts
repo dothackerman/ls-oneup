@@ -11,6 +11,11 @@ export type ProbeListItem = {
   expire_by: string;
   submitted_at: string | null;
   crop_name: string | null;
+  plant_vitality: Vitality | null;
+  soil_moisture: SoilMoisture | null;
+  gps_lat: number | null;
+  gps_lon: number | null;
+  gps_captured_at: string | null;
   crop_overridden_at: string | null;
   image_key: string | null;
 };
@@ -93,6 +98,11 @@ export async function listProbes(
       expire_by,
       submitted_at,
       crop_name,
+      plant_vitality,
+      soil_moisture,
+      gps_lat,
+      gps_lon,
+      gps_captured_at,
       crop_overridden_at,
       image_key
     FROM probes
@@ -111,6 +121,11 @@ export async function listProbes(
       expire_by: string;
       submitted_at: string | null;
       crop_name: string | null;
+      plant_vitality: Vitality | null;
+      soil_moisture: SoilMoisture | null;
+      gps_lat: number | null;
+      gps_lon: number | null;
+      gps_captured_at: string | null;
       crop_overridden_at: string | null;
       image_key: string | null;
     }>();
@@ -125,6 +140,11 @@ export async function listProbes(
     expire_by: row.expire_by,
     submitted_at: row.submitted_at,
     crop_name: row.crop_name,
+    plant_vitality: row.plant_vitality,
+    soil_moisture: row.soil_moisture,
+    gps_lat: row.gps_lat,
+    gps_lon: row.gps_lon,
+    gps_captured_at: row.gps_captured_at,
     crop_overridden_at: row.crop_overridden_at,
     image_key: row.image_key,
   }));

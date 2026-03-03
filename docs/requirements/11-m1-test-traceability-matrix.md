@@ -16,12 +16,12 @@ Map each M1 acceptance criterion to automated tests.
 | Admin can create probes/links for one order in one flow | `INT-ADMIN-001`     | `E2E-ADMIN-001` | implemented                            |
 | Each probe has exactly one active link in M1            | `INT-LINK-001`      | `E2E-ADMIN-002` | implemented                            |
 | Submit blocked without mandatory fields, GPS, one image | `INT-SUBMIT-001`    | `E2E-FARM-001`  | implemented                            |
-| Submitted probes visible with status `eingereicht`      | `INT-STATUS-001`    | `E2E-ADMIN-003` | implemented                            |
+| Submitted probes visible with status `eingereicht`      | `INT-STATUS-001`    | `E2E-ADMIN-003` | implemented (inkl. Farmer-Felder in Admin-Tabelle) |
 | Unused links become `abgelaufen` after TTL              | `INT-LINK-002`      | `E2E-FARM-002`  | implemented                            |
 | Used link cannot be submitted again                     | `INT-SUBMIT-002`    | `E2E-FARM-003`  | implemented                            |
 | No internet prevents load/submit (M1 online-only)       | `INT-NET-001`       | `E2E-FARM-004`  | implemented via E2E (`INT-NET-001` is N/A for Worker integration) |
 | Backend rejects non-JPEG/PNG and >2 MB                  | `INT-UPLOAD-001`    | `E2E-FARM-005`  | implemented                            |
-| Admin can view uploaded image via D1->R2 reference      | `INT-ADMIN-002`     | `E2E-ADMIN-004` | implemented                            |
+| Admin can view uploaded image via D1->R2 reference      | `INT-ADMIN-002`     | `E2E-ADMIN-004` | implemented (inline Header + Lazy-Modal Vorschau) |
 
 ## Additional Risk-Driven Tests
 
@@ -31,6 +31,8 @@ Map each M1 acceptance criterion to automated tests.
    - `INT-UPLOAD-002` (R2 write succeeds, conditional D1 submit fails -> delete attempted and logged) - implemented
 3. Admin crop override timestamp:
    - `INT-ADMIN-003` and `E2E-ADMIN-005` implemented
+4. Lazy image preview caching:
+   - `E2E-ADMIN-004` verifies modal reopen without second image fetch - implemented
 
 ## Minimum Test Inventory for M1 Sign-off
 

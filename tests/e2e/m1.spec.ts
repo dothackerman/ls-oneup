@@ -7,7 +7,7 @@ test("E2E-ADMIN-001 and E2E-ADMIN-002 create links and render frontend QR", asyn
 
   await page.getByLabel("Kunde").fill("E2E Kunde");
   await page.getByLabel("Auftragsnummer").fill(`E2E-${Date.now()}`);
-  await page.getByLabel("Anzahl Probes").fill("1");
+  await page.getByLabel("Anzahl Proben").fill("1");
   await page.getByRole("button", { name: "Links erstellen" }).click();
 
   await expect(page.getByText("QR-Codes werden nicht persistiert")).toBeVisible();
@@ -113,7 +113,7 @@ test("E2E-FARM-004 blocks submit when offline", async ({ page, request, context 
   await expect(page.getByText("Keine Internetverbindung erkannt.")).toBeVisible();
 
   await page.getByRole("button", { name: "Absenden" }).click();
-  await expect(page.getByText("Ohne Internet ist Senden in M1 nicht moeglich.")).toBeVisible();
+  await expect(page.getByText("Ohne Internet ist Senden in M1 nicht möglich.")).toBeVisible();
 });
 
 test("E2E-ADMIN-003 shows submitted probes with status eingereicht", async ({ page, request }) => {
@@ -128,6 +128,9 @@ test("E2E-ADMIN-003 shows submitted probes with status eingereicht", async ({ pa
   const row = page.locator("tbody tr", { hasText: orderNumber });
   await expect(row).toHaveCount(1);
   await expect(row.locator(".status")).toHaveText("eingereicht");
+  await expect(row).toContainText("Kartoffeln");
+  await expect(row).toContainText("normal");
+  await expect(row).toContainText("47.37690, 8.54170");
 });
 
 test("E2E-FARM-002 blocks expired tokens in farmer flow", async ({ page, request }) => {
@@ -178,19 +181,29 @@ test("E2E-ADMIN-004 allows viewing uploaded image from admin table", async ({ pa
   const submitStatus = await submitProbe(request, token);
   expect(submitStatus).toBe(201);
 
+  let imageCalls = 0;
+  await page.route("**/api/admin/probes/*/image", async (route) => {
+    imageCalls += 1;
+    await route.continue();
+  });
+
   await page.goto("/admin");
   const row = page.locator("tbody tr", { hasText: orderNumber });
   await expect(row).toHaveCount(1);
 
-  const imageLink = row.getByRole("link", { name: "Anzeigen" });
-  await expect(imageLink).toBeVisible();
+  await expect(row.getByRole("link", { name: "Anzeigen" })).toHaveCount(0);
+  await row.getByRole("button", { name: "Anzeigen" }).click();
 
-  const imageUrl = await imageLink.getAttribute("href");
-  expect(imageUrl).toBeTruthy();
+  const modal = page.getByRole("dialog", { name: /Bildvorschau Probe/ });
+  await expect(modal).toBeVisible();
+  await expect(modal.locator(".image-preview")).toBeVisible();
 
-  const imageResponse = await request.get(imageUrl ?? "");
-  expect(imageResponse.status()).toBe(200);
-  expect(imageResponse.headers()["content-type"]).toContain("image/");
+  await modal.getByRole("button", { name: "Schliessen" }).click();
+  await expect(modal).toBeHidden();
+
+  await row.getByRole("button", { name: "Anzeigen" }).click();
+  await expect(modal.locator(".image-preview")).toBeVisible();
+  expect(imageCalls).toBe(1);
 });
 
 test("E2E-ADMIN-005 stores and shows crop override timestamp", async ({ page, request }) => {
@@ -202,6 +215,9 @@ test("E2E-ADMIN-005 stores and shows crop override timestamp", async ({ page, re
   const row = page.locator("tbody tr", { hasText: orderNumber });
   await expect(row).toHaveCount(1);
 
+  await expect(page.getByRole("columnheader", { name: "Override" })).toHaveCount(0);
+  await row.getByRole("button", { name: "Bearbeiten" }).click();
+  await expect(row).toContainText("Mit Speichern übernimmt Admin die Verantwortung.");
   await row.getByPlaceholder("Kultur anpassen").fill("Randen");
   await row.getByRole("button", { name: "Speichern" }).click();
 

@@ -86,13 +86,13 @@ app.post("/api/admin/probes", async (c) => {
   const body = await c.req.json().catch(() => null);
   const parsed = createProbesSchema.safeParse(body);
   if (!parsed.success) {
-    return jsonError(400, "VALIDATION_ERROR", "Ungueltige Anfrage.");
+    return jsonError(400, "VALIDATION_ERROR", "Ungültige Anfrage.");
   }
 
   const { customer_name, order_number, probe_count } = parsed.data;
 
   if (await orderExists(c.env.DB, customer_name, order_number)) {
-    return jsonError(409, "ORDER_ALREADY_EXISTS", "Fuer diesen Auftrag bestehen bereits Links.");
+    return jsonError(409, "ORDER_ALREADY_EXISTS", "Für diesen Auftrag bestehen bereits Links.");
   }
 
   const createdAt = nowIso();
@@ -148,7 +148,7 @@ app.get("/api/admin/probes", async (c) => {
   const parsed = listProbesQuerySchema.safeParse(query);
 
   if (!parsed.success) {
-    return jsonError(400, "VALIDATION_ERROR", "Ungueltige Filterparameter.");
+    return jsonError(400, "VALIDATION_ERROR", "Ungültige Filterparameter.");
   }
 
   const filters: { customer_name?: string; order_number?: string; status?: ProbeStatus } = {
@@ -170,6 +170,11 @@ app.get("/api/admin/probes", async (c) => {
       expire_by: item.expire_by,
       submitted_at: item.submitted_at,
       crop_name: item.crop_name,
+      plant_vitality: item.plant_vitality,
+      soil_moisture: item.soil_moisture,
+      gps_lat: item.gps_lat,
+      gps_lon: item.gps_lon,
+      gps_captured_at: item.gps_captured_at,
       crop_overridden_at: item.crop_overridden_at,
       image_url: item.image_key ? `/api/admin/probes/${item.probe_id}/image` : null,
     })),
@@ -180,7 +185,7 @@ app.patch("/api/admin/probes/:id/crop-override", async (c) => {
   const body = await c.req.json().catch(() => null);
   const parsed = cropOverrideSchema.safeParse(body);
   if (!parsed.success) {
-    return jsonError(400, "VALIDATION_ERROR", "Ungueltiger Kulturname.");
+    return jsonError(400, "VALIDATION_ERROR", "Ungültiger Kulturname.");
   }
 
   const probeId = c.req.param("id");
@@ -210,6 +215,8 @@ app.get("/api/admin/probes/:id/image", async (c) => {
   obj.writeHttpMetadata(headers);
   headers.set("etag", obj.httpEtag);
   headers.set("cache-control", "private, max-age=60");
+  headers.set("content-type", headers.get("content-type") ?? imageRef.image_mime ?? "image/jpeg");
+  headers.set("content-disposition", "inline");
 
   return new Response(obj.body, { headers });
 });
@@ -262,7 +269,7 @@ app.post("/api/probe/:token/submit", async (c) => {
 
   const formData = await c.req.formData().catch(() => null);
   if (!formData) {
-    return jsonError(400, "VALIDATION_ERROR", "Ungueltige Formular-Daten.");
+    return jsonError(400, "VALIDATION_ERROR", "Ungültige Formular-Daten.");
   }
 
   const imageEntries = formData
@@ -280,7 +287,7 @@ app.post("/api/probe/:token/submit", async (c) => {
   }
 
   if (image.size > MAX_IMAGE_BYTES) {
-    return jsonError(413, "IMAGE_TOO_LARGE", "Bild ist groesser als 2 MB.");
+    return jsonError(413, "IMAGE_TOO_LARGE", "Bild ist grösser als 2 MB.");
   }
 
   const parsed = farmerSubmitFieldsSchema.safeParse({
@@ -293,7 +300,7 @@ app.post("/api/probe/:token/submit", async (c) => {
   });
 
   if (!parsed.success) {
-    return jsonError(400, "VALIDATION_ERROR", "Pflichtfelder fehlen oder sind ungueltig.");
+    return jsonError(400, "VALIDATION_ERROR", "Pflichtfelder fehlen oder sind ungültig.");
   }
 
   const extension = image.type === "image/png" ? "png" : "jpg";

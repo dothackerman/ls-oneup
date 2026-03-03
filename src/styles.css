@@ -88,6 +88,23 @@ button:hover,
   background: #0b684c;
 }
 
+.button-secondary {
+  background: #e6edf3;
+  color: #122433;
+}
+
+.button-secondary:hover {
+  background: #d5e0e9;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid #0b684c;
+  outline-offset: 2px;
+}
+
 .warning {
   color: #8f4b00;
   background: #fff1de;
@@ -119,6 +136,7 @@ button:hover,
 table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 1080px;
 }
 
 th,
@@ -157,6 +175,15 @@ td {
   color: #5a6a79;
 }
 
+.inline-edit {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.inline-action {
+  margin-top: 0.45rem;
+}
+
 .qr-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -187,8 +214,68 @@ td {
   color: #3f4f5d;
 }
 
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(18, 36, 51, 0.62);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 30;
+}
+
+.modal {
+  width: min(980px, 100%);
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid rgba(18, 36, 51, 0.12);
+  padding: 1rem;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.modal-header h3 {
+  margin: 0;
+}
+
+.image-modal {
+  background: #f7f9fb;
+}
+
+.image-preview {
+  width: 100%;
+  height: auto;
+  max-height: 72vh;
+  border-radius: 10px;
+  object-fit: contain;
+  background: #fff;
+}
+
 @media (max-width: 760px) {
   .container {
     padding: 0.8rem;
+  }
+
+  th,
+  td {
+    padding: 0.4rem;
+  }
+
+  .modal {
+    padding: 0.75rem;
+  }
+
+  .modal-header {
+    flex-direction: column;
+    align-items: stretch;
   }
 }

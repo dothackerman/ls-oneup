@@ -98,7 +98,13 @@ Success `200`:
       "expire_by": "2026-05-02T10:00:00Z",
       "submitted_at": null,
       "crop_name": null,
-      "crop_overridden_at": null
+      "plant_vitality": null,
+      "soil_moisture": null,
+      "gps_lat": null,
+      "gps_lon": null,
+      "gps_captured_at": null,
+      "crop_overridden_at": null,
+      "image_url": null
     }
   ]
 }
@@ -129,6 +135,21 @@ Success `200`:
 Errors:
 1. `404` probe not found.
 2. `400` validation failure.
+
+### `GET /api/admin/probes/:id/image`
+Open uploaded probe image via stored D1 reference to R2 object.
+
+Success:
+1. `200` image body with inline rendering headers.
+
+Response headers:
+1. `content-type` from R2 metadata; if missing, fallback to D1 `image_mime`.
+2. `content-disposition: inline`.
+3. `cache-control: private, max-age=60`.
+
+Errors:
+1. `404` image reference missing in D1.
+2. `404` object missing in R2.
 
 ### `GET /api/probe/:token`
 Resolve token for farmer form initialization.

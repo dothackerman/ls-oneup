@@ -170,11 +170,18 @@ describe("M1 integration", () => {
     expect(list.status).toBe(200);
     const listPayload = (await list.json()) as { items: AdminProbeList[] };
     expect(listPayload.items[0].status).toBe("eingereicht");
+    expect(listPayload.items[0].crop_name).toBe("Kartoffeln");
+    expect(listPayload.items[0].plant_vitality).toBe("normal");
+    expect(listPayload.items[0].soil_moisture).toBe("normal");
+    expect(listPayload.items[0].gps_lat).toBeCloseTo(47.3769, 5);
+    expect(listPayload.items[0].gps_lon).toBeCloseTo(8.5417, 5);
+    expect(listPayload.items[0].gps_captured_at).toBeTruthy();
     expect(listPayload.items[0].image_url).toContain(`/api/admin/probes/${probeId}/image`);
 
     const imageRes = await SELF.fetch(`https://example.test/api/admin/probes/${probeId}/image`);
     expect(imageRes.status).toBe(200);
     expect(imageRes.headers.get("content-type")).toContain("image/");
+    expect(imageRes.headers.get("content-disposition")).toContain("inline");
     await imageRes.arrayBuffer();
   });
 
@@ -202,5 +209,11 @@ describe("M1 integration", () => {
 type AdminProbeList = {
   probe_id: string;
   status: "offen" | "eingereicht" | "abgelaufen";
+  crop_name: string | null;
+  plant_vitality: "normal" | "schwach_langsam" | "krankheit_oder_anderes_problem" | null;
+  soil_moisture: "sehr_trocken" | "trocken" | "normal" | "nass" | "sehr_nass" | null;
+  gps_lat: number | null;
+  gps_lon: number | null;
+  gps_captured_at: string | null;
   image_url: string | null;
 };

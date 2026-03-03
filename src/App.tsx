@@ -1,7 +1,10 @@
 import type { FormEvent } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as QRCode from "qrcode";
 import "./styles.css";
+
+type VitalityValue = "normal" | "schwach_langsam" | "krankheit_oder_anderes_problem";
+type SoilMoistureValue = "sehr_trocken" | "trocken" | "normal" | "nass" | "sehr_nass";
 
 type AdminProbe = {
   probe_id: string;
@@ -13,8 +16,19 @@ type AdminProbe = {
   expire_by: string;
   submitted_at: string | null;
   crop_name: string | null;
+  plant_vitality: VitalityValue | null;
+  soil_moisture: SoilMoistureValue | null;
+  gps_lat: number | null;
+  gps_lon: number | null;
+  gps_captured_at: string | null;
   crop_overridden_at: string | null;
   image_url: string | null;
+};
+
+type ImageCacheEntry = {
+  object_url: string | null;
+  loading: boolean;
+  error: string | null;
 };
 
 type CreatedProbe = {
@@ -92,10 +106,16 @@ function AdminPage(): JSX.Element {
   const [createdItems, setCreatedItems] = useState<CreatedProbe[]>([]);
   const [probes, setProbes] = useState<AdminProbe[]>([]);
   const [overrideDrafts, setOverrideDrafts] = useState<Record<string, string>>({});
+  const [overrideEditingProbeId, setOverrideEditingProbeId] = useState<string | null>(null);
+  const [previewProbeId, setPreviewProbeId] = useState<string | null>(null);
+  const [imageCache, setImageCache] = useState<Record<string, ImageCacheEntry>>({});
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const imageObjectUrls = useRef<string[]>([]);
 
   const qrData = useQrData(createdItems);
+  const previewProbe = probes.find((probe) => probe.probe_id === previewProbeId) ?? null;
+  const previewState = previewProbeId ? imageCache[previewProbeId] : undefined;
 
   async function loadProbes(): Promise<void> {
     const res = await fetch("/api/admin/probes");
@@ -147,12 +167,26 @@ function AdminPage(): JSX.Element {
     await navigator.clipboard.writeText(value);
   }
 
+  function startOverrideEdit(probe: AdminProbe): void {
+    setOverrideEditingProbeId(probe.probe_id);
+    setOverrideDrafts((prev) => ({
+      ...prev,
+      [probe.probe_id]: probe.crop_name ?? "",
+    }));
+  }
+
+  function cancelOverrideEdit(probeId: string): void {
+    setOverrideEditingProbeId((prev) => (prev === probeId ? null : prev));
+  }
+
   async function submitOverride(probeId: string): Promise<void> {
     const cropName = overrideDrafts[probeId]?.trim();
     if (!cropName) {
+      setError("Kulturname ist obligatorisch.");
       return;
     }
 
+    setError(null);
     const res = await fetch(`/api/admin/probes/${probeId}/crop-override`, {
       method: "PATCH",
       headers: {
@@ -169,8 +203,91 @@ function AdminPage(): JSX.Element {
     }
 
     setOverrideDrafts((prev) => ({ ...prev, [probeId]: "" }));
+    setOverrideEditingProbeId(null);
     await loadProbes();
   }
+
+  async function loadImagePreview(probe: AdminProbe): Promise<void> {
+    if (!probe.image_url) {
+      return;
+    }
+
+    const existing = imageCache[probe.probe_id];
+    if (existing?.loading || existing?.object_url) {
+      return;
+    }
+
+    setImageCache((prev) => ({
+      ...prev,
+      [probe.probe_id]: {
+        object_url: null,
+        loading: true,
+        error: null,
+      },
+    }));
+
+    try {
+      const res = await fetch(probe.image_url);
+      if (!res.ok) {
+        const payload = (await res.json().catch(() => null)) as ApiError | null;
+        throw new Error(payload?.message || "Bildvorschau konnte nicht geladen werden.");
+      }
+
+      const blob = await res.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      imageObjectUrls.current.push(objectUrl);
+
+      setImageCache((prev) => ({
+        ...prev,
+        [probe.probe_id]: {
+          object_url: objectUrl,
+          loading: false,
+          error: null,
+        },
+      }));
+    } catch (err) {
+      setImageCache((prev) => ({
+        ...prev,
+        [probe.probe_id]: {
+          object_url: null,
+          loading: false,
+          error: err instanceof Error ? err.message : "Bildvorschau konnte nicht geladen werden.",
+        },
+      }));
+    }
+  }
+
+  function openPreview(probe: AdminProbe): void {
+    setPreviewProbeId(probe.probe_id);
+    void loadImagePreview(probe);
+  }
+
+  function closePreview(): void {
+    setPreviewProbeId(null);
+  }
+
+  useEffect(() => {
+    return () => {
+      for (const objectUrl of imageObjectUrls.current) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!previewProbeId) {
+      return;
+    }
+
+    function onKeyDown(event: KeyboardEvent): void {
+      if (event.key === "Escape") {
+        closePreview();
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [previewProbeId]);
 
   return (
     <main className="container">
@@ -178,7 +295,7 @@ function AdminPage(): JSX.Element {
       <p className="subtitle">Adminbereich M1</p>
 
       <section className="card">
-        <h2>Probes erstellen</h2>
+        <h2>Proben erstellen</h2>
         <form className="grid-form" onSubmit={handleCreate}>
           <label>
             Kunde
@@ -197,7 +314,7 @@ function AdminPage(): JSX.Element {
             />
           </label>
           <label>
-            Anzahl Probes
+            Anzahl Proben
             <input
               type="number"
               min={1}
@@ -249,7 +366,7 @@ function AdminPage(): JSX.Element {
       )}
 
       <section className="card">
-        <h2>Probes</h2>
+        <h2>Proben</h2>
         {error && <p className="error">{error}</p>}
         <div className="table-wrapper">
           <table>
@@ -261,9 +378,13 @@ function AdminPage(): JSX.Element {
                 <th>Status</th>
                 <th>Erstellt</th>
                 <th>Ablauf</th>
+                <th>Eingereicht</th>
                 <th>Kultur</th>
+                <th>Pflanzenvitalität</th>
+                <th>Bodenfeuchte</th>
+                <th>GPS</th>
+                <th>GPS erfasst</th>
                 <th>Bild</th>
-                <th>Override</th>
               </tr>
             </thead>
             <tbody>
@@ -277,40 +398,70 @@ function AdminPage(): JSX.Element {
                   </td>
                   <td>{formatDate(probe.created_at)}</td>
                   <td>{formatDate(probe.expire_by)}</td>
+                  <td>{formatDate(probe.submitted_at)}</td>
                   <td>
-                    {probe.crop_name || "-"}
-                    {probe.crop_overridden_at ? (
-                      <small className="block">
-                        Override: {formatDate(probe.crop_overridden_at)}
-                      </small>
-                    ) : null}
+                    {overrideEditingProbeId === probe.probe_id ? (
+                      <div className="inline-edit">
+                        <input
+                          placeholder="Kultur anpassen"
+                          value={overrideDrafts[probe.probe_id] ?? ""}
+                          onChange={(event) =>
+                            setOverrideDrafts((prev) => ({
+                              ...prev,
+                              [probe.probe_id]: event.target.value,
+                            }))
+                          }
+                        />
+                        <div className="button-row">
+                          <button type="button" onClick={() => void submitOverride(probe.probe_id)}>
+                            Speichern
+                          </button>
+                          <button
+                            type="button"
+                            className="button-secondary"
+                            onClick={() => cancelOverrideEdit(probe.probe_id)}
+                          >
+                            Abbrechen
+                          </button>
+                        </div>
+                        <small className="block">
+                          Mit Speichern übernimmt Admin die Verantwortung.
+                        </small>
+                      </div>
+                    ) : (
+                      <>
+                        {probe.crop_name || "-"}
+                        {probe.crop_overridden_at ? (
+                          <small className="block">
+                            Override: {formatDate(probe.crop_overridden_at)}
+                          </small>
+                        ) : null}
+                        <button
+                          type="button"
+                          className="button-secondary inline-action"
+                          onClick={() => startOverrideEdit(probe)}
+                        >
+                          Bearbeiten
+                        </button>
+                      </>
+                    )}
                   </td>
+                  <td>{probe.plant_vitality ? vitalityLabels[probe.plant_vitality] : "-"}</td>
+                  <td>{probe.soil_moisture ? moistureLabels[probe.soil_moisture] : "-"}</td>
+                  <td>
+                    {probe.gps_lat !== null && probe.gps_lon !== null
+                      ? `${probe.gps_lat.toFixed(5)}, ${probe.gps_lon.toFixed(5)}`
+                      : "-"}
+                  </td>
+                  <td>{formatDate(probe.gps_captured_at)}</td>
                   <td>
                     {probe.image_url ? (
-                      <a href={probe.image_url} target="_blank" rel="noreferrer">
+                      <button type="button" onClick={() => openPreview(probe)}>
                         Anzeigen
-                      </a>
+                      </button>
                     ) : (
                       "-"
                     )}
-                  </td>
-                  <td>
-                    <input
-                      placeholder="Kultur anpassen"
-                      value={overrideDrafts[probe.probe_id] ?? ""}
-                      onChange={(event) =>
-                        setOverrideDrafts((prev) => ({
-                          ...prev,
-                          [probe.probe_id]: event.target.value,
-                        }))
-                      }
-                    />
-                    <button type="button" onClick={() => submitOverride(probe.probe_id)}>
-                      Speichern
-                    </button>
-                    <small className="block">
-                      Mit Speichern uebernimmt Admin die Verantwortung.
-                    </small>
                   </td>
                 </tr>
               ))}
@@ -318,6 +469,41 @@ function AdminPage(): JSX.Element {
           </table>
         </div>
       </section>
+
+      {previewProbe && (
+        <div className="modal-backdrop" onClick={closePreview}>
+          <section
+            className="modal image-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Bildvorschau Probe ${previewProbe.probe_number}`}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="modal-header">
+              <h3>Bildvorschau Probe {previewProbe.probe_number}</h3>
+              <button type="button" className="button-secondary" onClick={closePreview}>
+                Schliessen
+              </button>
+            </div>
+            {previewState?.loading || !previewState ? <p>Lade Bildvorschau...</p> : null}
+            {!previewState?.loading && previewState?.error ? (
+              <>
+                <p className="error">{previewState.error}</p>
+                <button type="button" onClick={() => void loadImagePreview(previewProbe)}>
+                  Erneut versuchen
+                </button>
+              </>
+            ) : null}
+            {!previewState?.loading && !previewState?.error && previewState?.object_url ? (
+              <img
+                className="image-preview"
+                src={previewState.object_url}
+                alt={`Probe ${previewProbe.probe_number}`}
+              />
+            ) : null}
+          </section>
+        </div>
+      )}
     </main>
   );
 }
@@ -408,7 +594,7 @@ function FarmerPage({ token }: { token: string }): JSX.Element {
   useEffect(() => {
     async function loadToken(): Promise<void> {
       if (!navigator.onLine) {
-        setError("Ohne Internet ist Laden in M1 nicht moeglich.");
+        setError("Ohne Internet ist Laden in M1 nicht möglich.");
         setLoading(false);
         return;
       }
@@ -434,7 +620,7 @@ function FarmerPage({ token }: { token: string }): JSX.Element {
 
   async function captureGps(): Promise<void> {
     if (!navigator.geolocation) {
-      setError("GPS ist auf diesem Geraet nicht verfuegbar.");
+      setError("GPS ist auf diesem Gerät nicht verfügbar.");
       return;
     }
 
@@ -463,7 +649,7 @@ function FarmerPage({ token }: { token: string }): JSX.Element {
     event.preventDefault();
 
     if (!online) {
-      setError("Ohne Internet ist Senden in M1 nicht moeglich.");
+      setError("Ohne Internet ist Senden in M1 nicht möglich.");
       return;
     }
 
@@ -534,7 +720,7 @@ function FarmerPage({ token }: { token: string }): JSX.Element {
             </label>
 
             <label>
-              Pflanzenvitalitaet
+              Pflanzenvitalität
               <select value={vitality} onChange={(event) => setVitality(event.target.value)}>
                 {Object.entries(vitalityLabels).map(([value, label]) => (
                   <option key={value} value={value}>
