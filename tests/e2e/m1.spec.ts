@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { Buffer } from "node:buffer";
+import { createProbeOrder, expireProbeById, submitProbe } from "./helpers";
 
 test("E2E-ADMIN-001 and E2E-ADMIN-002 create links and render frontend QR", async ({ page }) => {
   await page.goto("/admin");
@@ -113,4 +114,97 @@ test("E2E-FARM-004 blocks submit when offline", async ({ page, request, context 
 
   await page.getByRole("button", { name: "Absenden" }).click();
   await expect(page.getByText("Ohne Internet ist Senden in M1 nicht moeglich.")).toBeVisible();
+});
+
+test("E2E-ADMIN-003 shows submitted probes with status eingereicht", async ({ page, request }) => {
+  const { orderNumber, token } = await createProbeOrder(request, {
+    orderPrefix: "E2E-ADMIN-003",
+  });
+
+  const submitStatus = await submitProbe(request, token);
+  expect(submitStatus).toBe(201);
+
+  await page.goto("/admin");
+  const row = page.locator("tbody tr", { hasText: orderNumber });
+  await expect(row).toHaveCount(1);
+  await expect(row.locator(".status")).toHaveText("eingereicht");
+});
+
+test("E2E-FARM-002 blocks expired tokens in farmer flow", async ({ page, request }) => {
+  const { token, probeId } = await createProbeOrder(request, {
+    orderPrefix: "E2E-FARM-002",
+  });
+
+  await expireProbeById(probeId);
+
+  await page.goto(`/p/${token}`);
+  await expect(page.getByText("Link ist abgelaufen.")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Absenden" })).toHaveCount(0);
+});
+
+test("E2E-FARM-005 rejects invalid MIME and oversized uploads", async ({ request }) => {
+  const { token: badMimeToken } = await createProbeOrder(request, {
+    orderPrefix: "E2E-FARM-005-MIME",
+  });
+
+  const badMimeStatus = await submitProbe(request, badMimeToken, {
+    image: {
+      name: "not-image.txt",
+      mimeType: "text/plain",
+      buffer: Buffer.from("not-an-image"),
+    },
+  });
+  expect(badMimeStatus).toBe(415);
+
+  const { token: oversizedToken } = await createProbeOrder(request, {
+    orderPrefix: "E2E-FARM-005-SIZE",
+  });
+
+  const oversizedStatus = await submitProbe(request, oversizedToken, {
+    image: {
+      name: "too-large.jpg",
+      mimeType: "image/jpeg",
+      buffer: Buffer.alloc(2 * 1024 * 1024 + 1, 1),
+    },
+  });
+  expect(oversizedStatus).toBe(413);
+});
+
+test("E2E-ADMIN-004 allows viewing uploaded image from admin table", async ({ page, request }) => {
+  const { orderNumber, token } = await createProbeOrder(request, {
+    orderPrefix: "E2E-ADMIN-004",
+  });
+
+  const submitStatus = await submitProbe(request, token);
+  expect(submitStatus).toBe(201);
+
+  await page.goto("/admin");
+  const row = page.locator("tbody tr", { hasText: orderNumber });
+  await expect(row).toHaveCount(1);
+
+  const imageLink = row.getByRole("link", { name: "Anzeigen" });
+  await expect(imageLink).toBeVisible();
+
+  const imageUrl = await imageLink.getAttribute("href");
+  expect(imageUrl).toBeTruthy();
+
+  const imageResponse = await request.get(imageUrl ?? "");
+  expect(imageResponse.status()).toBe(200);
+  expect(imageResponse.headers()["content-type"]).toContain("image/");
+});
+
+test("E2E-ADMIN-005 stores and shows crop override timestamp", async ({ page, request }) => {
+  const { orderNumber } = await createProbeOrder(request, {
+    orderPrefix: "E2E-ADMIN-005",
+  });
+
+  await page.goto("/admin");
+  const row = page.locator("tbody tr", { hasText: orderNumber });
+  await expect(row).toHaveCount(1);
+
+  await row.getByPlaceholder("Kultur anpassen").fill("Randen");
+  await row.getByRole("button", { name: "Speichern" }).click();
+
+  await expect(row).toContainText("Randen");
+  await expect(row).toContainText("Override:");
 });
