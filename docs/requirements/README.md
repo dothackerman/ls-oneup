@@ -19,6 +19,14 @@ This folder contains the living requirement and implementation-guidance document
    - M1 implementation contract for agent/subagent execution
 8. `08-local-testing-and-first-release-runbook.md`
    - local testing getting-started + proposed first Cloudflare release steps
+9. `09-m1-api-contract.md`
+   - endpoint contract, payloads, and status/error behavior for M1
+10. `10-m1-data-model-and-migrations.md`
+   - D1 schema baseline, R2 reference model, and migration rules
+11. `11-m1-test-traceability-matrix.md`
+   - mapping from M1 acceptance criteria to integration/E2E tests
+12. `12-m1-security-decision-record.md`
+   - ADR-style security decision for one-time token links
 
 ## Working Rules
 1. Keep docs aligned with code and architecture decisions.

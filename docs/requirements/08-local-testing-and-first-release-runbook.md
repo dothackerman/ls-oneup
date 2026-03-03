@@ -28,6 +28,7 @@ Optional but recommended:
 1. `npm run typecheck`
 2. `npm run test:unit`
 3. `npm run ci:local` (single command to run full local quality loop)
+4. `npm run test:manual:prep` (start local services for browser-based manual testing)
 
 ### Local Quality Loop (Mandatory)
 1. Implement change
@@ -38,11 +39,13 @@ Optional but recommended:
 
 Before milestone sign-off:
 1. Run complete E2E suite (`npm run test:e2e`) covering M1 business logic.
+2. Ensure integration and E2E test execution target local Workers runtime semantics.
 
 ### Local Data/Service Expectations
 1. D1 local database and migrations run locally before integration tests.
 2. R2 interactions are testable in local/dev mode (or mocked where needed).
 3. No cloud deployment is required for local testing.
+4. Local Workers runtime testing is not constrained by Cloudflare free-tier deployment/build limits.
 
 ## Proposed First Release (Cloudflare) - Manual Only
 

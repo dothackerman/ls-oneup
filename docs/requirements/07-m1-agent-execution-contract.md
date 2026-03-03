@@ -39,7 +39,7 @@ For each feature/fix change:
 1. Implement
 2. Formatter
 3. Linter
-4. Integration tests
+4. Integration tests (Workers-runtime semantics)
 5. If green: commit and push
 
 Required stop rule:
@@ -58,6 +58,7 @@ M1 is complete only when:
    - admin crop override with timestamp
    - admin status derivation (`offen`, `eingereicht`, `abgelaufen`)
 3. The full local test run is green.
+4. `ci:local` is green and includes Workers-runtime integration + E2E execution.
 
 ## UX Quality Expectations
 1. Intuitive and visually coherent UX (mobile-first for farmer flow).
@@ -74,8 +75,9 @@ Examples:
 2. `test(m1-submit): cover first-submit-wins race path`
 3. `docs(m1): update local testing and runbook`
 
-## Missing Artifacts to Keep Ready During Implementation
-1. API contract document for M1 endpoints.
-2. D1 schema and migration plan with versioning notes.
-3. Test matrix mapping each M1 acceptance criterion to integration/e2e tests.
-4. Deployment runbook for first manual Cloudflare release (document only until auth exists).
+## Required Supporting Artifacts
+1. API contract document for M1 endpoints: `09-m1-api-contract.md`.
+2. D1 schema and migration plan with versioning notes: `10-m1-data-model-and-migrations.md`.
+3. Test matrix mapping each M1 acceptance criterion to integration/e2e tests: `11-m1-test-traceability-matrix.md`.
+4. Security decision record (ADR-style): `12-m1-security-decision-record.md`.
+5. Deployment runbook for first manual Cloudflare release (document only until auth exists): `08-local-testing-and-first-release-runbook.md`.

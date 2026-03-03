@@ -27,6 +27,14 @@ There is no application code yet.
   - M1 implementation contract for agent/subagent execution and quality gates.
 - `docs/requirements/08-local-testing-and-first-release-runbook.md`
   - local testing getting-started and manual first-release proposal for Cloudflare.
+- `docs/requirements/09-m1-api-contract.md`
+  - endpoint-level API contract for M1.
+- `docs/requirements/10-m1-data-model-and-migrations.md`
+  - D1 schema baseline and migration rules.
+- `docs/requirements/11-m1-test-traceability-matrix.md`
+  - acceptance-criteria-to-test mapping for M1.
+- `docs/requirements/12-m1-security-decision-record.md`
+  - ADR-style token-link security decision for M1.
 
 ## Project Focus (now)
 
@@ -38,6 +46,6 @@ The current focus is Milestone 1 (MVP):
 
 ## Next Steps
 
-1. Translate M1 into concrete implementation tickets with requirement-to-test mapping.
-2. Scaffold application code and local script contract from `07` and `08`.
-3. Execute M1 with strict local quality loop and manual-only release policy.
+1. Scaffold application code from `06`, `09`, and `10`.
+2. Implement and validate against `11` and `12` under the `07` quality contract.
+3. Execute M1 with strict local quality loop and manual-only release policy from `08`.

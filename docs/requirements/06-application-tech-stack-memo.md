@@ -15,7 +15,7 @@ Use a single full-stack project with:
 8. `Vitest` + `Playwright` for testing.
 
 This is the primary stack.  
-Fallback stack remains available: `Astro + Hono + direct D1 SQL + Wrangler migrations + Workers Vitest pool`.
+Fallback stack (`Astro + Hono + direct D1 SQL + Wrangler migrations + Workers Vitest pool`) is documented as contingency only and is not active for M1 implementation.
 
 ## Clarification Addendum (Latest Decisions)
 1. Frontend image compression is preferred in M1, but backend validation is mandatory and authoritative.
@@ -49,6 +49,9 @@ Fallback stack remains available: `Astro + Hono + direct D1 SQL + Wrangler migra
    - avoid Node-only runtime dependencies in Worker code (`fs`, `net`, `tls`, `child_process`, native Node add-ons)
    - keep `nodejs_compat` disabled by default
    - only enable compatibility mode via explicit documented exception
+7. Test realism requirement:
+   - integration and E2E tests must execute against local Workers runtime semantics before merge.
+   - local Workers runtime testing is not limited by Cloudflare free-tier deployment/build quotas.
 
 ## Minimal Architecture Mapping
 1. Admin (Access-protected) creates probes and receives per-probe token/link.

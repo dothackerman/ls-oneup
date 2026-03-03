@@ -1,8 +1,9 @@
 # Open Questions and Clarifications
 
-## Still Open for Milestone 1
-1. Do we keep the fallback stack (`Astro + direct D1 SQL`) as an active contingency, or freeze on primary stack only?
-2. Do we add Workers-runtime integration tests immediately (`@cloudflare/vitest-pool-workers`) or defer them until after the first end-to-end vertical slice?
+## Milestone 1 Technical Status
+1. No technical open questions remain for M1.
+2. Stack for M1 is frozen on primary path from `06-application-tech-stack-memo.md`.
+3. Integration and E2E tests must run against local Workers runtime semantics before merge.
 
 ## Deferred to Milestone 2
 1. Will revoke/regenerate links be included in M2 initial release or moved further?
@@ -15,6 +16,8 @@
 3. Which model metadata must be stored (for example confidence, model version, inference timestamp)?
 
 ## Data Governance
-1. What legal basis/consent wording is required for GPS and image collection?
-2. Can images be reused for model training by default, or only with explicit opt-in?
-3. What retention and deletion policy applies to uploaded images and probe metadata?
+1. Legal and data-governance items are explicitly deferred until M1 implementation is running.
+2. Open items to resolve in that phase:
+   - legal basis/consent wording for GPS and image collection
+   - model-training reuse policy (default vs opt-in)
+   - retention and deletion policy for images and probe metadata
