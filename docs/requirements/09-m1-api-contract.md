@@ -135,6 +135,7 @@ Success `200`:
 Errors:
 1. `404` probe not found.
 2. `400` validation failure.
+3. `409` probe is not submitted yet (`PROBE_NOT_SUBMITTED`).
 
 ### `GET /api/admin/probes/:id/image`
 Open uploaded probe image via stored D1 reference to R2 object.

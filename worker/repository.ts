@@ -227,18 +227,35 @@ export async function applySubmit(
   return result.meta.changes ?? 0;
 }
 
+export type OverrideCropResult = "updated" | "not_found" | "not_submitted";
+
 export async function overrideCrop(
   db: D1Database,
   probeId: string,
   cropName: string,
   nowIso: string,
-): Promise<boolean> {
+): Promise<OverrideCropResult> {
   const result = await db
-    .prepare("UPDATE probes SET crop_name = ?1, crop_overridden_at = ?2 WHERE id = ?3")
+    .prepare(
+      "UPDATE probes SET crop_name = ?1, crop_overridden_at = ?2 WHERE id = ?3 AND submitted_at IS NOT NULL",
+    )
     .bind(cropName, nowIso, probeId)
     .run();
 
-  return (result.meta.changes ?? 0) > 0;
+  if ((result.meta.changes ?? 0) > 0) {
+    return "updated";
+  }
+
+  const row = await db
+    .prepare("SELECT submitted_at FROM probes WHERE id = ?1")
+    .bind(probeId)
+    .first<{ submitted_at: string | null }>();
+
+  if (!row) {
+    return "not_found";
+  }
+
+  return "not_submitted";
 }
 
 export async function getProbeImage(

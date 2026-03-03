@@ -36,7 +36,7 @@ Per probe, collect simple field data in a fast workflow so admin can interpret a
    - exactly one mandatory image (`jpg/png`, max 2 MB after client-side compression if supported by chosen tech stack)
    - online-only behavior in M1 (form load and submit require internet connection; no offline capability)
 7. Admin can view submitted probe data.
-8. Admin can override crop name only.
+8. Admin can override crop name only after farmer submission (`status = eingereicht`).
 9. Overridden crop keeps final value only and stores `crop_overridden_at`.
 
 ## Confirmed M2 and M3 Direction

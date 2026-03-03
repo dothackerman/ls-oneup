@@ -230,15 +230,19 @@ test("E2E-ADMIN-004 allows viewing uploaded image from admin table", async ({ pa
   expect(imageCalls).toBeLessThanOrEqual(2);
 });
 
-test("E2E-ADMIN-005 stores and shows crop override timestamp", async ({ page, request }) => {
-  const { orderNumber } = await createProbeOrder(request, {
+test("E2E-ADMIN-005 stores override timestamp only after submitted status", async ({
+  page,
+  request,
+}) => {
+  const { orderNumber, token } = await createProbeOrder(request, {
     orderPrefix: "E2E-ADMIN-005",
   });
 
   await page.goto("/admin");
-  const row = page.locator("tbody tr", { hasText: orderNumber });
+  let row = page.locator("tbody tr", { hasText: orderNumber });
   await expect(row).toHaveCount(1);
   await expect(row.locator(".status")).toHaveText("offen");
+  await expect(row.getByRole("button", { name: "Kultur bearbeiten" })).toHaveCount(0);
 
   const cells = row.locator("td");
   await expect(cells.nth(4)).toContainText("-");
@@ -247,8 +251,14 @@ test("E2E-ADMIN-005 stores and shows crop override timestamp", async ({ page, re
   await expect(cells.nth(7)).toHaveText("-");
   await expect(cells.nth(11)).toHaveText("-");
 
-  await expect(page.getByRole("columnheader", { name: "Override" })).toHaveCount(0);
-  await row.getByRole("button", { name: "Bearbeiten" }).click();
+  const submitStatus = await submitProbe(request, token);
+  expect(submitStatus).toBe(201);
+
+  await page.reload();
+  row = page.locator("tbody tr", { hasText: orderNumber });
+  await expect(row).toHaveCount(1);
+  await expect(row.locator(".status")).toHaveText("eingereicht");
+  await row.getByRole("button", { name: "Kultur bearbeiten" }).click();
   await expect(row).toContainText("Mit Speichern übernimmt Admin die Verantwortung.");
   await row.getByPlaceholder("Kultur anpassen").fill("Randen");
   await row.getByRole("button", { name: "Speichern" }).click();
@@ -286,6 +296,38 @@ test("E2E-FARM-006 requires explicit select choices before submit", async ({
 
   await page.getByLabel("Bodenfeuchte").selectOption("normal");
   await expect(submitButton).toBeEnabled();
+});
+
+test("E2E-FARM-007 shows loading state while GPS capture runs", async ({
+  page,
+  request,
+  context,
+}) => {
+  const { token } = await createProbeOrder(request, {
+    orderPrefix: "E2E-FARM-007",
+  });
+
+  await context.grantPermissions(["geolocation"]);
+  await context.setGeolocation({ latitude: 47.3769, longitude: 8.5417 });
+
+  await page.addInitScript(() => {
+    const original = navigator.geolocation.getCurrentPosition.bind(navigator.geolocation);
+    navigator.geolocation.getCurrentPosition = (success, error, options) =>
+      original(
+        (position) => {
+          window.setTimeout(() => success(position), 800);
+        },
+        error,
+        options,
+      );
+  });
+
+  await page.goto(`/p/${token}`);
+  await page.getByRole("button", { name: "GPS erfassen" }).click();
+
+  await expect(page.getByRole("button", { name: "GPS wird erfasst..." })).toBeDisabled();
+  await expect(page.getByText("Standort wird ermittelt...")).toBeVisible();
+  await expect(page.getByText("GPS erfasst:")).toBeVisible({ timeout: 5000 });
 });
 
 test("E2E-ADMIN-006 paginates admin table with 20 rows per page", async ({ page, request }) => {

@@ -241,8 +241,30 @@ describe("M1 integration", () => {
     await imageRes.arrayBuffer();
   });
 
-  it("INT-ADMIN-003 stores crop override timestamp", async () => {
-    const { probeId } = await createProbeOrder({ order_number: "ORD-OVERRIDE" });
+  it("INT-ADMIN-003 allows crop override only for submitted probes", async () => {
+    const { probeId, tokenUrl } = await createProbeOrder({ order_number: "ORD-OVERRIDE" });
+    const token = tokenFromUrl(tokenUrl);
+
+    const blocked = await SELF.fetch(
+      `https://example.test/api/admin/probes/${probeId}/crop-override`,
+      {
+        method: "PATCH",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ crop_name: "Randen" }),
+      },
+    );
+
+    expect(blocked.status).toBe(409);
+    const blockedPayload = (await blocked.json()) as { error_code: string };
+    expect(blockedPayload.error_code).toBe("PROBE_NOT_SUBMITTED");
+
+    const submit = await SELF.fetch(`https://example.test/api/probe/${token}/submit`, {
+      method: "POST",
+      body: buildValidForm(),
+    });
+    expect(submit.status).toBe(201);
 
     const response = await SELF.fetch(
       `https://example.test/api/admin/probes/${probeId}/crop-override`,

@@ -74,6 +74,24 @@ function statusBadgeClasses(status: AdminProbe["status"]): string {
   return "bg-sky-100 text-sky-800";
 }
 
+function EditIcon(): JSX.Element {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+    </svg>
+  );
+}
+
 function buildImagePreviewUrl(baseUrl: string, retryNonce: number): string {
   if (retryNonce === 0) {
     return baseUrl;
@@ -545,7 +563,8 @@ function AdminPage(): JSX.Element {
                             </span>
                           </td>
                           <td className="border-b border-slate-200 px-3 py-2 align-top">
-                            {overrideEditingProbeId === probe.probe_id ? (
+                            {overrideEditingProbeId === probe.probe_id &&
+                            probe.status === "eingereicht" ? (
                               <div className="grid gap-2">
                                 <input
                                   className={fieldClass}
@@ -586,13 +605,16 @@ function AdminPage(): JSX.Element {
                                     Override: {formatDate(probe.crop_overridden_at)}
                                   </p>
                                 ) : null}
-                                <button
-                                  type="button"
-                                  className="mt-2 inline-flex items-center justify-center rounded-md border border-slate-300 bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-800 transition hover:bg-slate-200"
-                                  onClick={() => startOverrideEdit(probe)}
-                                >
-                                  Bearbeiten
-                                </button>
+                                {probe.status === "eingereicht" ? (
+                                  <button
+                                    type="button"
+                                    aria-label="Kultur bearbeiten"
+                                    className="mt-2 inline-flex items-center justify-center rounded-md border border-slate-300 bg-slate-100 px-2.5 py-1.5 text-xs font-semibold text-slate-800 transition hover:bg-slate-200"
+                                    onClick={() => startOverrideEdit(probe)}
+                                  >
+                                    <EditIcon />
+                                  </button>
+                                ) : null}
                               </div>
                             )}
                           </td>
@@ -779,6 +801,7 @@ function FarmerPage({ token }: { token: string }): JSX.Element {
   const [soilMoisture, setSoilMoisture] = useState<SoilMoistureValue | "">("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [gps, setGps] = useState<{ lat: number; lon: number; capturedAt: string } | null>(null);
+  const [gpsLoading, setGpsLoading] = useState(false);
 
   useEffect(() => {
     function updateOnline(): void {
@@ -822,30 +845,46 @@ function FarmerPage({ token }: { token: string }): JSX.Element {
   }, [token]);
 
   async function captureGps(): Promise<void> {
+    if (gpsLoading) {
+      return;
+    }
+
     if (!navigator.geolocation) {
       setError("GPS ist auf diesem Gerät nicht verfügbar.");
       return;
     }
 
     setError(null);
+    setGpsLoading(true);
 
-    const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject, {
-        enableHighAccuracy: true,
-        timeout: 15_000,
+    try {
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 15_000,
+          maximumAge: 0,
+        });
       });
-    }).catch(() => null);
 
-    if (!position) {
-      setError("GPS konnte nicht gelesen werden. Bitte Berechtigung erlauben.");
-      return;
+      setGps({
+        lat: position.coords.latitude,
+        lon: position.coords.longitude,
+        capturedAt: new Date().toISOString(),
+      });
+    } catch (err) {
+      const geoError = err as GeolocationPositionError | undefined;
+      if (geoError?.code === 1) {
+        setError("GPS-Berechtigung fehlt. Bitte Zugriff erlauben.");
+      } else if (geoError?.code === 2) {
+        setError("Standort ist momentan nicht verfügbar. Bitte erneut versuchen.");
+      } else if (geoError?.code === 3) {
+        setError("GPS-Erfassung dauerte zu lange. Bitte erneut versuchen.");
+      } else {
+        setError("GPS konnte nicht gelesen werden. Bitte Berechtigung erlauben.");
+      }
+    } finally {
+      setGpsLoading(false);
     }
-
-    setGps({
-      lat: position.coords.latitude,
-      lon: position.coords.longitude,
-      capturedAt: new Date().toISOString(),
-    });
   }
 
   const canSubmit =
@@ -855,7 +894,8 @@ function FarmerPage({ token }: { token: string }): JSX.Element {
     Boolean(vitality) &&
     Boolean(soilMoisture) &&
     Boolean(gps) &&
-    Boolean(imageFile);
+    Boolean(imageFile) &&
+    !gpsLoading;
 
   async function handleSubmit(event: FormEvent): Promise<void> {
     event.preventDefault();
@@ -1014,13 +1054,26 @@ function FarmerPage({ token }: { token: string }): JSX.Element {
                 type="button"
                 className={secondaryButtonClass}
                 onClick={() => void captureGps()}
+                disabled={gpsLoading}
               >
-                GPS erfassen
+                {gpsLoading ? (
+                  <span className="inline-flex items-center gap-2">
+                    <span
+                      className="h-4 w-4 animate-spin rounded-full border-2 border-slate-500 border-t-transparent"
+                      aria-hidden="true"
+                    />
+                    GPS wird erfasst...
+                  </span>
+                ) : (
+                  "GPS erfassen"
+                )}
               </button>
               <p className="mt-2 text-sm text-slate-600">
-                {gps
-                  ? `GPS erfasst: ${gps.lat.toFixed(5)}, ${gps.lon.toFixed(5)}`
-                  : "Noch kein GPS erfasst."}
+                {gpsLoading
+                  ? "Standort wird ermittelt..."
+                  : gps
+                    ? `GPS erfasst: ${gps.lat.toFixed(5)}, ${gps.lon.toFixed(5)}`
+                    : "Noch kein GPS erfasst."}
               </p>
             </div>
 

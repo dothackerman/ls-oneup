@@ -29,13 +29,15 @@ Map each M1 acceptance criterion to automated tests.
    - `INT-SUBMIT-003` (parallel submit requests, exactly one accepted) - implemented
 2. Orphan cleanup path:
    - `INT-UPLOAD-002` (R2 write succeeds, conditional D1 submit fails -> delete attempted and logged) - implemented
-3. Admin crop override timestamp:
+3. Admin crop override timestamp and submitted-only guard:
    - `INT-ADMIN-003` and `E2E-ADMIN-005` implemented
 4. Lazy image preview caching:
    - `E2E-ADMIN-004` verifies modal reopen without second image fetch - implemented
 5. Responsive admin table behavior:
    - `E2E-ADMIN-006` verifies pagination (`20` rows per page)
    - `E2E-ADMIN-007` verifies sticky/right-side image action visibility on narrow viewport
+6. GPS capture progress feedback:
+   - `E2E-FARM-007` verifies loading spinner + disabled button while GPS capture is in progress
 
 ## Minimum Test Inventory for M1 Sign-off
 

@@ -190,10 +190,17 @@ app.patch("/api/admin/probes/:id/crop-override", async (c) => {
 
   const probeId = c.req.param("id");
   const at = nowIso();
-  const ok = await overrideCrop(c.env.DB, probeId, parsed.data.crop_name, at);
+  const result = await overrideCrop(c.env.DB, probeId, parsed.data.crop_name, at);
 
-  if (!ok) {
+  if (result === "not_found") {
     return jsonError(404, "PROBE_NOT_FOUND", "Probe nicht gefunden.");
+  }
+  if (result === "not_submitted") {
+    return jsonError(
+      409,
+      "PROBE_NOT_SUBMITTED",
+      "Kulturname kann erst nach Einreichung angepasst werden.",
+    );
   }
 
   return c.json({ probe_id: probeId, crop_name: parsed.data.crop_name, crop_overridden_at: at });

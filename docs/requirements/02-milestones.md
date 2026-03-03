@@ -43,7 +43,7 @@ Ship a minimal workflow where admin can create probe-specific links and farmers 
 7. Admin view and correction
    - Admin table includes at least: `created_at`, `expire_by`, status.
    - Status set in M1: `offen`, `eingereicht`, `abgelaufen`.
-   - Admin can override `crop_name` only.
+   - Admin can override `crop_name` only after farmer submission (`status = eingereicht`).
    - On override, keep final crop value and store `crop_overridden_at`.
    - UI must make it clear that admin takes responsibility when overriding crop.
 
