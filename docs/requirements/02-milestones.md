@@ -29,11 +29,18 @@ Ship a minimal workflow where admin can create probe-specific links and farmers 
      - `sehr nass`
    - Mandatory GPS capture (`lat`, `lon`, `gps_captured_at`)
    - Exactly one mandatory image (`jpg/png`, max 2 MB after client-side compression if the selected tech stack supports it)
+   - Backend enforces MIME and max-byte limits regardless of client checks.
 4. Farmer input handling
    - M1 is online-only: form load and submit require internet connection.
    - Offline usage is out of scope in M1.
    - No cross-device draft synchronization in M1.
-5. Admin view and correction
+5. Submission persistence and media handling
+   - Uploaded image is stored in R2 object storage.
+   - D1 stores the image reference and metadata (at least `image_key`, `image_mime`, `image_bytes`) so admin can view farmer uploads.
+   - If R2 upload succeeds but final conditional D1 submit write fails, system performs best-effort orphan cleanup (`delete` in R2) and logs cleanup result.
+6. Prototype compatibility stance
+   - Device-specific upload/compression issues are tolerated in M1 and handled iteratively based on field feedback.
+7. Admin view and correction
    - Admin table includes at least: `created_at`, `expire_by`, status.
    - Status set in M1: `offen`, `eingereicht`, `abgelaufen`.
    - Admin can override `crop_name` only.
@@ -51,6 +58,8 @@ Admin can issue probe-specific links/QRs and receive complete per-probe context 
 5. Unused links transition to `abgelaufen` after 60 days.
 6. A used link cannot be submitted again.
 7. If no internet connection is available, form load/submit is not possible in M1.
+8. Backend rejects non-`image/jpeg`/`image/png` files and files larger than 2 MB.
+9. Admin can open/view uploaded image via stored D1 reference to R2 object.
 
 ### Out of Scope
 1. Regenerate/revoke links.

@@ -2,7 +2,7 @@
 
 ## Still Open for Milestone 1
 1. Do we keep the fallback stack (`Astro + direct D1 SQL`) as an active contingency, or freeze on primary stack only?
-2. Do we enforce MIME validation strictly both client-side and server-side for `image/jpeg` and `image/png` from day one?
+2. Do we add Workers-runtime integration tests immediately (`@cloudflare/vitest-pool-workers`) or defer them until after the first end-to-end vertical slice?
 
 ## Deferred to Milestone 2
 1. Will revoke/regenerate links be included in M2 initial release or moved further?

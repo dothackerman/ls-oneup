@@ -17,6 +17,19 @@ Use a single full-stack project with:
 This is the primary stack.  
 Fallback stack remains available: `Astro + Hono + direct D1 SQL + Wrangler migrations + Workers Vitest pool`.
 
+## Clarification Addendum (Latest Decisions)
+1. Frontend image compression is preferred in M1, but backend validation is mandatory and authoritative.
+2. Backend enforces:
+   - exactly one image
+   - MIME whitelist: `image/jpeg`, `image/png`
+   - max payload size: 2 MB
+3. Image persistence model:
+   - binary object in R2
+   - reference + metadata in D1 (`image_key`, `image_mime`, `image_bytes`, optional upload timestamp)
+   - admin UI reads image via D1 reference
+4. If R2 upload succeeds but conditional D1 submit write fails, perform best-effort orphan cleanup in R2 and log outcome.
+5. M1 keeps prototype pragmatism for device-specific upload/compression edge cases and iterates from field feedback.
+
 ## Why This Stack
 1. Good speed for SPA/admin workflow and form-heavy UX.
 2. Runtime compatibility with Cloudflare Workers is strong for core components.
@@ -32,6 +45,10 @@ Fallback stack remains available: `Astro + Hono + direct D1 SQL + Wrangler migra
    - not expired
    - not already submitted
 5. Keep schemas and queries simple (YAGNI).
+6. Keep backend dependency set Workers-compatible:
+   - avoid Node-only runtime dependencies in Worker code (`fs`, `net`, `tls`, `child_process`, native Node add-ons)
+   - keep `nodejs_compat` disabled by default
+   - only enable compatibility mode via explicit documented exception
 
 ## Minimal Architecture Mapping
 1. Admin (Access-protected) creates probes and receives per-probe token/link.
@@ -71,6 +88,9 @@ Public:
 4. Add explicit German error states for location/permissions/upload failures.
 5. Keep admin routes protected via Access and document recovery flow.
 6. Keep local-first quality gates before any manual cloud release.
+7. Add backend guardrails to prevent Node-runtime drift:
+   - CI/lint checks to block Node-only imports in Worker modules
+   - at least one integration test path executed in Workers-compatible runtime
 
 ## Source Set (from Research Memo)
 1. Cloudflare Workers, D1, R2, Access, logging, limits, Vite plugin docs.
