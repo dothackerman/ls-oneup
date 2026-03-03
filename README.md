@@ -9,6 +9,8 @@ There is no application code yet.
 
 ### Available documents
 
+- `docs/requirements/README.md`
+  - index of requirement and implementation-guidance documents.
 - `docs/requirements/01-customer-wishes.md`
   - Consolidated functional wishes and constraints for Milestone 1.
 - `docs/requirements/02-milestones.md`
@@ -21,6 +23,10 @@ There is no application code yet.
   - Multi-agent tooling setup, read-first MCP usage, and manual-only release policy.
 - `docs/requirements/06-application-tech-stack-memo.md`
   - Selected application stack on Cloudflare (SPA-first) with architecture and risk baseline.
+- `docs/requirements/07-m1-agent-execution-contract.md`
+  - M1 implementation contract for agent/subagent execution and quality gates.
+- `docs/requirements/08-local-testing-and-first-release-runbook.md`
+  - local testing getting-started and manual first-release proposal for Cloudflare.
 
 ## Project Focus (now)
 
@@ -32,6 +38,6 @@ The current focus is Milestone 1 (MVP):
 
 ## Next Steps
 
-1. Translate the selected application stack into concrete implementation tickets.
-2. Define API/data model from the M1 requirements.
-3. Start implementation with local-first quality gates and manual release.
+1. Translate M1 into concrete implementation tickets with requirement-to-test mapping.
+2. Scaffold application code and local script contract from `07` and `08`.
+3. Execute M1 with strict local quality loop and manual-only release policy.
