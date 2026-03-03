@@ -5,11 +5,12 @@ Define how multi-agent development is supported for M1 while keeping Cloudflare 
 
 ## Decisions Implemented
 1. Deployment platform is Cloudflare (from `04-tech-stack-decision-memo.md` outcome).
-2. Cloudflare skills installed for agent usage:
+2. Cloudflare skills are stored at repository scope under `.agents/skills`:
    - `cloudflare`
    - `wrangler`
    - `web-perf`
-3. MCP is configured in read-first mode:
+3. User-level copies were removed from `~/.codex/skills` to avoid global leakage across unrelated repositories.
+4. MCP is configured in read-first mode:
    - enabled now: `cloudflare-docs`
    - deferred for later: `cloudflare-builds`, `cloudflare-observability`
 
