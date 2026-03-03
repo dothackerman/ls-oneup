@@ -21,7 +21,7 @@ Define the execution contract so a coding agent with subagents can implement M1 
 2. `backend-subagent`
    - API, D1 schema, R2 integration, concurrency guards
 3. `frontend-subagent`
-   - farmer/admin UX, German copy, validation UX states
+   - farmer/admin UX, `de-CH` copy, validation UX states
 4. `test-subagent`
    - integration tests and end-to-end suite
 5. `docs-subagent`

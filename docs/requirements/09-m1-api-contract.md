@@ -4,7 +4,7 @@
 Define the exact HTTP contract for Milestone 1.
 
 ## Conventions
-1. All responses are JSON except the farmer page route (`GET /p/:token`).
+1. This contract defines API behavior under `/api/*` (JSON responses) and required UI page routes (HTML/app shell responses).
 2. Timestamps use ISO 8601 UTC strings.
 3. Error payload shape:
 ```json
@@ -22,6 +22,23 @@ Define the exact HTTP contract for Milestone 1.
 3. `status`: `offen | eingereicht | abgelaufen`
 
 ## Endpoints
+
+## UI Routes (HTML/App Shell)
+
+### `GET /admin`
+Serve admin UI entry route (Cloudflare Access protected).
+
+### `GET /admin/*`
+Serve admin UI subroutes (Cloudflare Access protected).
+
+### `GET /p/:token`
+Serve farmer UI entry route.
+
+Success:
+1. `200` HTML/app shell content if link can be resolved.
+2. Expired/used states may still return HTML/app shell with blocked submit message.
+
+## API Routes (JSON)
 
 ### `POST /api/admin/probes`
 Create probe entries and one-time links for an order.
@@ -112,13 +129,6 @@ Success `200`:
 Errors:
 1. `404` probe not found.
 2. `400` validation failure.
-
-### `GET /p/:token`
-Serve farmer form page.
-
-Success:
-1. `200` HTML content if link can be resolved.
-2. Expired/used states may still return HTML with blocked submit message.
 
 ### `GET /api/probe/:token`
 Resolve token for farmer form initialization.
