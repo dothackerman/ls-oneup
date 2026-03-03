@@ -15,7 +15,7 @@ Ship a minimal workflow where admin can create probe-specific links and farmers 
    - Link is valid for 60 days (`expire_by = created_at + 60 days`) if unused.
    - First successful submit invalidates the link immediately.
    - Optimistic concurrency applies: first successful submit wins; later submit attempts are rejected.
-3. Farmer form (German UI)
+3. Farmer form (Swiss Standard German `de-CH` UI)
    - `crop_name` (mandatory free text)
    - `plant_vitality` dropdown with fixed values:
      - `normal`
@@ -130,4 +130,4 @@ Admin gets BBCH decision support and retains final authority over stored BBCH.
    - `expire_by`
    - `gps_captured_at`
    - `crop_overridden_at` (when applicable)
-4. UI language is German.
+4. UI language is Swiss Standard German (`de-CH`).

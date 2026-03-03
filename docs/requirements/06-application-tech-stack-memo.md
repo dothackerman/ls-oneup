@@ -85,7 +85,7 @@ Public:
 1. Prefer Web-standards-first libraries and pinned versions.
 2. Keep image handling client-side + strict server checks only.
 3. Use one conditional DB write for submit semantics.
-4. Add explicit German error states for location/permissions/upload failures.
+4. Add explicit Swiss Standard German (`de-CH`) error states for location/permissions/upload failures.
 5. Keep admin routes protected via Access and document recovery flow.
 6. Keep local-first quality gates before any manual cloud release.
 7. Add backend guardrails to prevent Node-runtime drift:

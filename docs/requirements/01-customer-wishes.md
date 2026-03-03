@@ -17,7 +17,7 @@ Per probe, collect simple field data in a fast workflow so admin can interpret a
 ## Confirmed Product Direction
 1. Rapid prototype first, strict YAGNI scope.
 2. Every milestone must be shippable by itself.
-3. UI language is German.
+3. UI language is Swiss Standard German (`de-CH`).
 
 ## Confirmed M1 Wishes
 1. Admin enters:

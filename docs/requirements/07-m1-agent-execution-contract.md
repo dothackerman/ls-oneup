@@ -61,7 +61,7 @@ M1 is complete only when:
 
 ## UX Quality Expectations
 1. Intuitive and visually coherent UX (mobile-first for farmer flow).
-2. German microcopy is clear and concise.
+2. UI text uses Swiss Standard German (`de-CH`), consistent `Sie` form, Swiss `ss` spellings, and Swiss date/number formats.
 3. Error states are explicit and actionable (permission denied, invalid image, expired/used link).
 4. Avoid generic template UI; design should feel intentional.
 
