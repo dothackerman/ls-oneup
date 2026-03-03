@@ -1,5 +1,5 @@
 import type { FormEvent } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as QRCode from "qrcode";
 import "./styles.css";
 
@@ -88,6 +88,41 @@ function EditIcon(): JSX.Element {
     >
       <path d="M12 20h9" />
       <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+    </svg>
+  );
+}
+
+function CopyIcon(): JSX.Element {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </svg>
+  );
+}
+
+function CheckIcon(): JSX.Element {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m5 13 4 4L19 7" />
     </svg>
   );
 }
@@ -196,6 +231,8 @@ function AdminPage(): JSX.Element {
 
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [copiedProbeId, setCopiedProbeId] = useState<string | null>(null);
+  const copyFeedbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const qrData = useQrData(createdItems);
   const previewProbe = probes.find((probe) => probe.probe_id === previewProbeId) ?? null;
@@ -212,6 +249,14 @@ function AdminPage(): JSX.Element {
   useEffect(() => {
     setPage((prev) => Math.min(prev, totalPages));
   }, [totalPages]);
+
+  useEffect(() => {
+    return () => {
+      if (copyFeedbackTimer.current) {
+        clearTimeout(copyFeedbackTimer.current);
+      }
+    };
+  }, []);
 
   async function loadProbes({ resetPage = false }: { resetPage?: boolean } = {}): Promise<void> {
     const res = await fetch("/api/admin/probes");
@@ -268,8 +313,20 @@ function AdminPage(): JSX.Element {
     }
   }
 
-  async function copyToClipboard(value: string): Promise<void> {
-    await navigator.clipboard.writeText(value);
+  async function copyToClipboard(probeId: string, value: string): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedProbeId(probeId);
+      if (copyFeedbackTimer.current) {
+        clearTimeout(copyFeedbackTimer.current);
+      }
+      copyFeedbackTimer.current = setTimeout(() => {
+        setCopiedProbeId((current) => (current === probeId ? null : current));
+        copyFeedbackTimer.current = null;
+      }, 2_000);
+    } catch {
+      setError("Link konnte nicht kopiert werden. Bitte manuell kopieren.");
+    }
   }
 
   function startOverrideEdit(probe: AdminProbe): void {
@@ -308,7 +365,7 @@ function AdminPage(): JSX.Element {
     const payload = (await res.json()) as ApiError;
 
     if (!res.ok) {
-      setError(payload.message || "Override fehlgeschlagen.");
+      setError(payload.message || "Überschreiben fehlgeschlagen.");
       return;
     }
 
@@ -364,7 +421,7 @@ function AdminPage(): JSX.Element {
     <main className="mx-auto min-h-screen w-full max-w-7xl px-4 pb-10 pt-6 sm:px-6 lg:px-8">
       <header className="mb-6">
         <h1 className="font-display text-3xl font-bold text-slate-900">Leaf Sap One Up</h1>
-        <p className="mt-1 text-slate-600">Adminbereich M1</p>
+        <p className="mt-1 text-slate-600">Adminbereich</p>
       </header>
 
       <section className="mb-5 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur md:p-5">
@@ -442,9 +499,12 @@ function AdminPage(): JSX.Element {
                   <button
                     type="button"
                     className={primaryButtonClass}
-                    onClick={() => void copyToClipboard(item.token_url)}
+                    onClick={() => void copyToClipboard(item.probe_id, item.token_url)}
                   >
-                    Link kopieren
+                    <span className="inline-flex items-center gap-2">
+                      {copiedProbeId === item.probe_id ? <CheckIcon /> : <CopyIcon />}
+                      {copiedProbeId === item.probe_id ? "Kopiert" : "Link kopieren"}
+                    </span>
                   </button>
                   {qrData[item.probe_id] && (
                     <a
@@ -602,7 +662,7 @@ function AdminPage(): JSX.Element {
                                 <p>{probe.crop_name || "-"}</p>
                                 {probe.crop_overridden_at ? (
                                   <p className="mt-1 text-xs text-slate-600">
-                                    Override: {formatDate(probe.crop_overridden_at)}
+                                    Überschrieben am: {formatDate(probe.crop_overridden_at)}
                                   </p>
                                 ) : null}
                                 {probe.status === "eingereicht" ? (
@@ -820,7 +880,7 @@ function FarmerPage({ token }: { token: string }): JSX.Element {
   useEffect(() => {
     async function loadToken(): Promise<void> {
       if (!navigator.onLine) {
-        setError("Ohne Internet ist Laden in M1 nicht möglich.");
+        setError("Ohne Internet ist Laden nicht möglich.");
         setLoading(false);
         return;
       }
@@ -901,7 +961,7 @@ function FarmerPage({ token }: { token: string }): JSX.Element {
     event.preventDefault();
 
     if (!online) {
-      setError("Ohne Internet ist Senden in M1 nicht möglich.");
+      setError("Ohne Internet ist Senden nicht möglich.");
       return;
     }
 

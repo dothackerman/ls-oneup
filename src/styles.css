@@ -16,4 +16,15 @@
     color: #122433;
     background: radial-gradient(circle at top right, #d6efe4, #f5f8f3 45%, #f1efe6 100%);
   }
+
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  a[href] {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [role="button"][aria-disabled="true"] {
+    cursor: not-allowed;
+  }
 }

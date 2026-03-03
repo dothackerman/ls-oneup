@@ -3,6 +3,15 @@ import { Buffer } from "node:buffer";
 import { createProbeOrder, expireProbeById, submitProbe } from "./helpers";
 
 test("E2E-ADMIN-001 and E2E-ADMIN-002 create links and render frontend QR", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: {
+        writeText: async () => {},
+      },
+    });
+  });
+
   await page.goto("/admin");
 
   await page.getByLabel("Kunde").fill("E2E Kunde");
@@ -13,6 +22,19 @@ test("E2E-ADMIN-001 and E2E-ADMIN-002 create links and render frontend QR", asyn
   await expect(page.getByText("QR-Codes werden nicht persistiert")).toBeVisible();
   await expect(page.locator("img[alt^='QR Probe']")).toBeVisible();
   await expect(page.getByRole("link", { name: "QR herunterladen" })).toBeVisible();
+
+  const copyButton = page.getByRole("button", { name: "Link kopieren" });
+  await copyButton.click();
+  await expect(page.getByRole("button", { name: "Kopiert" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Link kopieren" })).toBeVisible({ timeout: 5000 });
+
+  await expect(page.getByRole("button", { name: "Links erstellen" })).toHaveCSS(
+    "cursor",
+    "pointer",
+  );
+  const prevButton = page.getByRole("button", { name: "Zurück" }).first();
+  await expect(prevButton).toBeDisabled();
+  await expect(prevButton).toHaveCSS("cursor", "not-allowed");
 });
 
 test("E2E-FARM-001 and E2E-FARM-003 submit once then reject second submit", async ({
@@ -264,7 +286,7 @@ test("E2E-ADMIN-005 stores override timestamp only after submitted status", asyn
   await row.getByRole("button", { name: "Speichern" }).click();
 
   await expect(row).toContainText("Randen");
-  await expect(row).toContainText("Override:");
+  await expect(row).toContainText("Überschrieben am:");
 });
 
 test("E2E-FARM-006 requires explicit select choices before submit", async ({
