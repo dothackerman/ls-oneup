@@ -2,63 +2,108 @@
 
 Prototype repository for the Leaf Sap One Up project.
 
-## Current Repository State
+## Non-Technical Getting Started (Local Admin Page)
 
-Milestone 1 implementation is now scaffolded and functional:
+Follow this path from zero to opening the admin UI in your browser.
 
-- Cloudflare Worker API (`Hono`) in `worker/`
-- React + Vite frontend (`/admin` and `/p/:token`) in `src/`
-- D1 migration baseline in `migrations/`
-- Integration tests (Workers semantics) and Playwright E2E tests in `tests/`
+### 1. Install the tools
 
-### Available documents
+- [Git](https://git-scm.com/downloads)
+- [Node.js LTS (includes npm)](https://nodejs.org/en/download)
 
-- `docs/requirements/README.md`
-  - index of requirement and implementation-guidance documents.
-- `docs/requirements/01-customer-wishes.md`
-  - Consolidated functional wishes and constraints for Milestone 1.
-- `docs/requirements/02-milestones.md`
-  - Shippable milestone definitions (M1 to M3) with scope and acceptance criteria.
-- `docs/requirements/03-open-questions.md`
-  - Remaining open and deferred decisions (technical, governance, later milestones).
-- `docs/requirements/04-tech-stack-decision-memo.md`
-  - Research-based comparison of two deployment/stack options with M1-free and M2-cost outlook.
-- `docs/requirements/05-agent-tooling-and-local-flow.md`
-  - Multi-agent tooling setup, read-first MCP usage, and manual-only release policy.
-- `docs/requirements/06-application-tech-stack-memo.md`
-  - Selected application stack on Cloudflare (SPA-first) with architecture and risk baseline.
-- `docs/requirements/07-m1-agent-execution-contract.md`
-  - M1 implementation contract for agent/subagent execution and quality gates.
-- `docs/requirements/08-local-testing-and-first-release-runbook.md`
-  - local testing getting-started and manual first-release proposal for Cloudflare.
-- `docs/requirements/09-m1-api-contract.md`
-  - endpoint-level API contract for M1.
-- `docs/requirements/10-m1-data-model-and-migrations.md`
-  - D1 schema baseline and migration rules.
-- `docs/requirements/11-m1-test-traceability-matrix.md`
-  - acceptance-criteria-to-test mapping for M1.
-- `docs/requirements/12-m1-security-decision-record.md`
-  - ADR-style token-link security decision for M1.
+### 2. Get the code
 
-## Project Focus (now)
+```bash
+git clone <your-repo-url>
+cd ls-oneup
+```
 
-The current focus is Milestone 1 (MVP):
+### 3. Install project dependencies
 
-- Admin creates probe-specific one-time links and QR codes.
-- Farmer submits mandatory probe context data (online-only flow).
-- Admin can review submissions and override crop name.
+```bash
+npm install
+```
 
-## Next Steps
+### 4. Prepare the local database
 
-1. Keep extending coverage for the remaining planned M1 matrix IDs.
-2. Prepare manual first Cloudflare release using `08-local-testing-and-first-release-runbook.md`.
-3. Plan M2 scope items once M1 release feedback is collected.
+```bash
+npm run db:migrate:local
+```
 
-## Local Commands
+### 5. Start the app locally
 
 ```bash
 npm run dev
+```
+
+### 6. Open the admin page
+
+In your browser, open:
+
+- `http://localhost:8787/admin`
+
+The farmer link route is available at `http://localhost:8787/p/<token>` after links are created in admin.
+
+## Technical References
+
+### Requirements and contracts
+
+- [Requirements index](docs/requirements/README.md)
+- [Milestones and acceptance criteria](docs/requirements/02-milestones.md)
+- [M1 API contract](docs/requirements/09-m1-api-contract.md)
+- [M1 data model and migrations](docs/requirements/10-m1-data-model-and-migrations.md)
+- [M1 test traceability matrix](docs/requirements/11-m1-test-traceability-matrix.md)
+- [M1 security decision record](docs/requirements/12-m1-security-decision-record.md)
+- [Local testing and first release runbook](docs/requirements/08-local-testing-and-first-release-runbook.md)
+
+### Local quality commands
+
+```bash
+npm run format
+npm run lint
+npm run typecheck
 npm run test:integration
 npm run test:e2e
 npm run ci:local
 ```
+
+## Cloudflare Deployment (Manual, via Local CLI)
+
+This repository uses [Cloudflare Workers](https://developers.cloudflare.com/workers/) with [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/), [D1](https://developers.cloudflare.com/d1/), and [R2](https://developers.cloudflare.com/r2/).
+
+Use the full release runbook for policy/process details:
+
+- [docs/requirements/08-local-testing-and-first-release-runbook.md](docs/requirements/08-local-testing-and-first-release-runbook.md)
+
+Typical manual release flow from your machine:
+
+1. Authenticate Wrangler.
+
+```bash
+npx wrangler login
+```
+
+2. Verify local quality gate is green.
+
+```bash
+npm run ci:local
+```
+
+3. Ensure production bindings/secrets are configured in [wrangler.jsonc](wrangler.jsonc).
+4. Apply D1 migrations to the target environment.
+
+```bash
+npx wrangler d1 migrations apply ls-oneup-db --remote --config wrangler.jsonc
+```
+
+5. Build and deploy.
+
+```bash
+npm run build
+npx wrangler deploy --config wrangler.jsonc
+```
+
+6. Run smoke checks:
+- Admin route protection (for example with [Cloudflare Access](https://developers.cloudflare.com/cloudflare-one/applications/configure-apps/self-hosted-apps/))
+- Token link open/submit flow
+- Submission visibility in admin
