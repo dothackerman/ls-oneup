@@ -30,6 +30,12 @@ npm install
 npm run db:migrate:local
 ```
 
+To reset local D1+R2 prototype data back to an empty state:
+
+```bash
+npm run db:reset:local
+```
+
 ### 5. Start the app locally
 
 ```bash
@@ -59,6 +65,7 @@ The farmer link route is available at [http://localhost:8787/p/example-token](ht
 ### Local quality commands
 
 ```bash
+npm run db:reset:local
 npm run format
 npm run lint
 npm run typecheck

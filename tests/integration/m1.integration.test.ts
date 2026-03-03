@@ -2,6 +2,16 @@ import { env, SELF } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
 import { buildValidForm, createProbeOrder, tokenFromUrl } from "./helpers";
 
+async function expectD1Failure(run: () => Promise<unknown>): Promise<void> {
+  let failed = false;
+  try {
+    await run();
+  } catch {
+    failed = true;
+  }
+  expect(failed).toBe(true);
+}
+
 describe("M1 integration", () => {
   it("INT-ADMIN-001 creates probes and links in one flow", async () => {
     const response = await SELF.fetch("https://example.test/api/admin/probes", {
@@ -154,6 +164,52 @@ describe("M1 integration", () => {
 
     const listed = await env.PROBE_IMAGES.list();
     expect(listed.objects.length).toBe(1);
+  });
+
+  it("INT-DATA-001 blocks DB submit-state updates with missing mandatory farmer fields", async () => {
+    const { probeId } = await createProbeOrder({ order_number: "ORD-DATA-REQ" });
+    const now = new Date().toISOString();
+
+    await expectD1Failure(() =>
+      env.DB.prepare("UPDATE probes SET submitted_at = ?1 WHERE id = ?2").bind(now, probeId).run(),
+    );
+
+    const row = await env.DB.prepare("SELECT submitted_at FROM probes WHERE id = ?1")
+      .bind(probeId)
+      .first<{ submitted_at: string | null }>();
+
+    expect(row?.submitted_at ?? null).toBeNull();
+  });
+
+  it("INT-DATA-002 blocks DB submit-state updates with invalid enum and MIME values", async () => {
+    const { probeId } = await createProbeOrder({ order_number: "ORD-DATA-ENUM" });
+    const now = new Date().toISOString();
+
+    await expectD1Failure(() =>
+      env.DB.prepare(
+        `UPDATE probes
+         SET submitted_at = ?1,
+             crop_name = 'Kartoffeln',
+             plant_vitality = 'ungueltig',
+             soil_moisture = 'normal',
+             gps_lat = 47.3769,
+             gps_lon = 8.5417,
+             gps_captured_at = ?2,
+             image_key = 'img/test.jpg',
+             image_mime = 'image/gif',
+             image_bytes = 1000,
+             image_uploaded_at = ?3
+         WHERE id = ?4`,
+      )
+        .bind(now, now, now, probeId)
+        .run(),
+    );
+
+    const row = await env.DB.prepare("SELECT submitted_at FROM probes WHERE id = ?1")
+      .bind(probeId)
+      .first<{ submitted_at: string | null }>();
+
+    expect(row?.submitted_at ?? null).toBeNull();
   });
 
   it("INT-STATUS-001 and INT-ADMIN-002 expose submitted status and image view", async () => {

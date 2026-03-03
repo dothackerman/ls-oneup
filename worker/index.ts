@@ -300,6 +300,25 @@ app.post("/api/probe/:token/submit", async (c) => {
   });
 
   if (!parsed.success) {
+    const invalidFields = new Set(parsed.error.issues.map((issue) => String(issue.path[0] ?? "")));
+
+    if (invalidFields.has("crop_name")) {
+      return jsonError(400, "VALIDATION_ERROR", "Kulturname ist obligatorisch.");
+    }
+    if (invalidFields.has("vitality")) {
+      return jsonError(400, "VALIDATION_ERROR", "Pflanzenvitalität ist obligatorisch.");
+    }
+    if (invalidFields.has("soil_moisture")) {
+      return jsonError(400, "VALIDATION_ERROR", "Bodennässe ist obligatorisch.");
+    }
+    if (
+      invalidFields.has("gps_lat") ||
+      invalidFields.has("gps_lon") ||
+      invalidFields.has("gps_captured_at")
+    ) {
+      return jsonError(400, "VALIDATION_ERROR", "GPS-Daten fehlen oder sind ungültig.");
+    }
+
     return jsonError(400, "VALIDATION_ERROR", "Pflichtfelder fehlen oder sind ungültig.");
   }
 

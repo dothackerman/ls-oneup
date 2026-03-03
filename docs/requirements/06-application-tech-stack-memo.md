@@ -5,7 +5,7 @@ Define the application-layer stack on top of the already selected Cloudflare dep
 
 ## Decision
 Use a single full-stack project with:
-1. `React` + `Vite` for UI.
+1. `React` + `Vite` + `Tailwind CSS` for UI.
 2. `Hono` for API routes.
 3. `Zod` for shared validation.
 4. `Drizzle ORM` + `Drizzle Kit` for D1 schema and migrations.
@@ -29,6 +29,7 @@ Fallback stack (`Astro + Hono + direct D1 SQL + Wrangler migrations + Workers Vi
    - admin UI reads image via D1 reference
 4. If R2 upload succeeds but conditional D1 submit write fails, perform best-effort orphan cleanup in R2 and log outcome.
 5. M1 keeps prototype pragmatism for device-specific upload/compression edge cases and iterates from field feedback.
+6. Admin/farmer UI styling is implemented with Tailwind utility classes to keep responsive behavior explicit and testable.
 
 ## Why This Stack
 1. Good speed for SPA/admin workflow and form-heavy UX.

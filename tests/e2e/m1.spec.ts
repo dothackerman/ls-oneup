@@ -47,6 +47,8 @@ test("E2E-FARM-001 and E2E-FARM-003 submit once then reject second submit", asyn
   await page.goto(`/p/${token}`);
 
   await page.getByLabel("Kulturname").fill("Kartoffeln");
+  await page.getByLabel("Pflanzenvitalität").selectOption("normal");
+  await page.getByLabel("Bodenfeuchte").selectOption("normal");
   await page.getByRole("button", { name: "GPS erfassen" }).click();
 
   await page.setInputFiles("input[type='file']", {
@@ -102,6 +104,8 @@ test("E2E-FARM-004 blocks submit when offline", async ({ page, request, context 
 
   await page.goto(`/p/${token}`);
   await page.getByLabel("Kulturname").fill("Kartoffeln");
+  await page.getByLabel("Pflanzenvitalität").selectOption("normal");
+  await page.getByLabel("Bodenfeuchte").selectOption("normal");
   await page.getByRole("button", { name: "GPS erfassen" }).click();
   await page.setInputFiles("input[type='file']", {
     name: "probe.jpg",
@@ -112,8 +116,7 @@ test("E2E-FARM-004 blocks submit when offline", async ({ page, request, context 
   await context.setOffline(true);
   await expect(page.getByText("Keine Internetverbindung erkannt.")).toBeVisible();
 
-  await page.getByRole("button", { name: "Absenden" }).click();
-  await expect(page.getByText("Ohne Internet ist Senden in M1 nicht möglich.")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Absenden" })).toBeDisabled();
 });
 
 test("E2E-ADMIN-003 shows submitted probes with status eingereicht", async ({ page, request }) => {
@@ -137,10 +140,10 @@ test("E2E-ADMIN-003 shows submitted probes with status eingereicht", async ({ pa
     "Pflanzenvitalität",
     "Bodennässe",
     "GPS",
-    "Bild",
     "Erstellt",
     "Eingereicht",
     "Ablauf",
+    "Bild",
   ]);
 
   const row = page.locator("tbody tr", { hasText: orderNumber });
@@ -214,14 +217,17 @@ test("E2E-ADMIN-004 allows viewing uploaded image from admin table", async ({ pa
 
   const modal = page.getByRole("dialog", { name: /Bildvorschau Probe/ });
   await expect(modal).toBeVisible();
-  await expect(modal.locator(".image-preview")).toBeVisible();
+  const previewImage = modal.locator(".image-preview");
+  await expect(previewImage).toBeVisible();
+  await expect(previewImage).toHaveAttribute("src", /\/api\/admin\/probes\/.+\/image/);
 
   await modal.getByRole("button", { name: "Schliessen" }).click();
   await expect(modal).toBeHidden();
 
   await row.getByRole("button", { name: "Anzeigen" }).click();
-  await expect(modal.locator(".image-preview")).toBeVisible();
-  expect(imageCalls).toBe(1);
+  await expect(previewImage).toBeVisible();
+  expect(imageCalls).toBeGreaterThanOrEqual(1);
+  expect(imageCalls).toBeLessThanOrEqual(2);
 });
 
 test("E2E-ADMIN-005 stores and shows crop override timestamp", async ({ page, request }) => {
@@ -235,11 +241,11 @@ test("E2E-ADMIN-005 stores and shows crop override timestamp", async ({ page, re
   await expect(row.locator(".status")).toHaveText("offen");
 
   const cells = row.locator("td");
+  await expect(cells.nth(4)).toContainText("-");
   await expect(cells.nth(5)).toHaveText("-");
   await expect(cells.nth(6)).toHaveText("-");
   await expect(cells.nth(7)).toHaveText("-");
-  await expect(cells.nth(8)).toHaveText("-");
-  await expect(cells.nth(10)).toHaveText("-");
+  await expect(cells.nth(11)).toHaveText("-");
 
   await expect(page.getByRole("columnheader", { name: "Override" })).toHaveCount(0);
   await row.getByRole("button", { name: "Bearbeiten" }).click();
@@ -249,4 +255,89 @@ test("E2E-ADMIN-005 stores and shows crop override timestamp", async ({ page, re
 
   await expect(row).toContainText("Randen");
   await expect(row).toContainText("Override:");
+});
+
+test("E2E-FARM-006 requires explicit select choices before submit", async ({
+  page,
+  request,
+  context,
+}) => {
+  const { token } = await createProbeOrder(request, {
+    orderPrefix: "E2E-FARM-006",
+  });
+
+  await context.grantPermissions(["geolocation"]);
+  await context.setGeolocation({ latitude: 47.3769, longitude: 8.5417 });
+
+  await page.goto(`/p/${token}`);
+  await page.getByLabel("Kulturname").fill("Kartoffeln");
+  await page.getByRole("button", { name: "GPS erfassen" }).click();
+  await page.setInputFiles("input[type='file']", {
+    name: "probe.jpg",
+    mimeType: "image/jpeg",
+    buffer: Buffer.alloc(1024, 1),
+  });
+
+  const submitButton = page.getByRole("button", { name: "Absenden" });
+  await expect(submitButton).toBeDisabled();
+
+  await page.getByLabel("Pflanzenvitalität").selectOption("normal");
+  await expect(submitButton).toBeDisabled();
+
+  await page.getByLabel("Bodenfeuchte").selectOption("normal");
+  await expect(submitButton).toBeEnabled();
+});
+
+test("E2E-ADMIN-006 paginates admin table with 20 rows per page", async ({ page, request }) => {
+  const orderNumber = `E2E-ADMIN-006-${Date.now()}`;
+  const create = await request.post("/api/admin/probes", {
+    data: {
+      customer_name: "Pagination Kunde",
+      order_number: orderNumber,
+      probe_count: 25,
+    },
+  });
+
+  expect(create.status()).toBe(201);
+  const list = await request.get("/api/admin/probes");
+  expect(list.status()).toBe(200);
+  const listPayload = (await list.json()) as { items: Array<{ probe_id: string }> };
+  const total = listPayload.items.length;
+  const firstPageEnd = Math.min(20, total);
+
+  await page.goto("/admin");
+  await expect(page.getByText(`1-${firstPageEnd} von ${total}`)).toHaveCount(2);
+  await expect(page.locator("tbody tr")).toHaveCount(20);
+
+  await page.getByRole("button", { name: "Weiter" }).first().click();
+
+  const secondPageEnd = Math.min(40, total);
+  await expect(page.getByText(`21-${secondPageEnd} von ${total}`)).toHaveCount(2);
+  await expect(page.locator("tbody tr")).toHaveCount(secondPageEnd - 20);
+  if (total > 40) {
+    await expect(page.getByRole("button", { name: "Weiter" }).first()).toBeEnabled();
+  } else {
+    await expect(page.getByRole("button", { name: "Weiter" }).first()).toBeDisabled();
+  }
+  await expect(page.getByRole("button", { name: "Zurück" }).first()).toBeEnabled();
+});
+
+test("E2E-ADMIN-007 keeps Bild action visible on narrow screens", async ({ page, request }) => {
+  const { orderNumber, token } = await createProbeOrder(request, {
+    orderPrefix: "E2E-ADMIN-007",
+  });
+  const submitStatus = await submitProbe(request, token);
+  expect(submitStatus).toBe(201);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/admin");
+
+  const scrollContainer = page.getByTestId("admin-table-scroll");
+  await scrollContainer.evaluate((element) => {
+    element.scrollLeft = 0;
+  });
+
+  const row = page.locator("tbody tr", { hasText: orderNumber });
+  await expect(row).toHaveCount(1);
+  await expect(row.getByRole("button", { name: "Anzeigen" })).toBeVisible();
 });

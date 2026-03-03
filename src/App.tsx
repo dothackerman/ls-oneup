@@ -1,5 +1,5 @@
 import type { FormEvent } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import * as QRCode from "qrcode";
 import "./styles.css";
 
@@ -25,12 +25,6 @@ type AdminProbe = {
   image_url: string | null;
 };
 
-type ImageCacheEntry = {
-  object_url: string | null;
-  loading: boolean;
-  error: string | null;
-};
-
 type CreatedProbe = {
   probe_id: string;
   probe_number: number;
@@ -51,6 +45,15 @@ type ApiError = {
   message: string;
 };
 
+const ADMIN_PAGE_SIZE = 20;
+
+const fieldClass =
+  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm outline-none transition focus:border-emerald-700 focus:ring-2 focus:ring-emerald-200";
+const primaryButtonClass =
+  "inline-flex items-center justify-center rounded-lg bg-emerald-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-emerald-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 disabled:cursor-not-allowed disabled:opacity-50";
+const secondaryButtonClass =
+  "inline-flex items-center justify-center rounded-lg border border-slate-300 bg-slate-100 px-4 py-2 font-semibold text-slate-800 shadow-sm transition hover:bg-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500 disabled:cursor-not-allowed disabled:opacity-50";
+
 function formatDate(value: string | null): string {
   if (!value) {
     return "-";
@@ -61,14 +64,22 @@ function formatDate(value: string | null): string {
   }).format(new Date(value));
 }
 
-function statusBadge(status: AdminProbe["status"]): string {
+function statusBadgeClasses(status: AdminProbe["status"]): string {
   if (status === "eingereicht") {
-    return "status status-submitted";
+    return "bg-emerald-100 text-emerald-800";
   }
   if (status === "abgelaufen") {
-    return "status status-expired";
+    return "bg-amber-100 text-amber-800";
   }
-  return "status status-open";
+  return "bg-sky-100 text-sky-800";
+}
+
+function buildImagePreviewUrl(baseUrl: string, retryNonce: number): string {
+  if (retryNonce === 0) {
+    return baseUrl;
+  }
+  const delimiter = baseUrl.includes("?") ? "&" : "?";
+  return `${baseUrl}${delimiter}retry=${retryNonce}`;
 }
 
 function useQrData(createdItems: CreatedProbe[]): Record<string, string> {
@@ -99,35 +110,107 @@ function useQrData(createdItems: CreatedProbe[]): Record<string, string> {
   return data;
 }
 
+type TablePagerProps = {
+  page: number;
+  totalPages: number;
+  totalItems: number;
+  rangeStart: number;
+  rangeEnd: number;
+  onPrev: () => void;
+  onNext: () => void;
+};
+
+function TablePager({
+  page,
+  totalPages,
+  totalItems,
+  rangeStart,
+  rangeEnd,
+  onPrev,
+  onNext,
+}: TablePagerProps): JSX.Element {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
+      <p>
+        {rangeStart}-{rangeEnd} von {totalItems}
+      </p>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          className={secondaryButtonClass}
+          onClick={onPrev}
+          disabled={page <= 1 || totalItems === 0}
+        >
+          Zurück
+        </button>
+        <p className="text-sm font-semibold text-slate-800">
+          Seite {totalItems === 0 ? 0 : page} / {totalPages}
+        </p>
+        <button
+          type="button"
+          className={secondaryButtonClass}
+          onClick={onNext}
+          disabled={page >= totalPages || totalItems === 0}
+        >
+          Weiter
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function AdminPage(): JSX.Element {
   const [customerName, setCustomerName] = useState("");
   const [orderNumber, setOrderNumber] = useState("");
   const [probeCount, setProbeCount] = useState(1);
+
   const [createdItems, setCreatedItems] = useState<CreatedProbe[]>([]);
   const [probes, setProbes] = useState<AdminProbe[]>([]);
+  const [page, setPage] = useState(1);
+
   const [overrideDrafts, setOverrideDrafts] = useState<Record<string, string>>({});
   const [overrideEditingProbeId, setOverrideEditingProbeId] = useState<string | null>(null);
+
   const [previewProbeId, setPreviewProbeId] = useState<string | null>(null);
-  const [imageCache, setImageCache] = useState<Record<string, ImageCacheEntry>>({});
+  const [previewRetryNonce, setPreviewRetryNonce] = useState(0);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewError, setPreviewError] = useState<string | null>(null);
+
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const imageObjectUrls = useRef<string[]>([]);
 
   const qrData = useQrData(createdItems);
   const previewProbe = probes.find((probe) => probe.probe_id === previewProbeId) ?? null;
-  const previewState = previewProbeId ? imageCache[previewProbeId] : undefined;
 
-  async function loadProbes(): Promise<void> {
+  const totalPages = Math.max(1, Math.ceil(probes.length / ADMIN_PAGE_SIZE));
+  const paginatedProbes = useMemo(() => {
+    const start = (page - 1) * ADMIN_PAGE_SIZE;
+    return probes.slice(start, start + ADMIN_PAGE_SIZE);
+  }, [page, probes]);
+
+  const rangeStart = probes.length === 0 ? 0 : (page - 1) * ADMIN_PAGE_SIZE + 1;
+  const rangeEnd = probes.length === 0 ? 0 : Math.min(page * ADMIN_PAGE_SIZE, probes.length);
+
+  useEffect(() => {
+    setPage((prev) => Math.min(prev, totalPages));
+  }, [totalPages]);
+
+  async function loadProbes({ resetPage = false }: { resetPage?: boolean } = {}): Promise<void> {
     const res = await fetch("/api/admin/probes");
     const payload = (await res.json()) as { items?: AdminProbe[] } & ApiError;
+
     if (!res.ok) {
       throw new Error(payload.message || "Laden fehlgeschlagen.");
     }
+
     setProbes(payload.items ?? []);
+    if (resetPage) {
+      setPage(1);
+    }
   }
 
   useEffect(() => {
-    void loadProbes().catch((err: Error) => setError(err.message));
+    void loadProbes({ resetPage: true }).catch((err: Error) => setError(err.message));
   }, []);
 
   async function handleCreate(event: FormEvent): Promise<void> {
@@ -135,32 +218,36 @@ function AdminPage(): JSX.Element {
     setBusy(true);
     setError(null);
 
-    const response = await fetch("/api/admin/probes", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        customer_name: customerName,
-        order_number: orderNumber,
-        probe_count: probeCount,
-      }),
-    });
+    try {
+      const response = await fetch("/api/admin/probes", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          customer_name: customerName,
+          order_number: orderNumber,
+          probe_count: probeCount,
+        }),
+      });
 
-    const payload = (await response.json()) as { items?: CreatedProbe[] } & ApiError;
+      const payload = (await response.json()) as { items?: CreatedProbe[] } & ApiError;
 
-    setBusy(false);
+      if (!response.ok) {
+        setError(payload.message || "Erstellung fehlgeschlagen.");
+        return;
+      }
 
-    if (!response.ok) {
-      setError(payload.message || "Erstellung fehlgeschlagen.");
-      return;
+      setCreatedItems(payload.items ?? []);
+      setCustomerName("");
+      setOrderNumber("");
+      setProbeCount(1);
+      await loadProbes({ resetPage: true });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erstellung fehlgeschlagen.");
+    } finally {
+      setBusy(false);
     }
-
-    setCreatedItems(payload.items ?? []);
-    setCustomerName("");
-    setOrderNumber("");
-    setProbeCount(1);
-    await loadProbes();
   }
 
   async function copyToClipboard(value: string): Promise<void> {
@@ -177,6 +264,10 @@ function AdminPage(): JSX.Element {
 
   function cancelOverrideEdit(probeId: string): void {
     setOverrideEditingProbeId((prev) => (prev === probeId ? null : prev));
+    setOverrideDrafts((prev) => ({
+      ...prev,
+      [probeId]: "",
+    }));
   }
 
   async function submitOverride(probeId: string): Promise<void> {
@@ -187,6 +278,7 @@ function AdminPage(): JSX.Element {
     }
 
     setError(null);
+
     const res = await fetch(`/api/admin/probes/${probeId}/crop-override`, {
       method: "PATCH",
       headers: {
@@ -204,75 +296,32 @@ function AdminPage(): JSX.Element {
 
     setOverrideDrafts((prev) => ({ ...prev, [probeId]: "" }));
     setOverrideEditingProbeId(null);
-    await loadProbes();
+    await loadProbes({ resetPage: true });
   }
 
-  async function loadImagePreview(probe: AdminProbe): Promise<void> {
+  function openPreview(probe: AdminProbe): void {
     if (!probe.image_url) {
       return;
     }
 
-    const existing = imageCache[probe.probe_id];
-    if (existing?.loading || existing?.object_url) {
-      return;
-    }
-
-    setImageCache((prev) => ({
-      ...prev,
-      [probe.probe_id]: {
-        object_url: null,
-        loading: true,
-        error: null,
-      },
-    }));
-
-    try {
-      const res = await fetch(probe.image_url);
-      if (!res.ok) {
-        const payload = (await res.json().catch(() => null)) as ApiError | null;
-        throw new Error(payload?.message || "Bildvorschau konnte nicht geladen werden.");
-      }
-
-      const blob = await res.blob();
-      const objectUrl = URL.createObjectURL(blob);
-      imageObjectUrls.current.push(objectUrl);
-
-      setImageCache((prev) => ({
-        ...prev,
-        [probe.probe_id]: {
-          object_url: objectUrl,
-          loading: false,
-          error: null,
-        },
-      }));
-    } catch (err) {
-      setImageCache((prev) => ({
-        ...prev,
-        [probe.probe_id]: {
-          object_url: null,
-          loading: false,
-          error: err instanceof Error ? err.message : "Bildvorschau konnte nicht geladen werden.",
-        },
-      }));
-    }
-  }
-
-  function openPreview(probe: AdminProbe): void {
     setPreviewProbeId(probe.probe_id);
-    void loadImagePreview(probe);
+    setPreviewRetryNonce(0);
+    setPreviewLoading(true);
+    setPreviewError(null);
   }
 
   function closePreview(): void {
     setPreviewProbeId(null);
+    setPreviewError(null);
+    setPreviewLoading(false);
+    setPreviewRetryNonce(0);
   }
 
-  useEffect(() => {
-    return () => {
-      for (const objectUrl of imageObjectUrls.current) {
-        URL.revokeObjectURL(objectUrl);
-      }
-    };
-  }, []);
+  function retryPreview(): void {
+    setPreviewRetryNonce((prev) => prev + 1);
+    setPreviewLoading(true);
+    setPreviewError(null);
+  }
 
   useEffect(() => {
     if (!previewProbeId) {
@@ -289,33 +338,42 @@ function AdminPage(): JSX.Element {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [previewProbeId]);
 
-  return (
-    <main className="container">
-      <h1>Leaf Sap One Up</h1>
-      <p className="subtitle">Adminbereich M1</p>
+  const previewImageUrl = previewProbe?.image_url
+    ? buildImagePreviewUrl(previewProbe.image_url, previewRetryNonce)
+    : null;
 
-      <section className="card">
-        <h2>Proben erstellen</h2>
-        <form className="grid-form" onSubmit={handleCreate}>
-          <label>
+  return (
+    <main className="mx-auto min-h-screen w-full max-w-7xl px-4 pb-10 pt-6 sm:px-6 lg:px-8">
+      <header className="mb-6">
+        <h1 className="font-display text-3xl font-bold text-slate-900">Leaf Sap One Up</h1>
+        <p className="mt-1 text-slate-600">Adminbereich M1</p>
+      </header>
+
+      <section className="mb-5 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur md:p-5">
+        <h2 className="font-display text-xl font-semibold text-slate-900">Proben erstellen</h2>
+        <form className="mt-4 grid gap-4 md:grid-cols-3" onSubmit={handleCreate}>
+          <label className="grid gap-1.5 text-sm font-semibold text-slate-800">
             Kunde
             <input
+              className={fieldClass}
               value={customerName}
               onChange={(event) => setCustomerName(event.target.value)}
               required
             />
           </label>
-          <label>
+          <label className="grid gap-1.5 text-sm font-semibold text-slate-800">
             Auftragsnummer
             <input
+              className={fieldClass}
               value={orderNumber}
               onChange={(event) => setOrderNumber(event.target.value)}
               required
             />
           </label>
-          <label>
+          <label className="grid gap-1.5 text-sm font-semibold text-slate-800">
             Anzahl Proben
             <input
+              className={fieldClass}
               type="number"
               min={1}
               value={probeCount}
@@ -323,185 +381,329 @@ function AdminPage(): JSX.Element {
               required
             />
           </label>
-          <button type="submit" disabled={busy}>
-            {busy ? "Erstellen..." : "Links erstellen"}
-          </button>
+          <div className="md:col-span-3">
+            <button type="submit" className={primaryButtonClass} disabled={busy}>
+              {busy ? "Erstellen..." : "Links erstellen"}
+            </button>
+          </div>
         </form>
       </section>
 
       {createdItems.length > 0 && (
-        <section className="card">
-          <h2>Neue Links und QR-Codes</h2>
-          <p className="warning">
+        <section className="mb-5 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur md:p-5">
+          <h2 className="font-display text-xl font-semibold text-slate-900">
+            Neue Links und QR-Codes
+          </h2>
+          <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
             QR-Codes werden nicht persistiert. Bitte Link oder QR sofort kopieren bzw.
             herunterladen. Nach Seitenaktualisierung verschwindet die Darstellung.
           </p>
-          <div className="qr-grid">
+
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {createdItems.map((item) => (
-              <article key={item.probe_id} className="qr-item">
-                <h3>Probe {item.probe_number}</h3>
-                {qrData[item.probe_id] ? (
-                  <img src={qrData[item.probe_id]} alt={`QR Probe ${item.probe_number}`} />
-                ) : (
-                  <p>QR wird erstellt...</p>
-                )}
-                <p className="link-break">{item.token_url}</p>
-                <div className="button-row">
-                  <button type="button" onClick={() => copyToClipboard(item.token_url)}>
+              <article
+                key={item.probe_id}
+                className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+              >
+                <h3 className="font-display text-lg font-semibold text-slate-900">
+                  Probe {item.probe_number}
+                </h3>
+                <div className="mt-3 flex min-h-16 items-center justify-center">
+                  {qrData[item.probe_id] ? (
+                    <img
+                      className="h-auto w-full max-w-[180px]"
+                      src={qrData[item.probe_id]}
+                      alt={`QR Probe ${item.probe_number}`}
+                    />
+                  ) : (
+                    <p className="text-sm text-slate-600">QR wird erstellt...</p>
+                  )}
+                </div>
+                <p className="mt-3 break-all text-sm text-slate-700">{item.token_url}</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    className={primaryButtonClass}
+                    onClick={() => void copyToClipboard(item.token_url)}
+                  >
                     Link kopieren
                   </button>
                   {qrData[item.probe_id] && (
-                    <a download={`probe-${item.probe_number}-qr.png`} href={qrData[item.probe_id]}>
+                    <a
+                      className={secondaryButtonClass}
+                      download={`probe-${item.probe_number}-qr.png`}
+                      href={qrData[item.probe_id]}
+                    >
                       QR herunterladen
                     </a>
                   )}
                 </div>
-                <small>
+                <p className="mt-3 text-xs text-slate-600">
                   Erstellt: {formatDate(item.created_at)} | Ablauf: {formatDate(item.expire_by)}
-                </small>
+                </p>
               </article>
             ))}
           </div>
         </section>
       )}
 
-      <section className="card">
-        <h2>Proben</h2>
-        {error && <p className="error">{error}</p>}
-        <p className="block">
-          Hinweis: Bei kleinem Bildschirm kann die Tabelle horizontal gescrollt werden.
+      <section className="rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur md:p-5">
+        <h2 className="font-display text-xl font-semibold text-slate-900">Proben</h2>
+
+        {error && (
+          <p className="mt-3 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800">
+            {error}
+          </p>
+        )}
+
+        <p className="mt-3 text-sm text-slate-600">
+          Hinweis: Die Tabelle ist horizontal und vertikal innerhalb des Tabellenbereichs scrollbar.
         </p>
-        <div className="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Kunde</th>
-                <th>Auftrag</th>
-                <th>Probe</th>
-                <th>Status</th>
-                <th>Kultur</th>
-                <th>Pflanzenvitalität</th>
-                <th>Bodennässe</th>
-                <th>GPS</th>
-                <th>Bild</th>
-                <th>Erstellt</th>
-                <th>Eingereicht</th>
-                <th>Ablauf</th>
-              </tr>
-            </thead>
-            <tbody>
-              {probes.map((probe) => (
-                <tr key={probe.probe_id}>
-                  <td>{probe.customer_name}</td>
-                  <td>{probe.order_number}</td>
-                  <td>{probe.probe_number}</td>
-                  <td>
-                    <span className={statusBadge(probe.status)}>{probe.status}</span>
-                  </td>
-                  <td>
-                    {overrideEditingProbeId === probe.probe_id ? (
-                      <div className="inline-edit">
-                        <input
-                          placeholder="Kultur anpassen"
-                          value={overrideDrafts[probe.probe_id] ?? ""}
-                          onChange={(event) =>
-                            setOverrideDrafts((prev) => ({
-                              ...prev,
-                              [probe.probe_id]: event.target.value,
-                            }))
-                          }
-                        />
-                        <div className="button-row">
-                          <button type="button" onClick={() => void submitOverride(probe.probe_id)}>
-                            Speichern
-                          </button>
-                          <button
-                            type="button"
-                            className="button-secondary"
-                            onClick={() => cancelOverrideEdit(probe.probe_id)}
+
+        <div className="mt-3 space-y-3">
+          <TablePager
+            page={page}
+            totalPages={totalPages}
+            totalItems={probes.length}
+            rangeStart={rangeStart}
+            rangeEnd={rangeEnd}
+            onPrev={() => setPage((prev) => Math.max(1, prev - 1))}
+            onNext={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+          />
+
+          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+            <div data-testid="admin-table-scroll" className="max-h-[65vh] overflow-auto">
+              <table className="min-w-[1380px] border-collapse text-sm text-slate-800">
+                <thead>
+                  <tr>
+                    <th className="sticky top-0 z-20 border-b border-slate-200 bg-slate-100 px-3 py-2 text-left font-semibold">
+                      Kunde
+                    </th>
+                    <th className="sticky top-0 z-20 border-b border-slate-200 bg-slate-100 px-3 py-2 text-left font-semibold">
+                      Auftrag
+                    </th>
+                    <th className="sticky top-0 z-20 border-b border-slate-200 bg-slate-100 px-3 py-2 text-left font-semibold">
+                      Probe
+                    </th>
+                    <th className="sticky top-0 z-20 border-b border-slate-200 bg-slate-100 px-3 py-2 text-left font-semibold">
+                      Status
+                    </th>
+                    <th className="sticky top-0 z-20 border-b border-slate-200 bg-slate-100 px-3 py-2 text-left font-semibold">
+                      Kultur
+                    </th>
+                    <th className="sticky top-0 z-20 border-b border-slate-200 bg-slate-100 px-3 py-2 text-left font-semibold">
+                      Pflanzenvitalität
+                    </th>
+                    <th className="sticky top-0 z-20 border-b border-slate-200 bg-slate-100 px-3 py-2 text-left font-semibold">
+                      Bodennässe
+                    </th>
+                    <th className="sticky top-0 z-20 border-b border-slate-200 bg-slate-100 px-3 py-2 text-left font-semibold">
+                      GPS
+                    </th>
+                    <th className="sticky top-0 z-20 border-b border-slate-200 bg-slate-100 px-3 py-2 text-left font-semibold">
+                      Erstellt
+                    </th>
+                    <th className="sticky top-0 z-20 border-b border-slate-200 bg-slate-100 px-3 py-2 text-left font-semibold">
+                      Eingereicht
+                    </th>
+                    <th className="sticky top-0 z-20 border-b border-slate-200 bg-slate-100 px-3 py-2 text-left font-semibold">
+                      Ablauf
+                    </th>
+                    <th className="sticky right-0 top-0 z-30 border-b border-slate-200 bg-slate-100 px-3 py-2 text-left font-semibold shadow-[-8px_0_12px_-12px_rgba(15,23,42,0.6)]">
+                      Bild
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedProbes.length === 0 ? (
+                    <tr>
+                      <td colSpan={12} className="px-3 py-5 text-center text-slate-500">
+                        Keine Proben vorhanden.
+                      </td>
+                    </tr>
+                  ) : (
+                    paginatedProbes.map((probe, rowIndex) => {
+                      const rowBg = rowIndex % 2 === 0 ? "bg-white" : "bg-slate-50/70";
+                      const stickyCellBg = rowIndex % 2 === 0 ? "bg-white" : "bg-slate-50/70";
+
+                      return (
+                        <tr key={probe.probe_id} className={rowBg}>
+                          <td className="border-b border-slate-200 px-3 py-2 align-top">
+                            {probe.customer_name}
+                          </td>
+                          <td className="border-b border-slate-200 px-3 py-2 align-top">
+                            {probe.order_number}
+                          </td>
+                          <td className="border-b border-slate-200 px-3 py-2 align-top">
+                            {probe.probe_number}
+                          </td>
+                          <td className="border-b border-slate-200 px-3 py-2 align-top">
+                            <span
+                              className={`status inline-flex rounded-full px-2 py-1 text-xs font-semibold ${statusBadgeClasses(probe.status)}`}
+                            >
+                              {probe.status}
+                            </span>
+                          </td>
+                          <td className="border-b border-slate-200 px-3 py-2 align-top">
+                            {overrideEditingProbeId === probe.probe_id ? (
+                              <div className="grid gap-2">
+                                <input
+                                  className={fieldClass}
+                                  placeholder="Kultur anpassen"
+                                  value={overrideDrafts[probe.probe_id] ?? ""}
+                                  onChange={(event) =>
+                                    setOverrideDrafts((prev) => ({
+                                      ...prev,
+                                      [probe.probe_id]: event.target.value,
+                                    }))
+                                  }
+                                />
+                                <div className="flex flex-wrap gap-2">
+                                  <button
+                                    type="button"
+                                    className={primaryButtonClass}
+                                    onClick={() => void submitOverride(probe.probe_id)}
+                                  >
+                                    Speichern
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className={secondaryButtonClass}
+                                    onClick={() => cancelOverrideEdit(probe.probe_id)}
+                                  >
+                                    Abbrechen
+                                  </button>
+                                </div>
+                                <p className="text-xs text-slate-600">
+                                  Mit Speichern übernimmt Admin die Verantwortung.
+                                </p>
+                              </div>
+                            ) : (
+                              <div>
+                                <p>{probe.crop_name || "-"}</p>
+                                {probe.crop_overridden_at ? (
+                                  <p className="mt-1 text-xs text-slate-600">
+                                    Override: {formatDate(probe.crop_overridden_at)}
+                                  </p>
+                                ) : null}
+                                <button
+                                  type="button"
+                                  className="mt-2 inline-flex items-center justify-center rounded-md border border-slate-300 bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-800 transition hover:bg-slate-200"
+                                  onClick={() => startOverrideEdit(probe)}
+                                >
+                                  Bearbeiten
+                                </button>
+                              </div>
+                            )}
+                          </td>
+                          <td className="border-b border-slate-200 px-3 py-2 align-top">
+                            {probe.plant_vitality ? vitalityLabels[probe.plant_vitality] : "-"}
+                          </td>
+                          <td className="border-b border-slate-200 px-3 py-2 align-top">
+                            {probe.soil_moisture ? moistureLabels[probe.soil_moisture] : "-"}
+                          </td>
+                          <td className="border-b border-slate-200 px-3 py-2 align-top">
+                            {probe.gps_lat !== null && probe.gps_lon !== null
+                              ? `${probe.gps_lat.toFixed(5)}, ${probe.gps_lon.toFixed(5)}`
+                              : "-"}
+                          </td>
+                          <td className="border-b border-slate-200 px-3 py-2 align-top">
+                            {formatDate(probe.created_at)}
+                          </td>
+                          <td className="border-b border-slate-200 px-3 py-2 align-top">
+                            {formatDate(probe.submitted_at)}
+                          </td>
+                          <td className="border-b border-slate-200 px-3 py-2 align-top">
+                            {formatDate(probe.expire_by)}
+                          </td>
+                          <td
+                            className={`sticky right-0 border-b border-slate-200 px-3 py-2 align-top shadow-[-8px_0_12px_-12px_rgba(15,23,42,0.6)] ${stickyCellBg}`}
                           >
-                            Abbrechen
-                          </button>
-                        </div>
-                        <small className="block">
-                          Mit Speichern übernimmt Admin die Verantwortung.
-                        </small>
-                      </div>
-                    ) : (
-                      <>
-                        {probe.crop_name || "-"}
-                        {probe.crop_overridden_at ? (
-                          <small className="block">
-                            Override: {formatDate(probe.crop_overridden_at)}
-                          </small>
-                        ) : null}
-                        <button
-                          type="button"
-                          className="button-secondary inline-action"
-                          onClick={() => startOverrideEdit(probe)}
-                        >
-                          Bearbeiten
-                        </button>
-                      </>
-                    )}
-                  </td>
-                  <td>{probe.plant_vitality ? vitalityLabels[probe.plant_vitality] : "-"}</td>
-                  <td>{probe.soil_moisture ? moistureLabels[probe.soil_moisture] : "-"}</td>
-                  <td>
-                    {probe.gps_lat !== null && probe.gps_lon !== null
-                      ? `${probe.gps_lat.toFixed(5)}, ${probe.gps_lon.toFixed(5)}`
-                      : "-"}
-                  </td>
-                  <td>
-                    {probe.image_url ? (
-                      <button type="button" onClick={() => openPreview(probe)}>
-                        Anzeigen
-                      </button>
-                    ) : (
-                      "-"
-                    )}
-                  </td>
-                  <td>{formatDate(probe.created_at)}</td>
-                  <td>{formatDate(probe.submitted_at)}</td>
-                  <td>{formatDate(probe.expire_by)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                            {probe.image_url ? (
+                              <button
+                                type="button"
+                                className={primaryButtonClass}
+                                onClick={() => openPreview(probe)}
+                              >
+                                Anzeigen
+                              </button>
+                            ) : (
+                              "-"
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <TablePager
+            page={page}
+            totalPages={totalPages}
+            totalItems={probes.length}
+            rangeStart={rangeStart}
+            rangeEnd={rangeEnd}
+            onPrev={() => setPage((prev) => Math.max(1, prev - 1))}
+            onNext={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+          />
         </div>
       </section>
 
       {previewProbe && (
-        <div className="modal-backdrop" onClick={closePreview}>
+        <div
+          className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/70 px-4 py-6"
+          onClick={closePreview}
+        >
           <section
-            className="modal image-modal"
+            className="w-full max-w-5xl rounded-2xl border border-slate-300 bg-slate-50 p-4 shadow-xl"
             role="dialog"
             aria-modal="true"
             aria-label={`Bildvorschau Probe ${previewProbe.probe_number}`}
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="modal-header">
-              <h3>Bildvorschau Probe {previewProbe.probe_number}</h3>
-              <button type="button" className="button-secondary" onClick={closePreview}>
+            <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
+              <h3 className="font-display text-xl font-semibold text-slate-900">
+                Bildvorschau Probe {previewProbe.probe_number}
+              </h3>
+              <button type="button" className={secondaryButtonClass} onClick={closePreview}>
                 Schliessen
               </button>
             </div>
-            {previewState?.loading || !previewState ? <p>Lade Bildvorschau...</p> : null}
-            {!previewState?.loading && previewState?.error ? (
-              <>
-                <p className="error">{previewState.error}</p>
-                <button type="button" onClick={() => void loadImagePreview(previewProbe)}>
+
+            {previewLoading && (
+              <p className="mb-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
+                Lade Bildvorschau...
+              </p>
+            )}
+
+            {previewError && (
+              <div className="mb-3 space-y-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800">
+                <p>{previewError}</p>
+                <button type="button" className={primaryButtonClass} onClick={retryPreview}>
                   Erneut versuchen
                 </button>
-              </>
-            ) : null}
-            {!previewState?.loading && !previewState?.error && previewState?.object_url ? (
+              </div>
+            )}
+
+            {previewImageUrl && (
               <img
-                className="image-preview"
-                src={previewState.object_url}
+                key={previewImageUrl}
+                className="image-preview max-h-[72vh] w-full rounded-lg border border-slate-200 bg-white object-contain"
+                src={previewImageUrl}
                 alt={`Probe ${previewProbe.probe_number}`}
+                onLoad={() => {
+                  setPreviewLoading(false);
+                  setPreviewError(null);
+                }}
+                onError={() => {
+                  setPreviewLoading(false);
+                  setPreviewError("Bildvorschau konnte nicht geladen werden.");
+                }}
               />
-            ) : null}
+            )}
           </section>
         </div>
       )}
@@ -509,13 +711,13 @@ function AdminPage(): JSX.Element {
   );
 }
 
-const vitalityLabels: Record<string, string> = {
+const vitalityLabels: Record<VitalityValue, string> = {
   normal: "normal",
   schwach_langsam: "schwach / langsam",
   krankheit_oder_anderes_problem: "Krankheit oder anderes Problem",
 };
 
-const moistureLabels: Record<string, string> = {
+const moistureLabels: Record<SoilMoistureValue, string> = {
   sehr_trocken: "sehr trocken",
   trocken: "trocken",
   normal: "normal",
@@ -573,8 +775,8 @@ function FarmerPage({ token }: { token: string }): JSX.Element {
   const [success, setSuccess] = useState<string | null>(null);
 
   const [cropName, setCropName] = useState("");
-  const [vitality, setVitality] = useState("normal");
-  const [soilMoisture, setSoilMoisture] = useState("normal");
+  const [vitality, setVitality] = useState<VitalityValue | "">("");
+  const [soilMoisture, setSoilMoisture] = useState<SoilMoistureValue | "">("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [gps, setGps] = useState<{ lat: number; lon: number; capturedAt: string } | null>(null);
 
@@ -646,11 +848,35 @@ function FarmerPage({ token }: { token: string }): JSX.Element {
     });
   }
 
+  const canSubmit =
+    online &&
+    Boolean(lookup) &&
+    cropName.trim().length > 0 &&
+    Boolean(vitality) &&
+    Boolean(soilMoisture) &&
+    Boolean(gps) &&
+    Boolean(imageFile);
+
   async function handleSubmit(event: FormEvent): Promise<void> {
     event.preventDefault();
 
     if (!online) {
       setError("Ohne Internet ist Senden in M1 nicht möglich.");
+      return;
+    }
+
+    if (!cropName.trim()) {
+      setError("Kulturname ist obligatorisch.");
+      return;
+    }
+
+    if (!vitality) {
+      setError("Pflanzenvitalität ist obligatorisch.");
+      return;
+    }
+
+    if (!soilMoisture) {
+      setError("Bodennässe ist obligatorisch.");
       return;
     }
 
@@ -667,7 +893,7 @@ function FarmerPage({ token }: { token: string }): JSX.Element {
     const preparedImage = await maybeCompress(imageFile);
 
     const formData = new FormData();
-    formData.set("crop_name", cropName);
+    formData.set("crop_name", cropName.trim());
     formData.set("vitality", vitality);
     formData.set("soil_moisture", soilMoisture);
     formData.set("gps_lat", String(gps.lat));
@@ -700,29 +926,50 @@ function FarmerPage({ token }: { token: string }): JSX.Element {
   }, [lookup]);
 
   return (
-    <main className="container narrow">
-      <h1>Probe erfassen</h1>
-      {!online && <p className="warning">Keine Internetverbindung erkannt.</p>}
-      {loading && <p>Laden...</p>}
-      {error && <p className="error">{error}</p>}
-      {success && <p className="success">{success}</p>}
+    <main className="mx-auto min-h-screen w-full max-w-3xl px-4 pb-10 pt-6 sm:px-6">
+      <h1 className="font-display text-3xl font-bold text-slate-900">Probe erfassen</h1>
+
+      {!online && (
+        <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          Keine Internetverbindung erkannt.
+        </p>
+      )}
+      {loading && <p className="mt-4 text-slate-700">Laden...</p>}
+      {error && (
+        <p className="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800">
+          {error}
+        </p>
+      )}
+      {success && (
+        <p className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+          {success}
+        </p>
+      )}
 
       {lookup && (
-        <section className="card">
-          <p>{identityLine}</p>
-          <form className="grid-form" onSubmit={handleSubmit}>
-            <label>
+        <section className="mt-5 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur md:p-5">
+          <p className="text-sm text-slate-700">{identityLine}</p>
+
+          <form className="mt-4 grid gap-4" onSubmit={handleSubmit}>
+            <label className="grid gap-1.5 text-sm font-semibold text-slate-800">
               Kulturname
               <input
+                className={fieldClass}
                 value={cropName}
                 onChange={(event) => setCropName(event.target.value)}
                 required
               />
             </label>
 
-            <label>
+            <label className="grid gap-1.5 text-sm font-semibold text-slate-800">
               Pflanzenvitalität
-              <select value={vitality} onChange={(event) => setVitality(event.target.value)}>
+              <select
+                className={fieldClass}
+                value={vitality}
+                onChange={(event) => setVitality(event.target.value as VitalityValue | "")}
+                required
+              >
+                <option value="">Bitte wählen</option>
                 {Object.entries(vitalityLabels).map(([value, label]) => (
                   <option key={value} value={value}>
                     {label}
@@ -731,12 +978,15 @@ function FarmerPage({ token }: { token: string }): JSX.Element {
               </select>
             </label>
 
-            <label>
+            <label className="grid gap-1.5 text-sm font-semibold text-slate-800">
               Bodenfeuchte
               <select
+                className={fieldClass}
                 value={soilMoisture}
-                onChange={(event) => setSoilMoisture(event.target.value)}
+                onChange={(event) => setSoilMoisture(event.target.value as SoilMoistureValue | "")}
+                required
               >
+                <option value="">Bitte wählen</option>
                 {Object.entries(moistureLabels).map(([value, label]) => (
                   <option key={value} value={value}>
                     {label}
@@ -745,9 +995,10 @@ function FarmerPage({ token }: { token: string }): JSX.Element {
               </select>
             </label>
 
-            <label>
+            <label className="grid gap-1.5 text-sm font-semibold text-slate-800">
               Bild (JPEG oder PNG)
               <input
+                className={fieldClass}
                 type="file"
                 accept="image/jpeg,image/png"
                 onChange={(event) => {
@@ -759,17 +1010,23 @@ function FarmerPage({ token }: { token: string }): JSX.Element {
             </label>
 
             <div>
-              <button type="button" onClick={() => void captureGps()}>
+              <button
+                type="button"
+                className={secondaryButtonClass}
+                onClick={() => void captureGps()}
+              >
                 GPS erfassen
               </button>
-              <small className="block">
+              <p className="mt-2 text-sm text-slate-600">
                 {gps
                   ? `GPS erfasst: ${gps.lat.toFixed(5)}, ${gps.lon.toFixed(5)}`
                   : "Noch kein GPS erfasst."}
-              </small>
+              </p>
             </div>
 
-            <button type="submit">Absenden</button>
+            <button type="submit" className={primaryButtonClass} disabled={!canSubmit}>
+              Absenden
+            </button>
           </form>
         </section>
       )}
@@ -790,9 +1047,9 @@ export default function App(): JSX.Element {
   }
 
   return (
-    <main className="container narrow">
-      <h1>Leaf Sap One Up</h1>
-      <p>Unbekannte Route.</p>
+    <main className="mx-auto min-h-screen w-full max-w-3xl px-4 pb-10 pt-6 sm:px-6">
+      <h1 className="font-display text-3xl font-bold text-slate-900">Leaf Sap One Up</h1>
+      <p className="mt-2 text-slate-700">Unbekannte Route.</p>
     </main>
   );
 }

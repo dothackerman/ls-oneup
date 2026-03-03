@@ -67,6 +67,26 @@ Application-level validation enforces:
    - `image/jpeg`
    - `image/png`
 
+## Submit-Time DB Integrity Guards (v1.1)
+To ensure required farmer fields are present whenever a row becomes `submitted`, migration `0002_m1_submit_constraints.sql` adds triggers for both `INSERT` and `UPDATE` paths.
+
+Trigger contract when `submitted_at IS NOT NULL`:
+1. Required non-empty fields:
+   - `crop_name`
+   - `gps_captured_at`
+   - `image_key`
+   - `image_uploaded_at`
+2. Required enum values:
+   - `plant_vitality` must be one of M1 vitality values
+   - `soil_moisture` must be one of M1 soil moisture values
+   - `image_mime` must be `image/jpeg` or `image/png`
+3. Required numeric bounds:
+   - `gps_lat` in `[-90, 90]`
+   - `gps_lon` in `[-180, 180]`
+   - `image_bytes` in `(0, 2097152]`
+
+These guards complement API validation and protect direct DB write paths in local/prototype tooling.
+
 ## Submission Write Contract
 1. Write image to R2 first.
 2. Run one conditional D1 update for submit acceptance:
