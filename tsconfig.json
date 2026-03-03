@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
+    "types": ["vite/client", "@cloudflare/workers-types"],
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["src/shared/*"],
+      "@db/*": ["src/db/*"],
+      "@worker/*": ["worker/*"]
+    }
+  },
+  "include": [
+    "src",
+    "worker",
+    "tests",
+    "vite.config.ts",
+    "vitest.integration.config.ts",
+    "playwright.config.ts",
+    "drizzle.config.ts"
+  ]
+}

@@ -1,11 +1,15 @@
 # Leaf Sap One Up (`ls-oneup`)
 
-Prototype planning repository for the Leaf Sap One Up project.
+Prototype repository for the Leaf Sap One Up project.
 
 ## Current Repository State
 
-This repo currently contains product/requirements documentation only.  
-There is no application code yet.
+Milestone 1 implementation is now scaffolded and functional:
+
+- Cloudflare Worker API (`Hono`) in `worker/`
+- React + Vite frontend (`/admin` and `/p/:token`) in `src/`
+- D1 migration baseline in `migrations/`
+- Integration tests (Workers semantics) and Playwright E2E tests in `tests/`
 
 ### Available documents
 
@@ -46,6 +50,15 @@ The current focus is Milestone 1 (MVP):
 
 ## Next Steps
 
-1. Scaffold application code from `06`, `09`, and `10`.
-2. Implement and validate against `11` and `12` under the `07` quality contract.
-3. Execute M1 with strict local quality loop and manual-only release policy from `08`.
+1. Keep extending coverage for the remaining planned M1 matrix IDs.
+2. Prepare manual first Cloudflare release using `08-local-testing-and-first-release-runbook.md`.
+3. Plan M2 scope items once M1 release feedback is collected.
+
+## Local Commands
+
+```bash
+npm run dev
+npm run test:integration
+npm run test:e2e
+npm run ci:local
+```

@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ls-oneup",
+  "main": "worker/index.ts",
+  "compatibility_date": "2025-09-06",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application",
+  },
+  "vars": {
+    "APP_BASE_URL": "http://localhost:8787",
+    "DEV_BYPASS_ACCESS": "true",
+    "TOKEN_PEPPER": "dev-only-token-pepper",
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ls-oneup-db",
+      "database_id": "local",
+    },
+  ],
+  "r2_buckets": [
+    {
+      "binding": "PROBE_IMAGES",
+      "bucket_name": "ls-oneup-images",
+    },
+  ],
+}

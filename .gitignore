@@ -1,0 +1,9 @@
+node_modules
+dist
+.wrangler
+.wrangler-config
+.playwright-browsers
+playwright-report
+test-results
+coverage
+.DS_Store

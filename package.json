@@ -1,0 +1,49 @@
+{
+  "name": "ls-oneup",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "db:migrate:local": "mkdir -p .wrangler-config && XDG_CONFIG_HOME=.wrangler-config wrangler d1 migrations apply ls-oneup-db --local --config wrangler.jsonc",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write --ignore-unknown \"{src,worker,tests,migrations}/**/*\" package.json tsconfig.json vite.config.ts vitest.integration.config.ts playwright.config.ts wrangler.jsonc drizzle.config.ts eslint.config.js index.html",
+    "lint": "eslint .",
+    "test:unit": "vitest run",
+    "test:integration": "mkdir -p dist .wrangler-config && XDG_CONFIG_HOME=.wrangler-config vitest run --config vitest.integration.config.ts",
+    "test:e2e": "mkdir -p dist .wrangler-config .playwright-browsers && XDG_CONFIG_HOME=.wrangler-config PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers playwright test",
+    "ci:local": "npm run format && npm run lint && npm run typecheck && npm run test:integration && npm run test:e2e"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.36.4",
+    "hono": "^4.6.10",
+    "qrcode": "^1.5.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.0.0",
+    "@cloudflare/vitest-pool-workers": "^0.8.37",
+    "@cloudflare/workers-types": "^4.20260302.0",
+    "@types/qrcode": "^1.5.5",
+    "@playwright/test": "^1.52.0",
+    "@types/node": "^24.0.0",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@typescript-eslint/eslint-plugin": "^8.19.0",
+    "@typescript-eslint/parser": "^8.19.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "drizzle-kit": "^0.27.1",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^10.0.1",
+    "prettier": "^3.4.2",
+    "typescript-eslint": "^8.19.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.5",
+    "vitest": "^3.0.4",
+    "wrangler": "^4.22.0"
+  }
+}
