@@ -14,7 +14,7 @@ Follow this path from zero to opening the admin UI in your browser.
 ### 2. Get the code
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/dothackerman/ls-oneup
 cd ls-oneup
 ```
 
@@ -40,9 +40,9 @@ npm run dev
 
 In your browser, open:
 
-- `http://localhost:8787/admin`
+- [http://localhost:8787/admin](http://localhost:8787/admin)
 
-The farmer link route is available at `http://localhost:8787/p/<token>` after links are created in admin.
+The farmer link route is available at [http://localhost:8787/p/example-token](http://localhost:8787/p/example-token) after links are created in admin (replace `example-token` with a real token).
 
 ## Technical References
 
