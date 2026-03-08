@@ -1,6 +1,11 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { Buffer } from "node:buffer";
 import { createProbeOrder, expireProbeById, submitProbe } from "./helpers";
+
+async function chooseSelectOption(page: Page, label: string, optionText: string): Promise<void> {
+  await page.getByRole("combobox", { name: label }).click();
+  await page.getByRole("option", { name: optionText, exact: true }).click();
+}
 
 test("E2E-ADMIN-001 and E2E-ADMIN-002 create links and render frontend QR", async ({ page }) => {
   await page.addInitScript(() => {
@@ -12,7 +17,7 @@ test("E2E-ADMIN-001 and E2E-ADMIN-002 create links and render frontend QR", asyn
     });
   });
 
-  await page.goto("/admin");
+  await page.goto("/admin?onboarding=off");
 
   await page.getByLabel("Kunde").fill("E2E Kunde");
   await page.getByLabel("Auftragsnummer").fill(`E2E-${Date.now()}`);
@@ -35,6 +40,52 @@ test("E2E-ADMIN-001 and E2E-ADMIN-002 create links and render frontend QR", asyn
   const prevButton = page.getByRole("button", { name: "Zurück" }).first();
   await expect(prevButton).toBeDisabled();
   await expect(prevButton).toHaveCSS("cursor", "not-allowed");
+});
+
+test("E2E-ADMIN-008 onboarding appears once and force mode reopens it", async ({ page }) => {
+  await page.goto("/admin");
+
+  const onboardingDialog = page.getByRole("dialog", { name: "Admin Einführung" });
+  await expect(onboardingDialog).toBeVisible();
+  await expect(onboardingDialog).toContainText("Schritt 1 von");
+
+  await onboardingDialog.getByRole("button", { name: "Überspringen" }).click();
+  await expect(onboardingDialog).toBeHidden();
+
+  await page.goto("/admin");
+  await expect(page.getByRole("dialog", { name: "Admin Einführung" })).toHaveCount(0);
+
+  await page.goto("/admin?onboarding=force");
+  await expect(page.getByRole("dialog", { name: "Admin Einführung" })).toBeVisible();
+});
+
+test("E2E-ADMIN-009 applies dark mode only on /admin", async ({ page, request }) => {
+  const create = await request.post("/api/admin/probes", {
+    data: {
+      customer_name: "Theme Scope Kunde",
+      order_number: `THEME-${Date.now()}`,
+      probe_count: 1,
+    },
+  });
+  expect(create.status()).toBe(201);
+  const payload = (await create.json()) as { items: Array<{ token_url: string }> };
+  const token = payload.items[0].token_url.split("/").pop();
+  if (!token) {
+    throw new Error("token missing");
+  }
+
+  await page.goto("/admin?onboarding=off");
+  await page.evaluate(() => window.localStorage.setItem("ls-oneup-admin-theme", "dark"));
+  await page.reload();
+
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.classList.contains("dark")))
+    .toBe(true);
+
+  await page.goto(`/p/${token}`);
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.classList.contains("dark")))
+    .toBe(false);
 });
 
 test("E2E-FARM-001 and E2E-FARM-003 submit once then reject second submit", async ({
@@ -69,8 +120,8 @@ test("E2E-FARM-001 and E2E-FARM-003 submit once then reject second submit", asyn
   await page.goto(`/p/${token}`);
 
   await page.getByLabel("Kulturname").fill("Kartoffeln");
-  await page.getByLabel("Pflanzenvitalität").selectOption("normal");
-  await page.getByLabel("Bodenfeuchte").selectOption("normal");
+  await chooseSelectOption(page, "Pflanzenvitalität", "normal");
+  await chooseSelectOption(page, "Bodenfeuchte", "normal");
   await page.getByRole("button", { name: "GPS erfassen" }).click();
 
   await page.setInputFiles("input[type='file']", {
@@ -126,8 +177,8 @@ test("E2E-FARM-004 blocks submit when offline", async ({ page, request, context 
 
   await page.goto(`/p/${token}`);
   await page.getByLabel("Kulturname").fill("Kartoffeln");
-  await page.getByLabel("Pflanzenvitalität").selectOption("normal");
-  await page.getByLabel("Bodenfeuchte").selectOption("normal");
+  await chooseSelectOption(page, "Pflanzenvitalität", "normal");
+  await chooseSelectOption(page, "Bodenfeuchte", "normal");
   await page.getByRole("button", { name: "GPS erfassen" }).click();
   await page.setInputFiles("input[type='file']", {
     name: "probe.jpg",
@@ -149,7 +200,7 @@ test("E2E-ADMIN-003 shows submitted probes with status eingereicht", async ({ pa
   const submitStatus = await submitProbe(request, token);
   expect(submitStatus).toBe(201);
 
-  await page.goto("/admin");
+  await page.goto("/admin?onboarding=off");
   const headers = await page
     .locator("thead th")
     .evaluateAll((nodes) => nodes.map((node) => node.textContent?.trim() ?? ""));
@@ -230,7 +281,7 @@ test("E2E-ADMIN-004 allows viewing uploaded image from admin table", async ({ pa
     await route.continue();
   });
 
-  await page.goto("/admin");
+  await page.goto("/admin?onboarding=off");
   const row = page.locator("tbody tr", { hasText: orderNumber });
   await expect(row).toHaveCount(1);
 
@@ -260,7 +311,7 @@ test("E2E-ADMIN-005 stores override timestamp only after submitted status", asyn
     orderPrefix: "E2E-ADMIN-005",
   });
 
-  await page.goto("/admin");
+  await page.goto("/admin?onboarding=off");
   let row = page.locator("tbody tr", { hasText: orderNumber });
   await expect(row).toHaveCount(1);
   await expect(row.locator(".status")).toHaveText("offen");
@@ -313,10 +364,10 @@ test("E2E-FARM-006 requires explicit select choices before submit", async ({
   const submitButton = page.getByRole("button", { name: "Absenden" });
   await expect(submitButton).toBeDisabled();
 
-  await page.getByLabel("Pflanzenvitalität").selectOption("normal");
+  await chooseSelectOption(page, "Pflanzenvitalität", "normal");
   await expect(submitButton).toBeDisabled();
 
-  await page.getByLabel("Bodenfeuchte").selectOption("normal");
+  await chooseSelectOption(page, "Bodenfeuchte", "normal");
   await expect(submitButton).toBeEnabled();
 });
 
@@ -369,7 +420,7 @@ test("E2E-ADMIN-006 paginates admin table with 20 rows per page", async ({ page,
   const total = listPayload.items.length;
   const firstPageEnd = Math.min(20, total);
 
-  await page.goto("/admin");
+  await page.goto("/admin?onboarding=off");
   await expect(page.getByText(`1-${firstPageEnd} von ${total}`)).toHaveCount(2);
   await expect(page.locator("tbody tr")).toHaveCount(20);
 
@@ -394,7 +445,7 @@ test("E2E-ADMIN-007 keeps Bild action visible on narrow screens", async ({ page,
   expect(submitStatus).toBe(201);
 
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/admin");
+  await page.goto("/admin?onboarding=off");
 
   const scrollContainer = page.getByTestId("admin-table-scroll");
   await scrollContainer.evaluate((element) => {
