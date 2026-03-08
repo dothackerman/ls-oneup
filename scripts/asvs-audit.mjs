@@ -9,8 +9,11 @@ const ASVS_DIR = path.resolve("docs/security/asvs");
 const MACHINE_PATH = path.join(ASVS_DIR, "checklist.machine.json");
 const HUMAN_PATH = path.join(ASVS_DIR, "checklist.human.md");
 const FINDINGS_PATH = path.join(ASVS_DIR, "checklist.findings.jsonl");
+const DELTA_JSON_PATH = path.join(ASVS_DIR, "checklist.delta.json");
+const DELTA_MD_PATH = path.join(ASVS_DIR, "checklist.delta.md");
 
 const SCAN_DIRS = ["src", "worker", "tests", "docs", "migrations"];
+const EXCLUDED_PREFIXES = ["docs/security/asvs/"];
 const SCAN_EXT = new Set([".ts", ".tsx", ".js", ".mjs", ".json", ".md", ".sql"]);
 
 const STOPWORDS = new Set([
@@ -83,6 +86,7 @@ function extractKeywords(item) {
 function severityFromLevel(level, status) {
   if (status === "completed" || status === "not_applicable") return "none";
   const n = Number(level);
+  if (Number.isFinite(n) && n >= 4) return "critical";
   if (Number.isFinite(n) && n >= 3) return "high";
   if (Number.isFinite(n) && n >= 2) return "medium";
   return "low";
@@ -98,8 +102,10 @@ async function indexFiles() {
   for (const f of files) {
     try {
       const content = await fs.readFile(f, "utf8");
+      const rel = path.relative(ROOT, f);
+      if (EXCLUDED_PREFIXES.some((p) => rel.startsWith(p))) continue;
       indexed.push({
-        path: path.relative(ROOT, f),
+        path: rel,
         lines: content.split(/\r?\n/),
       });
     } catch {
@@ -122,6 +128,65 @@ function findReferences(index, keywords) {
     }
   }
   return refs;
+}
+
+function buildDelta(previous, current) {
+  const prevById = new Map((previous || []).map((x) => [x.requirement_id, x]));
+  const changed = [];
+  let newTodos = 0;
+  let resolved = 0;
+  let severityChanged = 0;
+
+  for (const row of current) {
+    const prev = prevById.get(row.requirement_id);
+    if (!prev) continue;
+    const statusChanged = (prev.status || "todo") !== row.status;
+    const sevChanged = (prev.severity || "none") !== row.severity;
+
+    if (statusChanged || sevChanged) {
+      changed.push({
+        requirement_id: row.requirement_id,
+        from_status: prev.status || "todo",
+        to_status: row.status,
+        from_severity: prev.severity || "none",
+        to_severity: row.severity,
+      });
+    }
+
+    if ((prev.status || "todo") !== "todo" && row.status === "todo") newTodos += 1;
+    if ((prev.status || "todo") === "todo" && row.status === "completed") resolved += 1;
+    if (sevChanged) severityChanged += 1;
+  }
+
+  return {
+    generated_at: new Date().toISOString(),
+    changed_count: changed.length,
+    new_todos: newTodos,
+    resolved_todos: resolved,
+    severity_changed: severityChanged,
+    changes: changed,
+  };
+}
+
+function renderDeltaMarkdown(delta) {
+  const lines = [
+    "# ASVS Delta Report",
+    "",
+    `- Generated at: ${delta.generated_at}`,
+    `- Changed controls: ${delta.changed_count}`,
+    `- New TODOs: ${delta.new_todos}`,
+    `- Resolved TODOs: ${delta.resolved_todos}`,
+    `- Severity changes: ${delta.severity_changed}`,
+    "",
+    "| Requirement | Status (from→to) | Severity (from→to) |",
+    "|---|---|---|",
+    ...delta.changes.map(
+      (c) =>
+        `| ${c.requirement_id} | ${c.from_status} → ${c.to_status} | ${c.from_severity} → ${c.to_severity} |`,
+    ),
+    "",
+  ];
+  return lines.join("\n");
 }
 
 function renderHuman(metadata, checklist) {
@@ -167,6 +232,7 @@ async function main() {
   const raw = await fs.readFile(MACHINE_PATH, "utf8");
   const machine = JSON.parse(raw);
   const checklist = Array.isArray(machine?.checklist) ? machine.checklist : [];
+  const previousChecklist = JSON.parse(JSON.stringify(checklist));
   const metadata = machine?.metadata ?? {};
 
   const fileIndex = await indexFiles();
@@ -211,6 +277,10 @@ async function main() {
 
   await fs.writeFile(MACHINE_PATH, `${JSON.stringify(nextMachine, null, 2)}\n`, "utf8");
   await fs.writeFile(HUMAN_PATH, renderHuman(nextMachine.metadata, audited), "utf8");
+
+  const delta = buildDelta(previousChecklist, audited);
+  await fs.writeFile(DELTA_JSON_PATH, `${JSON.stringify(delta, null, 2)}\n`, "utf8");
+  await fs.writeFile(DELTA_MD_PATH, `${renderDeltaMarkdown(delta)}\n`, "utf8");
 
   console.log(`ASVS audit complete: ${audited.length} controls evaluated.`);
 }

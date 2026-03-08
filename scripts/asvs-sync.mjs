@@ -33,10 +33,17 @@ function asArray(value) {
 }
 
 function normalizeItem(item) {
-  const reqId = item.shortcode || item.id || item.requirementId || item.code;
-  const title = item.name || item.title || item.requirement || "(untitled)";
-  const chapter = item.chapter || item.section || item.category || "unknown";
-  const level = item.level || item.asvs_level || item.maturity || "unknown";
+  const reqId =
+    item.req_id || item.shortcode || item.id || item.requirementId || item.code || item.requirement_id;
+  const title = item.req_description || item.name || item.title || item.requirement || "(untitled)";
+  const chapter = [item.chapter_id, item.chapter_name, item.section_id, item.section_name]
+    .filter(Boolean)
+    .join(" ") ||
+    item.chapter ||
+    item.section ||
+    item.category ||
+    "unknown";
+  const level = item.L || item.level || item.asvs_level || item.maturity || "unknown";
   return {
     requirement_id: String(reqId ?? "unknown"),
     chapter: String(chapter),
@@ -57,6 +64,7 @@ function parseChecklist(raw) {
   if (Array.isArray(raw)) return raw.map(normalizeItem);
   if (Array.isArray(raw?.requirements)) return raw.requirements.map(normalizeItem);
   if (Array.isArray(raw?.controls)) return raw.controls.map(normalizeItem);
+  if (Array.isArray(raw?.items)) return raw.items.map(normalizeItem);
 
   const values = [];
   if (raw && typeof raw === "object") {

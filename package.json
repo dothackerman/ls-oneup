@@ -17,7 +17,9 @@
     "test:e2e": "mkdir -p dist .wrangler-config .playwright-browsers && XDG_CONFIG_HOME=.wrangler-config PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers playwright test",
     "ci:local": "npm run format && npm run lint && npm run typecheck && npm run test:integration && npm run test:e2e",
     "asvs:sync": "node scripts/asvs-sync.mjs",
-    "asvs:audit": "node scripts/asvs-audit.mjs"
+    "asvs:audit": "node scripts/asvs-audit.mjs",
+    "asvs:gate": "node scripts/asvs-gate.mjs",
+    "asvs:run": "npm run asvs:sync && npm run asvs:audit && npm run asvs:gate"
   },
   "dependencies": {
     "@fontsource-variable/nunito-sans": "^5.2.7",

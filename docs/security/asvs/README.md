@@ -9,6 +9,8 @@ This directory tracks OWASP ASVS source state and local codebase validation.
 - `checklist.machine.json` — machine-readable checklist with status/reasoning/code refs
 - `checklist.human.md` — human-readable report
 - `checklist.findings.jsonl` — append-only per-item audit findings
+- `checklist.delta.json` — machine-readable diff vs previous run
+- `checklist.delta.md` — human-readable delta summary
 
 ## Workflow
 
@@ -22,6 +24,18 @@ npm run asvs:sync
 
 ```bash
 npm run asvs:audit
+```
+
+3. Enforce quality gate:
+
+```bash
+npm run asvs:gate
+```
+
+Or run all in one:
+
+```bash
+npm run asvs:run
 ```
 
 ## Status semantics

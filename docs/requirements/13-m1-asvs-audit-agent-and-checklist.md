@@ -42,6 +42,8 @@ The audit agent must enforce:
 
 - `npm run asvs:sync`
 - `npm run asvs:audit`
+- `npm run asvs:gate`
+- `npm run asvs:run`
 
 ## Checklist row contract
 
