@@ -27,6 +27,8 @@ This folder contains the living requirement and implementation-guidance document
    - mapping from M1 acceptance criteria to integration/E2E tests
 12. `12-m1-security-decision-record.md`
    - ADR-style security decision for one-time token links
+13. `13-m1-asvs-audit-agent-and-checklist.md`
+   - ASVS/vOS audit agent contract, source sync, and checklist workflow
 
 ## Working Rules
 1. Keep docs aligned with code and architecture decisions.

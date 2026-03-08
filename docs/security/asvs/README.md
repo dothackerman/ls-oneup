@@ -1,0 +1,44 @@
+# ASVS / vOS Security Checklist Pipeline
+
+This directory tracks OWASP ASVS source state and local codebase validation.
+
+## Files
+
+- `source-state.json` — latest upstream source metadata (commit + blob hash + checked time)
+- `version-history.jsonl` — append-only check history
+- `checklist.machine.json` — machine-readable checklist with status/reasoning/code refs
+- `checklist.human.md` — human-readable report
+- `checklist.findings.jsonl` — append-only per-item audit findings
+
+## Workflow
+
+1. Sync upstream ASVS source and (re)build checklist baseline:
+
+```bash
+npm run asvs:sync
+```
+
+2. Audit local codebase against checklist:
+
+```bash
+npm run asvs:audit
+```
+
+## Status semantics
+
+- `completed` — implemented and evidenced in code references
+- `todo` — not yet implemented or missing evidence
+- `not_applicable` — out of scope for this codebase (must include reasoning)
+
+## Severity semantics for unmet controls
+
+- `critical`
+- `high`
+- `medium`
+- `low`
+- `none` (for completed / not applicable)
+
+## Safety note
+
+The associated Claude custom agent (`.claude/agents/asvs-vos-auditor.md`) enforces
+Opus 4.6 as a hard precondition before performing this audit.
