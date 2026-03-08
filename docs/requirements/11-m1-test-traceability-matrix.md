@@ -38,6 +38,8 @@ Map each M1 acceptance criterion to automated tests.
    - `E2E-ADMIN-007` verifies sticky/right-side image action visibility on narrow viewport
 6. GPS capture progress feedback:
    - `E2E-FARM-007` verifies loading spinner + disabled button while GPS capture is in progress
+7. Admin onboarding first-load behavior:
+   - `E2E-ADMIN-008` verifies first-load tour display, `Überspringen` persistence, and `?onboarding=force` reopen behavior
 
 ## Minimum Test Inventory for M1 Sign-off
 

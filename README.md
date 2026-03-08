@@ -48,6 +48,11 @@ In your browser, open:
 
 - [http://localhost:8787/admin](http://localhost:8787/admin)
 
+On first load per browser profile, the admin page starts an interactive onboarding tour.
+- `Überspringen` and `Abschliessen` both mark the tour as completed for that browser profile.
+- Force the tour again: `http://localhost:8787/admin?onboarding=force`
+- Disable it for testing/debug runs: `http://localhost:8787/admin?onboarding=off`
+
 The farmer link route is available at [http://localhost:8787/p/example-token](http://localhost:8787/p/example-token) after links are created in admin (replace `example-token` with a real token).
 
 ## Technical References
