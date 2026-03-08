@@ -2,62 +2,11 @@
 
 Prototype repository for the Leaf Sap One Up project.
 
-## Non-Technical Getting Started (Local Admin Page)
+## Local CLI Manual
 
-Follow this path from zero to opening the admin UI in your browser.
+Use this as the single instruction manual for local CLI usage:
 
-### 1. Install the tools
-
-- [Git](https://git-scm.com/downloads)
-- [Node.js LTS (includes npm)](https://nodejs.org/en/download)
-
-### 2. Get the code
-
-```bash
-git clone https://github.com/dothackerman/ls-oneup
-cd ls-oneup
-```
-
-### 3. Install project dependencies
-
-```bash
-npm install
-```
-
-### 4. Prepare the local database
-
-```bash
-npm run db:migrate:local
-```
-
-To reset local D1+R2 prototype data back to an empty state:
-
-```bash
-npm run db:reset:local
-```
-
-### 5. Start the app locally
-
-```bash
-npm run dev
-```
-
-### 6. Open the admin page
-
-In your browser, open:
-
-- [http://localhost:8787/admin](http://localhost:8787/admin)
-
-On first load per browser profile, the admin page starts an interactive onboarding tour.
-- `Überspringen` and `Abschliessen` both mark the tour as completed for that browser profile.
-- Force the tour again: `http://localhost:8787/admin?onboarding=force`
-- Disable it for testing/debug runs: `http://localhost:8787/admin?onboarding=off`
-
-Dark mode behavior:
-- Theme preference is available only on `/admin` (System/Hell/Dunkel) and is persisted per browser profile.
-- Farmer pages (`/p/:token`) stay in light mode.
-
-The farmer link route is available at [http://localhost:8787/p/example-token](http://localhost:8787/p/example-token) after links are created in admin (replace `example-token` with a real token).
+- [docs/developer-local-cli-manual.md](docs/developer-local-cli-manual.md)
 
 ## Technical References
 
