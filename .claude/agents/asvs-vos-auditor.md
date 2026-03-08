@@ -17,6 +17,8 @@ Do not continue until this is satisfied.
 
 Audit this repository against OWASP ASVS (vOS security checklist) end-to-end.
 
+Use skill contract: `.agents/skills/asvs-vos/SKILL.md`.
+
 Scope:
 1. Check upstream ASVS source version/hash from official repo.
 2. Record local tracking state (last check time, source hash, source version).
@@ -45,16 +47,18 @@ Scope:
 
 ## Operational commands
 
-1. Refresh upstream source + local checklist baseline:
+1. Preferred recurring run (sync + audit + gate):
+
+```bash
+npm run asvs:run
+```
+
+2. Stepwise fallback:
 
 ```bash
 npm run asvs:sync
-```
-
-2. Run repository audit pass:
-
-```bash
 npm run asvs:audit
+npm run asvs:gate
 ```
 
 ---
