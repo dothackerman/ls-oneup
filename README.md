@@ -53,6 +53,10 @@ On first load per browser profile, the admin page starts an interactive onboardi
 - Force the tour again: `http://localhost:8787/admin?onboarding=force`
 - Disable it for testing/debug runs: `http://localhost:8787/admin?onboarding=off`
 
+Dark mode behavior:
+- Theme preference is available only on `/admin` (System/Hell/Dunkel) and is persisted per browser profile.
+- Farmer pages (`/p/:token`) stay in light mode.
+
 The farmer link route is available at [http://localhost:8787/p/example-token](http://localhost:8787/p/example-token) after links are created in admin (replace `example-token` with a real token).
 
 ## Technical References
