@@ -152,7 +152,12 @@ async function main() {
   };
   await fs.appendFile(HISTORY_PATH, `${JSON.stringify(historyEntry)}\n`, "utf8");
 
-  const existingChecklist = (await readJsonIfExists(CHECKLIST_MACHINE_PATH)) ?? [];
+  const existingChecklistDoc = await readJsonIfExists(CHECKLIST_MACHINE_PATH);
+  const existingChecklist = Array.isArray(existingChecklistDoc)
+    ? existingChecklistDoc
+    : Array.isArray(existingChecklistDoc?.checklist)
+      ? existingChecklistDoc.checklist
+      : [];
   const existingById = new Map(existingChecklist.map((x) => [x.requirement_id, x]));
 
   const mergedChecklist = parsedChecklist.map((row) => {

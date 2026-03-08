@@ -1,6 +1,6 @@
 # ASVS Checklist (Human View)
 
-- Generated at: 2026-03-08T19:22:07.396Z
+- Generated at: 2026-03-08T19:32:34.845Z
 - Source commit: ae4ab5b261a72b63edd6a10b4e2d600ea6937e2b
 - Source blob: f7ae2926598c4648ff7614a6968e4c8fd89524bd
 - Total requirements: 345
