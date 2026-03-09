@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@shared/components/ui/select";
-import { SpotlightOverlay } from "@shared/components/ui/spotlight-overlay";
+import { SpotlightOverlay } from "@shared/components/patterns/spotlight-overlay";
 import {
   Table,
   TableBody,
@@ -867,7 +867,7 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
                     <TableHead className="sticky top-0 z-20 bg-muted">Erstellt</TableHead>
                     <TableHead className="sticky top-0 z-20 bg-muted">Eingereicht</TableHead>
                     <TableHead className="sticky top-0 z-20 bg-muted">Ablauf</TableHead>
-                    <TableHead className="sticky top-0 right-0 z-30 bg-muted shadow-[-8px_0_12px_-12px_rgba(15,23,42,0.6)]">
+                    <TableHead className="shadow-sticky-edge sticky top-0 right-0 z-30 bg-muted">
                       Bild
                     </TableHead>
                   </TableRow>
@@ -972,10 +972,7 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
                           </TableCell>
                           <TableCell className="align-top">{formatDate(probe.expire_by)}</TableCell>
                           <TableCell
-                            className={cn(
-                              "sticky right-0 align-top shadow-[-8px_0_12px_-12px_rgba(15,23,42,0.6)]",
-                              rowBg,
-                            )}
+                            className={cn("shadow-sticky-edge sticky right-0 align-top", rowBg)}
                           >
                             {probe.image_url ? (
                               <Button type="button" onClick={() => openPreview(probe)}>

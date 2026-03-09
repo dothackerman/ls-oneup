@@ -16,6 +16,7 @@ This file is orchestration-only:
 1. Start with `docs/requirements/README.md` to locate the current requirement set.
 2. Use the referenced requirement docs as authoritative for behavior and constraints.
 3. Keep this file stable and reusable; store feature/milestone specifics in requirement docs, not here.
+4. For frontend UX/styling work, follow `docs/requirements/14-frontend-styling-policy.md`.
 
 ## Repo-Level Agent Rules
 1. Respect `SOLID`, `YAGNI`, `KISS`, high cohesion, low coupling.

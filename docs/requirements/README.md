@@ -29,6 +29,8 @@ This folder contains the living requirement and implementation-guidance document
    - ADR-style security decision for one-time token links
 13. `13-m1-asvs-audit-agent-and-checklist.md`
    - ASVS/vOS audit agent contract, source sync, and checklist workflow
+14. `14-frontend-styling-policy.md`
+   - frontend styling rules for shadcn base components, Tailwind composition, and runtime-style exceptions
 
 ## Working Rules
 1. Keep docs aligned with code and architecture decisions.
