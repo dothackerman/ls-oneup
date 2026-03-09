@@ -13,15 +13,6 @@ import {
   CardTitle,
 } from "@shared/components/ui/card";
 import { Dialog, DialogContent, DialogTitle } from "@shared/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@shared/components/ui/dropdown-menu";
 import { Input } from "@shared/components/ui/input";
 import { Label } from "@shared/components/ui/label";
 import {
@@ -624,25 +615,24 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
             Tour erneut starten
           </Button>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button type="button" variant="outline" data-onboarding="theme-toggle">
-                Farbmodus: {themePreferenceLabel(themePreference)}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-44">
-              <DropdownMenuLabel>Farbmodus</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuRadioGroup
-                value={themePreference}
-                onValueChange={(value) => onThemePreferenceChange(value as AdminThemePreference)}
-              >
-                <DropdownMenuRadioItem value="system">System</DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="light">Hell</DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="dark">Dunkel</DropdownMenuRadioItem>
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div data-onboarding="theme-toggle" className="grid gap-1">
+            <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+              Farbmodus
+            </p>
+            <Select
+              value={themePreference}
+              onValueChange={(value) => onThemePreferenceChange(value as AdminThemePreference)}
+            >
+              <SelectTrigger aria-label="Farbmodus" className="min-w-36">
+                <SelectValue>{themePreferenceLabel(themePreference)}</SelectValue>
+              </SelectTrigger>
+              <SelectContent align="end" position="popper">
+                <SelectItem value="system">System</SelectItem>
+                <SelectItem value="light">Hell</SelectItem>
+                <SelectItem value="dark">Dunkel</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </header>
 

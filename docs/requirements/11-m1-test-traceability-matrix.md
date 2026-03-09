@@ -49,6 +49,8 @@ Map each M1 acceptance criterion to automated tests.
    - `E2E-ADMIN-013` verifies inline validation copy stays in Swiss Standard German instead of falling back to browser-locale tooltips
 11. Admin-only dark mode scope:
    - `E2E-ADMIN-009` verifies dark theme is applied on `/admin` and not applied on farmer route `/p/:token`
+12. Admin theme selector behavior:
+   - `E2E-ADMIN-014` verifies the admin theme control can switch interactively between `Dunkel` and `Hell`
 
 ## Minimum Test Inventory for M1 Sign-off
 

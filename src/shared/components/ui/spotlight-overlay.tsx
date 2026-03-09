@@ -11,7 +11,7 @@ type SpotlightOverlayProps = {
   selector?: string;
 };
 
-const SPOTLIGHT_PADDING = 12;
+const SPOTLIGHT_PADDING = 8;
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
@@ -87,7 +87,7 @@ export function SpotlightOverlay({ selector }: SpotlightOverlayProps): JSX.Eleme
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed z-[45] rounded-2xl border border-primary/80 ring-4 ring-primary/25 shadow-[0_0_0_1px_rgba(255,255,255,0.12),0_0_32px_rgba(69,154,91,0.35)] transition-all duration-300"
+        className="pointer-events-none fixed z-[45] rounded-xl border border-primary/70 shadow-[0_0_0_1px_rgba(7,18,12,0.18),0_0_18px_rgba(69,154,91,0.18)] transition-all duration-300"
         style={{
           top: rect.top,
           left: rect.left,

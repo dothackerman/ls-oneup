@@ -104,7 +104,9 @@ test("E2E-ADMIN-012 header text remains readable in dark mode", async ({ page })
   await expect(title).toBeVisible();
   await expect(subtitle).toBeVisible();
 
-  const backgroundImage = await page.evaluate(() => window.getComputedStyle(document.body).backgroundImage);
+  const backgroundImage = await page.evaluate(
+    () => window.getComputedStyle(document.body).backgroundImage,
+  );
   expect(backgroundImage).toContain("rgb(38, 77, 58)");
   expect(backgroundImage).toContain("rgb(16, 23, 21)");
 });
@@ -118,6 +120,29 @@ test("E2E-ADMIN-013 form validation messages appear in German", async ({ page })
   const customerError = page.locator("[data-slot='field-error']").first();
   await expect(customerError).toBeVisible();
   await expect(customerError).toContainText("Bitte geben Sie den Kundennamen ein.");
+});
+
+test("E2E-ADMIN-014 theme selector switches between dark and light mode", async ({ page }) => {
+  await page.goto("/admin?onboarding=off");
+
+  const themeSelector = page.getByRole("combobox", { name: "Farbmodus" });
+  await expect(themeSelector).toBeVisible();
+
+  await themeSelector.click();
+  await page.getByRole("option", { name: "Dunkel" }).click();
+
+  await expect(page.getByRole("combobox", { name: "Farbmodus" })).toContainText("Dunkel");
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.classList.contains("dark")))
+    .toBe(true);
+
+  await page.getByRole("combobox", { name: "Farbmodus" }).click();
+  await page.getByRole("option", { name: "Hell" }).click();
+
+  await expect(page.getByRole("combobox", { name: "Farbmodus" })).toContainText("Hell");
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.classList.contains("dark")))
+    .toBe(false);
 });
 
 test("E2E-ADMIN-009 applies dark mode only on /admin", async ({ page, request }) => {
