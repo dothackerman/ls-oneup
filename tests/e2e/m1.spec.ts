@@ -59,6 +59,67 @@ test("E2E-ADMIN-008 onboarding appears once and force mode reopens it", async ({
   await expect(page.getByRole("dialog", { name: "Admin Einführung" })).toBeVisible();
 });
 
+test("E2E-ADMIN-010 onboarding spotlight highlights the current feature", async ({ page }) => {
+  await page.goto("/admin?onboarding=force");
+
+  const dialog = page.getByRole("dialog", { name: "Admin Einführung" });
+  await expect(dialog).toBeVisible();
+  await expect(page.locator("[data-slot='spotlight-overlay']")).toHaveCount(0);
+
+  await dialog.getByRole("button", { name: "Weiter" }).click();
+  await expect(dialog).toContainText("Schritt 2 von");
+
+  const spotlight = page.locator("[data-slot='spotlight-overlay']");
+  await expect(spotlight).toBeVisible();
+
+  const themeToggle = page.locator("[data-onboarding='theme-toggle']");
+  await expect(themeToggle).toBeVisible();
+  await expect(themeToggle).toHaveCSS("z-index", "45");
+});
+
+test("E2E-ADMIN-011 onboarding cannot be dismissed accidentally", async ({ page }) => {
+  await page.goto("/admin?onboarding=force");
+
+  const dialog = page.getByRole("dialog", { name: "Admin Einführung" });
+  await expect(dialog).toBeVisible();
+
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeVisible();
+
+  await page.mouse.click(10, 10);
+  await expect(dialog).toBeVisible();
+
+  await dialog.getByRole("button", { name: "Überspringen" }).click();
+  await expect(dialog).toBeHidden();
+});
+
+test("E2E-ADMIN-012 header text remains readable in dark mode", async ({ page }) => {
+  await page.goto("/admin?onboarding=off");
+  await page.evaluate(() => {
+    document.documentElement.classList.add("dark");
+  });
+
+  const title = page.getByRole("heading", { name: "Leaf Sap One Up" });
+  const subtitle = page.getByText("Adminbereich");
+  await expect(title).toBeVisible();
+  await expect(subtitle).toBeVisible();
+
+  const backgroundImage = await page.evaluate(() => window.getComputedStyle(document.body).backgroundImage);
+  expect(backgroundImage).toContain("rgb(38, 77, 58)");
+  expect(backgroundImage).toContain("rgb(16, 23, 21)");
+});
+
+test("E2E-ADMIN-013 form validation messages appear in German", async ({ page }) => {
+  await page.goto("/admin?onboarding=off");
+
+  await page.getByLabel("Auftragsnummer").fill("TEST-123");
+  await page.getByRole("button", { name: "Links erstellen" }).click();
+
+  const customerError = page.locator("[data-slot='field-error']").first();
+  await expect(customerError).toBeVisible();
+  await expect(customerError).toContainText("Bitte geben Sie den Kundennamen ein.");
+});
+
 test("E2E-ADMIN-009 applies dark mode only on /admin", async ({ page, request }) => {
   const create = await request.post("/api/admin/probes", {
     data: {

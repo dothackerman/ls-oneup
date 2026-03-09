@@ -31,6 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@shared/components/ui/select";
+import { SpotlightOverlay } from "@shared/components/ui/spotlight-overlay";
 import {
   Table,
   TableBody,
@@ -341,6 +342,7 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
   const [customerName, setCustomerName] = useState("");
   const [orderNumber, setOrderNumber] = useState("");
   const [probeCount, setProbeCount] = useState(1);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const [createdItems, setCreatedItems] = useState<CreatedProbe[]>([]);
   const [probes, setProbes] = useState<AdminProbe[]>([]);
@@ -451,6 +453,7 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
       setCustomerName("");
       setOrderNumber("");
       setProbeCount(1);
+      setFieldErrors({});
       await loadProbes({ resetPage: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erstellung fehlgeschlagen.");
@@ -592,7 +595,16 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
 
     if (target && target instanceof HTMLElement) {
       target.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+      target.style.position = "relative";
+      target.style.zIndex = "45";
     }
+
+    return () => {
+      if (target && target instanceof HTMLElement) {
+        target.style.position = "";
+        target.style.zIndex = "";
+      }
+    };
   }, [onboardingStep, createdItems.length, probes.length]);
 
   const previewImageUrl = previewProbe?.image_url
@@ -604,7 +616,7 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="font-display text-3xl font-bold text-foreground">Leaf Sap One Up</h1>
-          <p className="mt-1 text-muted-foreground">Adminbereich</p>
+          <p className="mt-1 text-sm font-medium text-muted-foreground">Adminbereich</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -640,15 +652,55 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
           <CardDescription>Erfasse Kunde, Auftrag und Anzahl Proben.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="grid gap-4 md:grid-cols-3" onSubmit={handleCreate}>
+          <form
+            className="grid gap-4 md:grid-cols-3"
+            noValidate
+            onSubmit={(event) => {
+              const nextErrors: Record<string, string> = {};
+
+              if (!customerName.trim()) {
+                nextErrors["customer-name"] = "Bitte geben Sie den Kundennamen ein.";
+              }
+              if (!orderNumber.trim()) {
+                nextErrors["order-number"] = "Bitte geben Sie die Auftragsnummer ein.";
+              }
+              if (!Number.isFinite(probeCount) || probeCount < 1) {
+                nextErrors["probe-count"] = "Bitte geben Sie die Anzahl Proben ein.";
+              }
+
+              setFieldErrors(nextErrors);
+              if (Object.keys(nextErrors).length > 0) {
+                event.preventDefault();
+                return;
+              }
+
+              void handleCreate(event);
+            }}
+          >
             <div className="grid gap-1.5">
               <Label htmlFor="customer-name">Kunde</Label>
               <Input
                 id="customer-name"
                 value={customerName}
-                onChange={(event) => setCustomerName(event.target.value)}
-                required
+                aria-invalid={fieldErrors["customer-name"] ? "true" : "false"}
+                onChange={(event) => {
+                  setCustomerName(event.target.value);
+                  setFieldErrors((prev) => {
+                    if (!prev["customer-name"]) {
+                      return prev;
+                    }
+
+                    const next = { ...prev };
+                    delete next["customer-name"];
+                    return next;
+                  });
+                }}
               />
+              {fieldErrors["customer-name"] ? (
+                <p data-slot="field-error" className="text-xs text-destructive">
+                  {fieldErrors["customer-name"]}
+                </p>
+              ) : null}
             </div>
 
             <div className="grid gap-1.5">
@@ -656,9 +708,25 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
               <Input
                 id="order-number"
                 value={orderNumber}
-                onChange={(event) => setOrderNumber(event.target.value)}
-                required
+                aria-invalid={fieldErrors["order-number"] ? "true" : "false"}
+                onChange={(event) => {
+                  setOrderNumber(event.target.value);
+                  setFieldErrors((prev) => {
+                    if (!prev["order-number"]) {
+                      return prev;
+                    }
+
+                    const next = { ...prev };
+                    delete next["order-number"];
+                    return next;
+                  });
+                }}
               />
+              {fieldErrors["order-number"] ? (
+                <p data-slot="field-error" className="text-xs text-destructive">
+                  {fieldErrors["order-number"]}
+                </p>
+              ) : null}
             </div>
 
             <div className="grid gap-1.5">
@@ -668,9 +736,25 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
                 type="number"
                 min={1}
                 value={probeCount}
-                onChange={(event) => setProbeCount(Number(event.target.value || 1))}
-                required
+                aria-invalid={fieldErrors["probe-count"] ? "true" : "false"}
+                onChange={(event) => {
+                  setProbeCount(Number(event.target.value || 0));
+                  setFieldErrors((prev) => {
+                    if (!prev["probe-count"]) {
+                      return prev;
+                    }
+
+                    const next = { ...prev };
+                    delete next["probe-count"];
+                    return next;
+                  });
+                }}
               />
+              {fieldErrors["probe-count"] ? (
+                <p data-slot="field-error" className="text-xs text-destructive">
+                  {fieldErrors["probe-count"]}
+                </p>
+              ) : null}
             </div>
 
             <div className="md:col-span-3">
@@ -992,63 +1076,65 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
         )}
       </Dialog>
 
-      <Dialog
-        open={Boolean(onboardingStep)}
-        onOpenChange={(open) => {
-          if (!open && onboardingStep) {
-            markOnboardingCompleted();
-          }
-        }}
-      >
+      <Dialog open={Boolean(onboardingStep)}>
         {onboardingStep && (
-          <DialogContent showCloseButton={false} className="max-w-xl">
-            <div className="space-y-3">
-              <DialogTitle className="font-display text-xl">Admin Einführung</DialogTitle>
-              <p className="text-xs text-muted-foreground">
-                Schritt {onboardingStepIndex! + 1} von {ADMIN_ONBOARDING_STEPS.length}
-              </p>
+          <>
+            <SpotlightOverlay selector={onboardingStep.selector} />
+            <DialogContent
+              showCloseButton={false}
+              hideOverlay
+              className="max-w-xl"
+              onInteractOutside={(event) => event.preventDefault()}
+              onEscapeKeyDown={(event) => event.preventDefault()}
+            >
+              <div className="space-y-3">
+                <DialogTitle className="font-display text-xl">Admin Einführung</DialogTitle>
+                <p className="text-xs text-muted-foreground">
+                  Schritt {onboardingStepIndex! + 1} von {ADMIN_ONBOARDING_STEPS.length}
+                </p>
 
-              <div className="rounded-lg border border-border/70 bg-muted/40 p-3">
-                <p className="font-medium text-foreground">{onboardingStep.title}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{onboardingStep.description}</p>
-              </div>
-
-              {onboardingStep.selector && !onboardingTargetFound && (
-                <Alert className="border-amber-300 bg-amber-500/10 text-amber-900 dark:text-amber-200">
-                  <AlertDescription>
-                    {onboardingStep.missingTargetHint ||
-                      "Der markierte Bereich ist aktuell nicht sichtbar."}
-                  </AlertDescription>
-                </Alert>
-              )}
-
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={showPreviousOnboardingStep}
-                    disabled={onboardingStepIndex === 0}
-                  >
-                    Zurück
-                  </Button>
-                  <Button type="button" variant="outline" onClick={markOnboardingCompleted}>
-                    Überspringen
-                  </Button>
+                <div className="rounded-lg border border-border/70 bg-muted/40 p-3">
+                  <p className="font-medium text-foreground">{onboardingStep.title}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{onboardingStep.description}</p>
                 </div>
 
-                {onboardingStepIndex === ADMIN_ONBOARDING_STEPS.length - 1 ? (
-                  <Button type="button" onClick={markOnboardingCompleted}>
-                    Abschliessen
-                  </Button>
-                ) : (
-                  <Button type="button" onClick={showNextOnboardingStep}>
-                    Weiter
-                  </Button>
+                {onboardingStep.selector && !onboardingTargetFound && (
+                  <Alert className="border-amber-300 bg-amber-500/10 text-amber-900 dark:text-amber-200">
+                    <AlertDescription>
+                      {onboardingStep.missingTargetHint ||
+                        "Der markierte Bereich ist aktuell nicht sichtbar."}
+                    </AlertDescription>
+                  </Alert>
                 )}
+
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={showPreviousOnboardingStep}
+                      disabled={onboardingStepIndex === 0}
+                    >
+                      Zurück
+                    </Button>
+                    <Button type="button" variant="outline" onClick={markOnboardingCompleted}>
+                      Überspringen
+                    </Button>
+                  </div>
+
+                  {onboardingStepIndex === ADMIN_ONBOARDING_STEPS.length - 1 ? (
+                    <Button type="button" onClick={markOnboardingCompleted}>
+                      Abschliessen
+                    </Button>
+                  ) : (
+                    <Button type="button" onClick={showNextOnboardingStep}>
+                      Weiter
+                    </Button>
+                  )}
+                </div>
               </div>
-            </div>
-          </DialogContent>
+            </DialogContent>
+          </>
         )}
       </Dialog>
     </main>

@@ -40,7 +40,14 @@ Map each M1 acceptance criterion to automated tests.
    - `E2E-FARM-007` verifies loading spinner + disabled button while GPS capture is in progress
 7. Admin onboarding first-load behavior:
    - `E2E-ADMIN-008` verifies first-load tour display, `Überspringen` persistence, and `?onboarding=force` reopen behavior
-8. Admin-only dark mode scope:
+8. Admin onboarding focus and dismissal guards:
+   - `E2E-ADMIN-010` verifies the current onboarding target stays visually highlighted instead of being fully obscured by the overlay
+   - `E2E-ADMIN-011` verifies onboarding cannot be dismissed via outside click or `Escape`; explicit controls remain required
+9. Admin header dark-mode readability:
+   - `E2E-ADMIN-012` verifies the admin route switches to the dark background treatment so header content remains readable in dark mode
+10. Admin-form German validation copy:
+   - `E2E-ADMIN-013` verifies inline validation copy stays in Swiss Standard German instead of falling back to browser-locale tooltips
+11. Admin-only dark mode scope:
    - `E2E-ADMIN-009` verifies dark theme is applied on `/admin` and not applied on farmer route `/p/:token`
 
 ## Minimum Test Inventory for M1 Sign-off
