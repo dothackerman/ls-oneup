@@ -1,0 +1,99 @@
+{
+  "browser": "chromium",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  },
+  "steps": [
+    {
+      "url": "http://127.0.0.1:8787/admin?onboarding=force",
+      "screenshot": "01-onboarding-light-desktop-welcome.png"
+    },
+    {
+      "actions": [
+        {
+          "clickRole": {
+            "role": "button",
+            "name": "Weiter"
+          }
+        },
+        {
+          "clickRole": {
+            "role": "button",
+            "name": "Weiter"
+          }
+        },
+        {
+          "clickRole": {
+            "role": "button",
+            "name": "Weiter"
+          }
+        },
+        {
+          "waitForText": {
+            "text": "Links und QR-Codes"
+          }
+        },
+        {
+          "waitForTimeout": 300
+        }
+      ],
+      "screenshot": "02-onboarding-light-desktop-links-preview.png"
+    },
+    {
+      "url": "http://127.0.0.1:8787/admin?onboarding=off",
+      "actions": [
+        {
+          "selectRoleOption": {
+            "trigger": {
+              "role": "combobox",
+              "name": "Farbmodus"
+            },
+            "option": "Dunkel"
+          }
+        },
+        {
+          "waitForTimeout": 300
+        }
+      ]
+    },
+    {
+      "url": "http://127.0.0.1:8787/admin?onboarding=force",
+      "actions": [
+        {
+          "resizeViewport": {
+            "width": 430,
+            "height": 932
+          }
+        },
+        {
+          "clickRole": {
+            "role": "button",
+            "name": "Weiter"
+          }
+        },
+        {
+          "clickRole": {
+            "role": "button",
+            "name": "Weiter"
+          }
+        },
+        {
+          "clickRole": {
+            "role": "button",
+            "name": "Weiter"
+          }
+        },
+        {
+          "waitForText": {
+            "text": "Links und QR-Codes"
+          }
+        },
+        {
+          "waitForTimeout": 300
+        }
+      ],
+      "screenshot": "03-onboarding-dark-mobile-links-preview.png"
+    }
+  ]
+}

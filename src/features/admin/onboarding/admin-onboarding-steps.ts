@@ -6,6 +6,14 @@ export type AdminOnboardingStep = {
   description: string;
   selector?: string;
   missingTargetHint?: string;
+  preview?: {
+    id: string;
+    selector: string;
+    eyebrow: string;
+    title: string;
+    description: string;
+    items?: string[];
+  };
 };
 
 export const ADMIN_ONBOARDING_STEPS: AdminOnboardingStep[] = [
@@ -14,6 +22,15 @@ export const ADMIN_ONBOARDING_STEPS: AdminOnboardingStep[] = [
     title: "Willkommen im Adminbereich",
     description:
       "Du siehst jetzt die wichtigsten Bereiche. Nach dieser Tour kannst du sofort mit echten Aufträgen starten.",
+    preview: {
+      id: "welcome",
+      selector: '[data-onboarding-preview="welcome"]',
+      eyebrow: "Vorschau",
+      title: "Orientierung im Adminbereich",
+      description:
+        "Die Einführung markiert nacheinander Farbmodus, Erstellung, neue Links und Tabelle, damit jeder Schritt einen klaren Fokuspunkt erhält.",
+      items: ["Farbmodus", "Proben erstellen", "Links und QR-Codes", "Proben-Tabelle"],
+    },
   },
   {
     id: "theme",
@@ -35,7 +52,17 @@ export const ADMIN_ONBOARDING_STEPS: AdminOnboardingStep[] = [
     description:
       "Nach der Erstellung findest du hier den Einmallink, Copy-Button und QR-Download je Probe.",
     selector: '[data-onboarding="new-links"]',
-    missingTargetHint: 'Dieser Bereich erscheint erst nach "Links erstellen".',
+    missingTargetHint:
+      'Dieser Bereich erscheint erst nach "Links erstellen". Bis dahin zeigen wir eine nicht-interaktive Vorschau.',
+    preview: {
+      id: "new-links",
+      selector: '[data-onboarding-preview="new-links"]',
+      eyebrow: "Vorschau",
+      title: "Neue Links und QR-Codes",
+      description:
+        'So sieht der Bereich nach "Links erstellen" aus: Link öffnen, Link kopieren und QR herunterladen bleiben danach direkt griffbereit.',
+      items: ["Formular öffnen", "Link kopieren", "QR herunterladen"],
+    },
   },
   {
     id: "table",
