@@ -79,51 +79,78 @@ export function AdminNewLinksCard({
 
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {createdItems.map((item) => (
-            <Card key={item.probe_id} size="sm" className="h-full">
-              <CardHeader>
+            <Card key={item.probe_id} size="sm" className="h-full border-border/80 bg-card/95">
+              <CardHeader className="space-y-3">
                 <CardTitle className="font-display text-lg">Probe {item.probe_number}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex min-h-20 items-center justify-center">
-                  {qrData[item.probe_id] ? (
-                    <img
-                      className="h-auto w-full max-w-[180px]"
-                      src={qrData[item.probe_id]}
-                      alt={`QR Probe ${item.probe_number}`}
-                    />
-                  ) : (
-                    <p className="text-xs text-muted-foreground">QR wird erstellt...</p>
-                  )}
+                <div className="rounded-lg border border-primary/15 bg-primary/8 px-3 py-2">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary/80">
+                    Nächster Schritt
+                  </p>
+                  <p className="mt-1 text-sm text-foreground">
+                    Öffnen Sie das Formular oder geben Sie Link und QR direkt weiter.
+                  </p>
                 </div>
-
-                <p className="mt-3 break-all text-xs text-muted-foreground">{item.token_url}</p>
-
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <Button
-                    type="button"
-                    onClick={() => void onCopyToClipboard(item.probe_id, item.token_url)}
-                  >
-                    <span className="inline-flex items-center gap-2">
-                      {copiedProbeId === item.probe_id ? <CheckIcon /> : <CopyIcon />}
-                      {copiedProbeId === item.probe_id ? "Kopiert" : "Link kopieren"}
-                    </span>
-                  </Button>
-
-                  {qrData[item.probe_id] && (
-                    <Button asChild variant="outline">
-                      <a
-                        download={`probe-${item.probe_number}-qr.png`}
-                        href={qrData[item.probe_id]}
-                      >
-                        QR herunterladen
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="grid items-start gap-3 [grid-template-columns:minmax(0,1fr)_6.5rem] sm:block">
+                  <div className="space-y-3">
+                    <Button asChild className="w-full justify-center">
+                      <a href={item.token_url} target="_blank" rel="noreferrer">
+                        Formular öffnen
                       </a>
                     </Button>
-                  )}
-                </div>
 
-                <p className="mt-3 text-[11px] text-muted-foreground">
-                  Erstellt: {formatDate(item.created_at)} | Ablauf: {formatDate(item.expire_by)}
-                </p>
+                    <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full justify-center sm:w-auto"
+                        onClick={() => void onCopyToClipboard(item.probe_id, item.token_url)}
+                      >
+                        <span className="inline-flex items-center gap-2">
+                          {copiedProbeId === item.probe_id ? <CheckIcon /> : <CopyIcon />}
+                          {copiedProbeId === item.probe_id ? "Kopiert" : "Link kopieren"}
+                        </span>
+                      </Button>
+
+                      {qrData[item.probe_id] && (
+                        <Button asChild variant="outline" className="w-full sm:w-auto">
+                          <a
+                            download={`probe-${item.probe_number}-qr.png`}
+                            href={qrData[item.probe_id]}
+                          >
+                            QR herunterladen
+                          </a>
+                        </Button>
+                      )}
+                    </div>
+
+                    <div className="rounded-lg border border-border/70 bg-muted/25 px-3 py-2">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                        Einmallink
+                      </p>
+                      <p className="mt-1 break-all text-xs text-muted-foreground">
+                        {item.token_url}
+                      </p>
+                    </div>
+
+                    <p className="text-[11px] text-muted-foreground">
+                      Erstellt: {formatDate(item.created_at)} | Ablauf: {formatDate(item.expire_by)}
+                    </p>
+                  </div>
+
+                  <div className="flex min-h-20 items-start justify-center sm:mt-0 sm:items-center">
+                    {qrData[item.probe_id] ? (
+                      <img
+                        className="h-auto w-full max-w-[104px] sm:max-w-[180px]"
+                        src={qrData[item.probe_id]}
+                        alt={`QR Probe ${item.probe_number}`}
+                      />
+                    ) : (
+                      <p className="text-xs text-muted-foreground">QR wird erstellt...</p>
+                    )}
+                  </div>
+                </div>
               </CardContent>
             </Card>
           ))}
