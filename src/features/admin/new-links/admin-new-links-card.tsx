@@ -83,47 +83,52 @@ export function AdminNewLinksCard({
               <CardHeader>
                 <CardTitle className="font-display text-lg">Probe {item.probe_number}</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="flex min-h-20 items-center justify-center">
-                  {qrData[item.probe_id] ? (
-                    <img
-                      className="h-auto w-full max-w-[180px]"
-                      src={qrData[item.probe_id]}
-                      alt={`QR Probe ${item.probe_number}`}
-                    />
-                  ) : (
-                    <p className="text-xs text-muted-foreground">QR wird erstellt...</p>
-                  )}
-                </div>
+              <CardContent className="space-y-3">
+                <div className="grid items-start gap-3 [grid-template-columns:minmax(0,1fr)_6.5rem] sm:block">
+                  <div className="space-y-3">
+                    <p className="break-all text-xs text-muted-foreground">{item.token_url}</p>
 
-                <p className="mt-3 break-all text-xs text-muted-foreground">{item.token_url}</p>
-
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <Button
-                    type="button"
-                    onClick={() => void onCopyToClipboard(item.probe_id, item.token_url)}
-                  >
-                    <span className="inline-flex items-center gap-2">
-                      {copiedProbeId === item.probe_id ? <CheckIcon /> : <CopyIcon />}
-                      {copiedProbeId === item.probe_id ? "Kopiert" : "Link kopieren"}
-                    </span>
-                  </Button>
-
-                  {qrData[item.probe_id] && (
-                    <Button asChild variant="outline">
-                      <a
-                        download={`probe-${item.probe_number}-qr.png`}
-                        href={qrData[item.probe_id]}
+                    <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                      <Button
+                        type="button"
+                        className="w-full justify-center sm:w-auto"
+                        onClick={() => void onCopyToClipboard(item.probe_id, item.token_url)}
                       >
-                        QR herunterladen
-                      </a>
-                    </Button>
-                  )}
-                </div>
+                        <span className="inline-flex items-center gap-2">
+                          {copiedProbeId === item.probe_id ? <CheckIcon /> : <CopyIcon />}
+                          {copiedProbeId === item.probe_id ? "Kopiert" : "Link kopieren"}
+                        </span>
+                      </Button>
 
-                <p className="mt-3 text-[11px] text-muted-foreground">
-                  Erstellt: {formatDate(item.created_at)} | Ablauf: {formatDate(item.expire_by)}
-                </p>
+                      {qrData[item.probe_id] && (
+                        <Button asChild variant="outline" className="w-full sm:w-auto">
+                          <a
+                            download={`probe-${item.probe_number}-qr.png`}
+                            href={qrData[item.probe_id]}
+                          >
+                            QR herunterladen
+                          </a>
+                        </Button>
+                      )}
+                    </div>
+
+                    <p className="text-[11px] text-muted-foreground">
+                      Erstellt: {formatDate(item.created_at)} | Ablauf: {formatDate(item.expire_by)}
+                    </p>
+                  </div>
+
+                  <div className="flex min-h-20 items-start justify-center sm:mt-0 sm:items-center">
+                    {qrData[item.probe_id] ? (
+                      <img
+                        className="h-auto w-full max-w-[104px] sm:max-w-[180px]"
+                        src={qrData[item.probe_id]}
+                        alt={`QR Probe ${item.probe_number}`}
+                      />
+                    ) : (
+                      <p className="text-xs text-muted-foreground">QR wird erstellt...</p>
+                    )}
+                  </div>
+                </div>
               </CardContent>
             </Card>
           ))}
