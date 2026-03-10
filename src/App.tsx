@@ -867,7 +867,7 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
                     <TableHead className="sticky top-0 z-20 bg-muted">Erstellt</TableHead>
                     <TableHead className="sticky top-0 z-20 bg-muted">Eingereicht</TableHead>
                     <TableHead className="sticky top-0 z-20 bg-muted">Ablauf</TableHead>
-                    <TableHead className="shadow-sticky-edge sticky top-0 right-0 z-30 bg-muted">
+                    <TableHead className="shadow-sticky-edge sticky top-0 right-0 z-30 w-28 bg-muted text-center">
                       Bild
                     </TableHead>
                   </TableRow>
@@ -974,13 +974,15 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
                           <TableCell
                             className={cn("shadow-sticky-edge sticky right-0 align-top", rowBg)}
                           >
-                            {probe.image_url ? (
-                              <Button type="button" onClick={() => openPreview(probe)}>
-                                Anzeigen
-                              </Button>
-                            ) : (
-                              "-"
-                            )}
+                            <div className="flex min-h-7 items-center justify-center">
+                              {probe.image_url ? (
+                                <Button type="button" onClick={() => openPreview(probe)}>
+                                  Anzeigen
+                                </Button>
+                              ) : (
+                                <span className="text-muted-foreground">-</span>
+                              )}
+                            </div>
                           </TableCell>
                         </TableRow>
                       );

@@ -35,7 +35,7 @@
 }
 
 @utility shadow-sticky-edge {
-  box-shadow: -8px 0 12px -12px rgba(15, 23, 42, 0.6);
+  box-shadow: -6px 0 10px -10px rgba(15, 23, 42, 0.32);
 }
 
 @utility shadow-spotlight-frame {
