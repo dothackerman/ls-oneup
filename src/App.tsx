@@ -1,6 +1,16 @@
 import type { FormEvent } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as QRCode from "qrcode";
+import { AdminNewLinksCard } from "./features/admin/new-links/admin-new-links-card";
+import { AdminOnboardingDialog } from "./features/admin/onboarding/admin-onboarding-dialog";
+import { useAdminOnboarding } from "./features/admin/onboarding/use-admin-onboarding";
+import {
+  FarmerSubmissionForm,
+  moistureLabels,
+  type SoilMoistureValue,
+  type VitalityValue,
+  vitalityLabels,
+} from "./features/farmer/form/farmer-submission-form";
 import { cn } from "@shared/lib/utils";
 import { Alert, AlertDescription } from "@shared/components/ui/alert";
 import { Badge } from "@shared/components/ui/badge";
@@ -22,7 +32,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@shared/components/ui/select";
-import { SpotlightOverlay } from "@shared/components/patterns/spotlight-overlay";
 import {
   Table,
   TableBody,
@@ -33,8 +42,6 @@ import {
 } from "@shared/components/ui/table";
 import "./styles.css";
 
-type VitalityValue = "normal" | "schwach_langsam" | "krankheit_oder_anderes_problem";
-type SoilMoistureValue = "sehr_trocken" | "trocken" | "normal" | "nass" | "sehr_nass";
 type AdminThemePreference = "system" | "light" | "dark";
 
 type AdminProbe = {
@@ -78,67 +85,6 @@ type ApiError = {
 
 const ADMIN_PAGE_SIZE = 20;
 const ADMIN_THEME_STORAGE_KEY = "ls-oneup-admin-theme";
-const ADMIN_ONBOARDING_STORAGE_KEY = "ls-oneup-admin-onboarding-v1";
-
-type AdminOnboardingStep = {
-  id: string;
-  title: string;
-  description: string;
-  selector?: string;
-  missingTargetHint?: string;
-};
-
-const ADMIN_ONBOARDING_STEPS: AdminOnboardingStep[] = [
-  {
-    id: "welcome",
-    title: "Willkommen im Adminbereich",
-    description:
-      "Du siehst jetzt die wichtigsten Bereiche. Nach dieser Tour kannst du sofort mit echten Aufträgen starten.",
-  },
-  {
-    id: "theme",
-    title: "Farbmodus",
-    description:
-      "Hier stellst du den Admin-Farbmodus auf System, Hell oder Dunkel. Diese Einstellung gilt nur für den Adminbereich.",
-    selector: '[data-onboarding="theme-toggle"]',
-  },
-  {
-    id: "create",
-    title: "Proben erstellen",
-    description:
-      'Erfasse Kunde, Auftragsnummer und Anzahl Proben. Mit "Links erstellen" wird pro Probe ein Einmallink erzeugt.',
-    selector: '[data-onboarding="create-probes"]',
-  },
-  {
-    id: "links",
-    title: "Links und QR-Codes",
-    description:
-      "Nach der Erstellung findest du hier den Einmallink, Copy-Button und QR-Download je Probe.",
-    selector: '[data-onboarding="new-links"]',
-    missingTargetHint: 'Dieser Bereich erscheint erst nach "Links erstellen".',
-  },
-  {
-    id: "table",
-    title: "Proben-Tabelle",
-    description:
-      "Hier siehst du Status, GPS, Kultur, Zeitstempel und Bildzugriff. Die Tabelle ist horizontal und vertikal scrollbar.",
-    selector: '[data-onboarding="probe-table"]',
-  },
-  {
-    id: "override",
-    title: "Kultur überschreiben",
-    description:
-      "Wenn eine Probe eingereicht ist, kannst du den Kulturnamen bearbeiten. Beim Speichern übernimmt der Admin die Verantwortung.",
-    selector: '[data-onboarding="probe-table"]',
-  },
-  {
-    id: "farmer-flow",
-    title: "Gesamtablauf",
-    description:
-      'Der Farmer öffnet den Link, erfasst Pflichtfelder, GPS und Bild und sendet einmalig ab. Danach siehst du den Status "eingereicht" und kannst die Daten prüfen.',
-    selector: '[data-onboarding="probe-table"]',
-  },
-];
 
 function formatDate(value: string | null): string {
   if (!value) {
@@ -200,41 +146,6 @@ function EditIcon(): JSX.Element {
     >
       <path d="M12 20h9" />
       <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
-    </svg>
-  );
-}
-
-function CopyIcon(): JSX.Element {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      className="h-4 w-4"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-    </svg>
-  );
-}
-
-function CheckIcon(): JSX.Element {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      className="h-4 w-4"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m5 13 4 4L19 7" />
     </svg>
   );
 }
@@ -351,11 +262,21 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
   const [busy, setBusy] = useState(false);
   const [copiedProbeId, setCopiedProbeId] = useState<string | null>(null);
   const copyFeedbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [onboardingStepIndex, setOnboardingStepIndex] = useState<number | null>(null);
-  const [onboardingTargetFound, setOnboardingTargetFound] = useState(true);
 
   const qrData = useQrData(createdItems);
   const previewProbe = probes.find((probe) => probe.probe_id === previewProbeId) ?? null;
+  const {
+    onboardingStepIndex,
+    onboardingStep,
+    onboardingTargetFound,
+    markOnboardingCompleted,
+    startOnboarding,
+    showPreviousOnboardingStep,
+    showNextOnboardingStep,
+  } = useAdminOnboarding({
+    createdItemsLength: createdItems.length,
+    probesLength: probes.length,
+  });
 
   const totalPages = Math.max(1, Math.ceil(probes.length / ADMIN_PAGE_SIZE));
   const paginatedProbes = useMemo(() => {
@@ -376,25 +297,6 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
         clearTimeout(copyFeedbackTimer.current);
       }
     };
-  }, []);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const mode = params.get("onboarding");
-
-    if (mode === "off") {
-      return;
-    }
-
-    if (mode === "force") {
-      setOnboardingStepIndex(0);
-      return;
-    }
-
-    const stored = window.localStorage.getItem(ADMIN_ONBOARDING_STORAGE_KEY);
-    if (stored !== "completed") {
-      setOnboardingStepIndex(0);
-    }
   }, []);
 
   async function loadProbes({ resetPage = false }: { resetPage?: boolean } = {}): Promise<void> {
@@ -537,66 +439,6 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
     setPreviewLoading(true);
     setPreviewError(null);
   }
-
-  function markOnboardingCompleted(): void {
-    window.localStorage.setItem(ADMIN_ONBOARDING_STORAGE_KEY, "completed");
-    setOnboardingStepIndex(null);
-  }
-
-  function startOnboarding(): void {
-    setOnboardingStepIndex(0);
-  }
-
-  function showPreviousOnboardingStep(): void {
-    setOnboardingStepIndex((prev) => {
-      if (prev === null) {
-        return prev;
-      }
-      return Math.max(0, prev - 1);
-    });
-  }
-
-  function showNextOnboardingStep(): void {
-    setOnboardingStepIndex((prev) => {
-      if (prev === null) {
-        return prev;
-      }
-      if (prev >= ADMIN_ONBOARDING_STEPS.length - 1) {
-        return null;
-      }
-      return prev + 1;
-    });
-  }
-
-  const onboardingStep =
-    onboardingStepIndex === null ? null : ADMIN_ONBOARDING_STEPS[onboardingStepIndex];
-
-  useEffect(() => {
-    if (!onboardingStep) {
-      return;
-    }
-
-    if (!onboardingStep.selector) {
-      setOnboardingTargetFound(true);
-      return;
-    }
-
-    const target = document.querySelector(onboardingStep.selector);
-    setOnboardingTargetFound(Boolean(target));
-
-    if (target && target instanceof HTMLElement) {
-      target.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
-      target.style.position = "relative";
-      target.style.zIndex = "45";
-    }
-
-    return () => {
-      if (target && target instanceof HTMLElement) {
-        target.style.position = "";
-        target.style.zIndex = "";
-      }
-    };
-  }, [onboardingStep, createdItems.length, probes.length]);
 
   const previewImageUrl = previewProbe?.image_url
     ? buildImagePreviewUrl(previewProbe.image_url, previewRetryNonce)
@@ -756,75 +598,13 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
         </CardContent>
       </Card>
 
-      {createdItems.length > 0 && (
-        <Card data-onboarding="new-links">
-          <CardHeader>
-            <CardTitle className="font-display text-xl">Neue Links und QR-Codes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Alert className="border-amber-300 bg-amber-500/10 text-amber-900 dark:text-amber-200">
-              <AlertDescription>
-                QR-Codes werden nicht persistiert. Bitte Link oder QR sofort kopieren bzw.
-                herunterladen. Nach Seitenaktualisierung verschwindet die Darstellung.
-              </AlertDescription>
-            </Alert>
-
-            <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {createdItems.map((item) => (
-                <Card key={item.probe_id} size="sm" className="h-full">
-                  <CardHeader>
-                    <CardTitle className="font-display text-lg">
-                      Probe {item.probe_number}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex min-h-20 items-center justify-center">
-                      {qrData[item.probe_id] ? (
-                        <img
-                          className="h-auto w-full max-w-[180px]"
-                          src={qrData[item.probe_id]}
-                          alt={`QR Probe ${item.probe_number}`}
-                        />
-                      ) : (
-                        <p className="text-xs text-muted-foreground">QR wird erstellt...</p>
-                      )}
-                    </div>
-
-                    <p className="mt-3 break-all text-xs text-muted-foreground">{item.token_url}</p>
-
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <Button
-                        type="button"
-                        onClick={() => void copyToClipboard(item.probe_id, item.token_url)}
-                      >
-                        <span className="inline-flex items-center gap-2">
-                          {copiedProbeId === item.probe_id ? <CheckIcon /> : <CopyIcon />}
-                          {copiedProbeId === item.probe_id ? "Kopiert" : "Link kopieren"}
-                        </span>
-                      </Button>
-
-                      {qrData[item.probe_id] && (
-                        <Button asChild variant="outline">
-                          <a
-                            download={`probe-${item.probe_number}-qr.png`}
-                            href={qrData[item.probe_id]}
-                          >
-                            QR herunterladen
-                          </a>
-                        </Button>
-                      )}
-                    </div>
-
-                    <p className="mt-3 text-[11px] text-muted-foreground">
-                      Erstellt: {formatDate(item.created_at)} | Ablauf: {formatDate(item.expire_by)}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      <AdminNewLinksCard
+        createdItems={createdItems}
+        qrData={qrData}
+        copiedProbeId={copiedProbeId}
+        onCopyToClipboard={copyToClipboard}
+        formatDate={formatDate}
+      />
 
       <Card data-onboarding="probe-table">
         <CardHeader>
@@ -1069,84 +849,17 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
         )}
       </Dialog>
 
-      <Dialog open={Boolean(onboardingStep)}>
-        {onboardingStep && (
-          <>
-            <SpotlightOverlay selector={onboardingStep.selector} />
-            <DialogContent
-              showCloseButton={false}
-              hideOverlay
-              className="max-w-xl"
-              onInteractOutside={(event) => event.preventDefault()}
-              onEscapeKeyDown={(event) => event.preventDefault()}
-            >
-              <div className="space-y-3">
-                <DialogTitle className="font-display text-xl">Admin Einführung</DialogTitle>
-                <p className="text-xs text-muted-foreground">
-                  Schritt {onboardingStepIndex! + 1} von {ADMIN_ONBOARDING_STEPS.length}
-                </p>
-
-                <div className="rounded-lg border border-border/70 bg-muted/40 p-3">
-                  <p className="font-medium text-foreground">{onboardingStep.title}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{onboardingStep.description}</p>
-                </div>
-
-                {onboardingStep.selector && !onboardingTargetFound && (
-                  <Alert className="border-amber-300 bg-amber-500/10 text-amber-900 dark:text-amber-200">
-                    <AlertDescription>
-                      {onboardingStep.missingTargetHint ||
-                        "Der markierte Bereich ist aktuell nicht sichtbar."}
-                    </AlertDescription>
-                  </Alert>
-                )}
-
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={showPreviousOnboardingStep}
-                      disabled={onboardingStepIndex === 0}
-                    >
-                      Zurück
-                    </Button>
-                    <Button type="button" variant="outline" onClick={markOnboardingCompleted}>
-                      Überspringen
-                    </Button>
-                  </div>
-
-                  {onboardingStepIndex === ADMIN_ONBOARDING_STEPS.length - 1 ? (
-                    <Button type="button" onClick={markOnboardingCompleted}>
-                      Abschliessen
-                    </Button>
-                  ) : (
-                    <Button type="button" onClick={showNextOnboardingStep}>
-                      Weiter
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </DialogContent>
-          </>
-        )}
-      </Dialog>
+      <AdminOnboardingDialog
+        onboardingStepIndex={onboardingStepIndex}
+        onboardingStep={onboardingStep}
+        onboardingTargetFound={onboardingTargetFound}
+        onPrevious={showPreviousOnboardingStep}
+        onSkip={markOnboardingCompleted}
+        onNext={showNextOnboardingStep}
+      />
     </main>
   );
 }
-
-const vitalityLabels: Record<VitalityValue, string> = {
-  normal: "normal",
-  schwach_langsam: "schwach / langsam",
-  krankheit_oder_anderes_problem: "Krankheit oder anderes Problem",
-};
-
-const moistureLabels: Record<SoilMoistureValue, string> = {
-  sehr_trocken: "sehr trocken",
-  trocken: "trocken",
-  normal: "normal",
-  nass: "nass",
-  sehr_nass: "sehr nass",
-};
 
 async function maybeCompress(file: File): Promise<File> {
   if (file.size <= 2 * 1024 * 1024 || !["image/jpeg", "image/png"].includes(file.type)) {
@@ -1391,114 +1104,21 @@ function FarmerPage({ token }: { token: string }): JSX.Element {
       )}
 
       {lookup && (
-        <Card>
-          <CardHeader>
-            <CardDescription>{identityLine}</CardDescription>
-          </CardHeader>
-
-          <CardContent>
-            <form className="grid gap-4" onSubmit={handleSubmit}>
-              <div className="grid gap-1.5">
-                <Label htmlFor="crop-name">Kulturname</Label>
-                <Input
-                  id="crop-name"
-                  value={cropName}
-                  onChange={(event) => setCropName(event.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="grid gap-1.5">
-                <Label htmlFor="vitality-select">Pflanzenvitalität</Label>
-                <Select
-                  value={vitality}
-                  onValueChange={(value) => setVitality(value as VitalityValue)}
-                >
-                  <SelectTrigger
-                    id="vitality-select"
-                    aria-label="Pflanzenvitalität"
-                    className="h-9 w-full"
-                  >
-                    <SelectValue placeholder="Bitte wählen" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(vitalityLabels).map(([value, label]) => (
-                      <SelectItem key={value} value={value}>
-                        {label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="grid gap-1.5">
-                <Label htmlFor="soil-select">Bodenfeuchte</Label>
-                <Select
-                  value={soilMoisture}
-                  onValueChange={(value) => setSoilMoisture(value as SoilMoistureValue)}
-                >
-                  <SelectTrigger id="soil-select" aria-label="Bodenfeuchte" className="h-9 w-full">
-                    <SelectValue placeholder="Bitte wählen" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(moistureLabels).map(([value, label]) => (
-                      <SelectItem key={value} value={value}>
-                        {label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="grid gap-1.5">
-                <Label htmlFor="image-file">Bild (JPEG oder PNG)</Label>
-                <Input
-                  id="image-file"
-                  type="file"
-                  accept="image/jpeg,image/png"
-                  onChange={(event) => {
-                    const file = event.target.files?.[0] ?? null;
-                    setImageFile(file);
-                  }}
-                  required
-                />
-              </div>
-
-              <div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => void captureGps()}
-                  disabled={gpsLoading}
-                >
-                  {gpsLoading ? (
-                    <span className="inline-flex items-center gap-2">
-                      <span
-                        className="h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent"
-                        aria-hidden="true"
-                      />
-                      GPS wird erfasst...
-                    </span>
-                  ) : (
-                    "GPS erfassen"
-                  )}
-                </Button>
-
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {gpsLoading
-                    ? "Standort wird ermittelt..."
-                    : gps
-                      ? `GPS erfasst: ${gps.lat.toFixed(5)}, ${gps.lon.toFixed(5)}`
-                      : "Noch kein GPS erfasst."}
-                </p>
-              </div>
-
-              <Button type="submit" disabled={!canSubmit}>
-                Absenden
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+        <FarmerSubmissionForm
+          identityLine={identityLine}
+          cropName={cropName}
+          vitality={vitality}
+          soilMoisture={soilMoisture}
+          gpsLoading={gpsLoading}
+          gps={gps}
+          canSubmit={canSubmit}
+          onSubmit={handleSubmit}
+          onCropNameChange={setCropName}
+          onVitalityChange={setVitality}
+          onSoilMoistureChange={setSoilMoisture}
+          onImageFileChange={setImageFile}
+          onCaptureGps={captureGps}
+        />
       )}
     </main>
   );
