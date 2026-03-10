@@ -64,7 +64,7 @@ test("E2E-ADMIN-010 onboarding spotlight highlights the current feature", async 
 
   const dialog = page.getByRole("dialog", { name: "Admin Einführung" });
   await expect(dialog).toBeVisible();
-  await expect(page.locator("[data-slot='spotlight-overlay']")).toHaveCount(0);
+  await expect(page.locator("[data-slot='spotlight-overlay']")).toBeVisible();
 
   await dialog.getByRole("button", { name: "Weiter" }).click();
   await expect(dialog).toContainText("Schritt 2 von");

@@ -11,7 +11,7 @@ type SpotlightOverlayProps = {
   selector?: string;
 };
 
-const SPOTLIGHT_PADDING = 8;
+const SPOTLIGHT_PADDING = 14;
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
@@ -59,7 +59,16 @@ export function SpotlightOverlay({ selector }: SpotlightOverlayProps): JSX.Eleme
     };
   }, [selector]);
 
-  if (!selector || !rect) {
+  if (!selector) {
+    return (
+      <div
+        data-slot="spotlight-overlay"
+        className="fixed inset-0 z-40 bg-black/45 supports-backdrop-filter:backdrop-blur-xs"
+      />
+    );
+  }
+
+  if (!rect) {
     return null;
   }
 
