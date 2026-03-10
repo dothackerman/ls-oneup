@@ -45,6 +45,10 @@ async function clickRoleTarget(page, target) {
   await locator.click();
 }
 
+async function resolveRoleLocator(page, target) {
+  return page.getByRole(target.role, { name: target.name });
+}
+
 async function runAction(page, action) {
   if (action.goto) {
     await page.goto(action.goto.url, { waitUntil: action.goto.waitUntil ?? "networkidle" });
@@ -52,6 +56,48 @@ async function runAction(page, action) {
   }
   if (action.clickRole) {
     await clickRoleTarget(page, action.clickRole);
+    return;
+  }
+  if (action.fillLabel) {
+    await page.getByLabel(action.fillLabel.label).fill(action.fillLabel.value);
+    return;
+  }
+  if (action.clickLabel) {
+    await page.getByLabel(action.clickLabel.label).click();
+    return;
+  }
+  if (action.selectRoleOption) {
+    const trigger = await resolveRoleLocator(page, action.selectRoleOption.trigger);
+    await trigger.click();
+    await page.getByRole("option", { name: action.selectRoleOption.option }).click();
+    return;
+  }
+  if (action.pressKey) {
+    await page.keyboard.press(action.pressKey.key);
+    return;
+  }
+  if (action.resizeViewport) {
+    await page.setViewportSize({
+      width: Number(action.resizeViewport.width),
+      height: Number(action.resizeViewport.height),
+    });
+    return;
+  }
+  if (action.waitForRole) {
+    const locator = await resolveRoleLocator(page, action.waitForRole);
+    await locator.waitFor({ state: action.waitForRole.state ?? "visible" });
+    return;
+  }
+  if (action.waitForText) {
+    await page.getByText(action.waitForText.text, { exact: Boolean(action.waitForText.exact) }).waitFor({
+      state: action.waitForText.state ?? "visible",
+    });
+    return;
+  }
+  if (action.waitForURL) {
+    await page.waitForURL(action.waitForURL.pattern, {
+      waitUntil: action.waitForURL.waitUntil ?? "networkidle",
+    });
     return;
   }
   if (action.waitForTimeout) {

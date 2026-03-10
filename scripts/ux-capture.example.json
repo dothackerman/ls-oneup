@@ -22,6 +22,41 @@
         }
       ],
       "screenshot": "onboarding-step2.png"
+    },
+    {
+      "url": "http://127.0.0.1:8787/admin?onboarding=off",
+      "actions": [
+        {
+          "fillLabel": {
+            "label": "Kunde",
+            "value": "UX Capture Kunde"
+          }
+        },
+        {
+          "fillLabel": {
+            "label": "Auftragsnummer",
+            "value": "UX-CAPTURE-1"
+          }
+        },
+        {
+          "fillLabel": {
+            "label": "Anzahl Proben",
+            "value": "2"
+          }
+        },
+        {
+          "clickRole": {
+            "role": "button",
+            "name": "Links erstellen"
+          }
+        },
+        {
+          "waitForText": {
+            "text": "Neue Links und QR-Codes"
+          }
+        }
+      ],
+      "screenshot": "admin-populated.png"
     }
   ]
 }

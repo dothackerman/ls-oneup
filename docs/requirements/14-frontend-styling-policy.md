@@ -76,7 +76,34 @@ Before merging frontend styling work, confirm:
 Supported actions:
 1. `goto`
 2. `clickRole`
-3. `waitForTimeout`
-4. `screenshot`
+3. `fillLabel`
+4. `clickLabel`
+5. `selectRoleOption`
+6. `pressKey`
+7. `resizeViewport`
+8. `waitForRole`
+9. `waitForText`
+10. `waitForURL`
+11. `waitForTimeout`
+12. `screenshot`
 
 See `scripts/ux-capture.example.json` for a working example.
+
+### What Counts as Visual UX Validation
+Another agent should treat UX validation as complete only when all of the following are true:
+1. The affected state was reproduced in a real browser through the UI or other approved browser-driven setup.
+2. Screenshots were captured for the relevant viewport(s) and state(s).
+3. The screenshots were visually inspected against the stated UX requirement.
+4. Functional checks still passed after the change.
+
+Functional test pass status alone is not UX validation.
+
+### Minimum Expectation by UX Change Type
+1. Layout/alignment changes
+   - capture the affected area in the target viewport
+2. Responsive changes
+   - capture at least one desktop and one narrow/mobile viewport
+3. State-driven UI
+   - capture the default state and the changed/active/error/populated state
+4. Guided flows such as onboarding
+   - capture each affected step, not just the first screen

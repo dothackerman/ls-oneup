@@ -35,6 +35,7 @@ This file is orchestration-only:
 4. If all green: commit and push.
 5. One commit per requirement-linked slice after green checks.
 6. If a step fails: do not commit; fix and rerun from the failed step.
+7. For UX work, "green" includes screenshot-based visual inspection per `docs/requirements/14-frontend-styling-policy.md`, not just passing functional tests.
 
 ## Subagent Structure (Default)
 1. `research-subagent`
