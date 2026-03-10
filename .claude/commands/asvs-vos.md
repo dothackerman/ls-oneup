@@ -21,14 +21,9 @@ If not Opus 4.6, stop and output exactly:
 npm run asvs:run
 ```
 
-3. Summarize results:
-   - upstream commit SHA
-   - source blob SHA
-   - checklist item count
-   - unknown ID count
-   - missing reasoning count
-   - counts by status/severity
+3. Report the gate summary output directly (the gate script emits a structured summary block — no manual JSON parsing needed).
 4. If gate fails, report exact failure and stop.
+5. If gate passes, proceed with agent triage of remaining `todo` items per SKILL.md instructions.
 
 ## Output artifacts
 

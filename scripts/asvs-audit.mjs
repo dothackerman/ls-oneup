@@ -52,6 +52,67 @@ const STOPWORDS = new Set([
   "use",
 ]);
 
+// ---------------------------------------------------------------------------
+// Tech-stack pre-filter: auto-resolve not_applicable for absent technologies.
+//
+// Each rule defines:
+//   - tech: human-readable technology name
+//   - deps: npm dependency names whose presence indicates the tech is used
+//   - code: code-level markers (class names, API calls) to search for
+//   - chapters: ASVS chapter prefixes whose controls require this tech
+//   - controlPattern: optional regex matching requirement_id for finer control
+//
+// A control is marked not_applicable ONLY when its required technology is
+// absent from BOTH dependencies AND code. This is intentionally conservative.
+// ---------------------------------------------------------------------------
+const TECH_ABSENCE_RULES = [
+  {
+    tech: "WebRTC",
+    deps: ["simple-peer", "webrtc", "mediasoup", "peerjs", "wrtc", "@mediasoup/client"],
+    code: ["RTCPeerConnection", "RTCDataChannel", "getUserMedia", "RTCSessionDescription"],
+    chapters: ["V17"],
+  },
+  {
+    tech: "GraphQL",
+    deps: ["graphql", "apollo-server", "@apollo/server", "mercurius", "graphql-yoga", "type-graphql"],
+    code: ["GraphQLSchema", "buildSchema", "graphql(", "gql`"],
+    chapters: [],
+    controlPattern: /graphql/i,
+  },
+  {
+    tech: "gRPC",
+    deps: ["@grpc/grpc-js", "@grpc/proto-loader", "grpc", "protobufjs"],
+    code: ["grpc.Server", "loadPackageDefinition"],
+    chapters: [],
+    controlPattern: /grpc|protobuf/i,
+  },
+  {
+    tech: "SOAP",
+    deps: ["soap", "strong-soap", "node-soap"],
+    code: ["soap.createClient", "wsdl"],
+    chapters: [],
+    controlPattern: /\bsoap\b/i,
+  },
+  {
+    tech: "LDAP",
+    deps: ["ldapjs", "ldapts", "activedirectory2"],
+    code: ["ldap.createClient", "LDAPClient"],
+    chapters: [],
+    controlPattern: /\bldap\b/i,
+  },
+  {
+    tech: "SAML",
+    deps: ["saml2-js", "passport-saml", "@node-saml/passport-saml", "samlify"],
+    code: ["SAMLResponse", "SAMLRequest", "samlp://"],
+    chapters: [],
+    controlPattern: /\bsaml\b/i,
+  },
+];
+
+// ---------------------------------------------------------------------------
+// File walking & indexing (unchanged from original)
+// ---------------------------------------------------------------------------
+
 async function walk(dir) {
   const out = [];
   let entries = [];
@@ -129,6 +190,66 @@ function findReferences(index, keywords) {
   }
   return refs;
 }
+
+// ---------------------------------------------------------------------------
+// Tech-stack detection
+// ---------------------------------------------------------------------------
+
+async function detectTechStack(fileIndex) {
+  // 1. Read package.json dependencies
+  let allDeps = new Set();
+  try {
+    const pkg = JSON.parse(await fs.readFile(path.join(ROOT, "package.json"), "utf8"));
+    for (const name of Object.keys(pkg.dependencies || {})) allDeps.add(name);
+    for (const name of Object.keys(pkg.devDependencies || {})) allDeps.add(name);
+  } catch {
+    // no package.json — skip dep detection
+  }
+
+  // 2. Build flat code corpus for marker search (join all indexed lines)
+  const codeCorpus = fileIndex.map((f) => f.lines.join("\n")).join("\n");
+
+  // 3. Evaluate each rule
+  const absentTech = new Map(); // tech name → reason string
+  for (const rule of TECH_ABSENCE_RULES) {
+    const hasDep = rule.deps.some((d) => allDeps.has(d));
+    const hasCode = rule.code.some((marker) => codeCorpus.includes(marker));
+
+    if (!hasDep && !hasCode) {
+      absentTech.set(
+        rule.tech,
+        `No ${rule.tech} dependencies (checked: ${rule.deps.join(", ")}) or code markers (checked: ${rule.code.join(", ")}) detected in codebase.`,
+      );
+    }
+  }
+
+  return absentTech;
+}
+
+function checkTechAbsence(item, absentTech) {
+  const chapterPrefix = item.requirement_id.split(".")[0]; // e.g. "V17"
+  const controlText = `${item.requirement_id} ${item.chapter} ${item.title}`;
+
+  for (const rule of TECH_ABSENCE_RULES) {
+    if (!absentTech.has(rule.tech)) continue;
+
+    // Chapter-level match
+    if (rule.chapters.includes(chapterPrefix)) {
+      return absentTech.get(rule.tech);
+    }
+
+    // Control-level pattern match
+    if (rule.controlPattern && rule.controlPattern.test(controlText)) {
+      return absentTech.get(rule.tech);
+    }
+  }
+
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// Delta & rendering (unchanged from original)
+// ---------------------------------------------------------------------------
 
 function buildDelta(previous, current) {
   const prevById = new Map((previous || []).map((x) => [x.requirement_id, x]));
@@ -228,6 +349,10 @@ function renderHuman(metadata, checklist) {
   return `${head.join("\n")}\n${sevRows.join("\n")}\n${table.join("\n")}`;
 }
 
+// ---------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------
+
 async function main() {
   const raw = await fs.readFile(MACHINE_PATH, "utf8");
   const machine = JSON.parse(raw);
@@ -236,10 +361,38 @@ async function main() {
   const metadata = machine?.metadata ?? {};
 
   const fileIndex = await indexFiles();
+  const absentTech = await detectTechStack(fileIndex);
+
+  if (absentTech.size > 0) {
+    console.log(`Tech-stack pre-filter: ${absentTech.size} absent technologies detected:`);
+    for (const [tech] of absentTech) {
+      console.log(`  - ${tech}`);
+    }
+  }
+
   await fs.writeFile(FINDINGS_PATH, "", "utf8");
 
+  let preFilterCount = 0;
   const audited = [];
   for (const item of checklist) {
+    // Pre-filter: check if control targets an absent technology
+    const absenceReason = checkTechAbsence(item, absentTech);
+    if (absenceReason) {
+      const row = {
+        ...item,
+        status: "not_applicable",
+        severity: "none",
+        reasoning: absenceReason,
+        code_references: [],
+        last_audited_at: new Date().toISOString(),
+      };
+      audited.push(row);
+      await fs.appendFile(FINDINGS_PATH, `${JSON.stringify(row)}\n`, "utf8");
+      preFilterCount += 1;
+      continue;
+    }
+
+    // Standard keyword-level audit for remaining controls
     const keywords = extractKeywords(item);
     const refs = findReferences(fileIndex, keywords);
 
@@ -271,6 +424,7 @@ async function main() {
       ...metadata,
       last_audited_at: new Date().toISOString(),
       audited_item_count: audited.length,
+      pre_filtered_count: preFilterCount,
     },
     checklist: audited,
   };
@@ -282,7 +436,7 @@ async function main() {
   await fs.writeFile(DELTA_JSON_PATH, `${JSON.stringify(delta, null, 2)}\n`, "utf8");
   await fs.writeFile(DELTA_MD_PATH, `${renderDeltaMarkdown(delta)}\n`, "utf8");
 
-  console.log(`ASVS audit complete: ${audited.length} controls evaluated.`);
+  console.log(`ASVS audit complete: ${audited.length} controls evaluated, ${preFilterCount} auto-resolved as not_applicable.`);
 }
 
 main().catch((err) => {
