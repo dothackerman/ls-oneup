@@ -1,0 +1,81 @@
+{
+  "browser": "chromium",
+  "viewport": {
+    "width": 430,
+    "height": 932
+  },
+  "steps": [
+    {
+      "url": "http://127.0.0.1:8787/admin?onboarding=off",
+      "actions": [
+        {
+          "fillLabel": {
+            "label": "Kunde",
+            "value": "UX Lane C Kunde"
+          }
+        },
+        {
+          "fillLabel": {
+            "label": "Auftragsnummer",
+            "value": "UX-LANE-C-1"
+          }
+        },
+        {
+          "fillLabel": {
+            "label": "Anzahl Proben",
+            "value": "1"
+          }
+        },
+        {
+          "clickRole": {
+            "role": "button",
+            "name": "Links erstellen"
+          }
+        },
+        {
+          "waitForText": {
+            "text": "Neue Links und QR-Codes"
+          }
+        },
+        {
+          "waitForTimeout": 300
+        }
+      ],
+      "screenshot": "01-admin-generated-mobile.png"
+    },
+    {
+      "url": "http://127.0.0.1:8787/p/__TOKEN__",
+      "actions": [
+        {
+          "resizeViewport": {
+            "width": 1280,
+            "height": 900
+          }
+        },
+        {
+          "waitForText": {
+            "text": "Probe erfassen"
+          }
+        },
+        {
+          "waitForTimeout": 300
+        }
+      ],
+      "screenshot": "02-farmer-desktop.png"
+    },
+    {
+      "actions": [
+        {
+          "resizeViewport": {
+            "width": 430,
+            "height": 932
+          }
+        },
+        {
+          "waitForTimeout": 300
+        }
+      ],
+      "screenshot": "03-farmer-mobile.png"
+    }
+  ]
+}
