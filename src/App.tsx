@@ -853,14 +853,14 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
 
           <div className="overflow-hidden rounded-lg border border-border/70">
             <div data-testid="admin-table-scroll" className="max-h-[65vh] overflow-auto">
-              <Table className="min-w-[1380px] border-collapse">
+              <Table className="min-w-[1440px] border-collapse">
                 <TableHeader>
                   <TableRow className="hover:bg-transparent">
                     <TableHead className="sticky top-0 z-20 bg-muted">Kunde</TableHead>
                     <TableHead className="sticky top-0 z-20 bg-muted">Auftrag</TableHead>
                     <TableHead className="sticky top-0 z-20 bg-muted">Probe</TableHead>
                     <TableHead className="sticky top-0 z-20 bg-muted">Status</TableHead>
-                    <TableHead className="sticky top-0 z-20 bg-muted">Kultur</TableHead>
+                    <TableHead className="sticky top-0 z-20 w-44 bg-muted">Kultur</TableHead>
                     <TableHead className="sticky top-0 z-20 bg-muted">Pflanzenvitalität</TableHead>
                     <TableHead className="sticky top-0 z-20 bg-muted">Bodennässe</TableHead>
                     <TableHead className="sticky top-0 z-20 bg-muted">GPS</TableHead>
@@ -885,15 +885,15 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
                     </TableRow>
                   ) : (
                     paginatedProbes.map((probe, rowIndex) => {
-                      const rowBg = rowIndex % 2 === 0 ? "bg-background" : "bg-muted/20";
-                      const stickyRowBg = rowIndex % 2 === 0 ? "bg-background" : "bg-muted";
+                      const rowBg = rowIndex % 2 === 0 ? "bg-background" : "bg-muted/35";
+                      const stickyRowBg = rowIndex % 2 === 0 ? "bg-background" : "bg-muted/70";
 
                       return (
-                        <TableRow key={probe.probe_id} className={cn(rowBg, "hover:bg-muted/40")}>
+                        <TableRow key={probe.probe_id} className={cn(rowBg, "hover:bg-muted/50")}>
                           <TableCell className="align-top">{probe.customer_name}</TableCell>
                           <TableCell className="align-top">{probe.order_number}</TableCell>
                           <TableCell className="align-top">{probe.probe_number}</TableCell>
-                          <TableCell className="align-top">
+                          <TableCell className="min-w-44 align-top">
                             <Badge className={cn("status", statusBadgeClasses(probe.status))}>
                               {probe.status}
                             </Badge>
