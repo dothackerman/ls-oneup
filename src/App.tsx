@@ -886,6 +886,7 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
                   ) : (
                     paginatedProbes.map((probe, rowIndex) => {
                       const rowBg = rowIndex % 2 === 0 ? "bg-background" : "bg-muted/20";
+                      const stickyRowBg = rowIndex % 2 === 0 ? "bg-background" : "bg-muted";
 
                       return (
                         <TableRow key={probe.probe_id} className={cn(rowBg, "hover:bg-muted/40")}>
@@ -972,7 +973,10 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
                           </TableCell>
                           <TableCell className="align-top">{formatDate(probe.expire_by)}</TableCell>
                           <TableCell
-                            className={cn("shadow-sticky-edge sticky right-0 align-top", rowBg)}
+                            className={cn(
+                              "shadow-sticky-edge sticky right-0 align-top",
+                              stickyRowBg,
+                            )}
                           >
                             <div className="flex min-h-7 items-center justify-center">
                               {probe.image_url ? (
