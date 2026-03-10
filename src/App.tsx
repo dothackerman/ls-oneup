@@ -631,23 +631,45 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
             onNext={() => setPage((prev) => Math.min(totalPages, prev + 1))}
           />
 
-          <div className="overflow-hidden rounded-lg border border-border/70">
+          <div className="admin-table-surface overflow-hidden rounded-xl border border-border/80">
             <div data-testid="admin-table-scroll" className="max-h-[65vh] overflow-auto">
-              <Table className="min-w-[1440px] border-collapse">
+              <Table className="min-w-[1440px] border-collapse text-sm">
                 <TableHeader>
                   <TableRow className="hover:bg-transparent">
-                    <TableHead className="sticky top-0 z-20 bg-muted">Kunde</TableHead>
-                    <TableHead className="sticky top-0 z-20 bg-muted">Auftrag</TableHead>
-                    <TableHead className="sticky top-0 z-20 bg-muted">Probe</TableHead>
-                    <TableHead className="sticky top-0 z-20 bg-muted">Status</TableHead>
-                    <TableHead className="sticky top-0 z-20 w-44 bg-muted">Kultur</TableHead>
-                    <TableHead className="sticky top-0 z-20 bg-muted">Pflanzenvitalität</TableHead>
-                    <TableHead className="sticky top-0 z-20 bg-muted">Bodennässe</TableHead>
-                    <TableHead className="sticky top-0 z-20 bg-muted">GPS</TableHead>
-                    <TableHead className="sticky top-0 z-20 bg-muted">Erstellt</TableHead>
-                    <TableHead className="sticky top-0 z-20 bg-muted">Eingereicht</TableHead>
-                    <TableHead className="sticky top-0 z-20 bg-muted">Ablauf</TableHead>
-                    <TableHead className="shadow-sticky-edge sticky top-0 right-0 z-30 w-28 bg-muted text-center">
+                    <TableHead className="admin-table-head sticky top-0 z-20 text-foreground">
+                      Kunde
+                    </TableHead>
+                    <TableHead className="admin-table-head sticky top-0 z-20 text-foreground">
+                      Auftrag
+                    </TableHead>
+                    <TableHead className="admin-table-head sticky top-0 z-20 text-foreground">
+                      Probe
+                    </TableHead>
+                    <TableHead className="admin-table-head sticky top-0 z-20 text-foreground">
+                      Status
+                    </TableHead>
+                    <TableHead className="admin-table-head sticky top-0 z-20 w-44 text-foreground">
+                      Kultur
+                    </TableHead>
+                    <TableHead className="admin-table-head sticky top-0 z-20 text-foreground">
+                      Pflanzenvitalität
+                    </TableHead>
+                    <TableHead className="admin-table-head sticky top-0 z-20 text-foreground">
+                      Bodennässe
+                    </TableHead>
+                    <TableHead className="admin-table-head sticky top-0 z-20 text-foreground">
+                      GPS
+                    </TableHead>
+                    <TableHead className="admin-table-head sticky top-0 z-20 text-foreground">
+                      Erstellt
+                    </TableHead>
+                    <TableHead className="admin-table-head sticky top-0 z-20 text-foreground">
+                      Eingereicht
+                    </TableHead>
+                    <TableHead className="admin-table-head sticky top-0 z-20 text-foreground">
+                      Ablauf
+                    </TableHead>
+                    <TableHead className="admin-table-head shadow-sticky-edge sticky top-0 right-0 z-30 w-28 border-l border-border/60 text-center text-foreground">
                       Bild
                     </TableHead>
                   </TableRow>
@@ -665,14 +687,24 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
                     </TableRow>
                   ) : (
                     paginatedProbes.map((probe, rowIndex) => {
-                      const rowBg = rowIndex % 2 === 0 ? "bg-background" : "bg-muted/35";
-                      const stickyRowBg = rowIndex % 2 === 0 ? "bg-background" : "bg-muted/70";
+                      const rowBg =
+                        rowIndex % 2 === 0 ? "admin-table-row-even" : "admin-table-row-odd";
+                      const stickyRowBg = rowBg;
 
                       return (
-                        <TableRow key={probe.probe_id} className={cn(rowBg, "hover:bg-muted/50")}>
-                          <TableCell className="align-top">{probe.customer_name}</TableCell>
-                          <TableCell className="align-top">{probe.order_number}</TableCell>
-                          <TableCell className="align-top">{probe.probe_number}</TableCell>
+                        <TableRow
+                          key={probe.probe_id}
+                          className={cn(rowBg, "border-b border-border/70 hover:bg-accent/35")}
+                        >
+                          <TableCell className="align-top font-medium">
+                            {probe.customer_name}
+                          </TableCell>
+                          <TableCell className="align-top text-foreground/90">
+                            {probe.order_number}
+                          </TableCell>
+                          <TableCell className="align-top text-foreground/90">
+                            {probe.probe_number}
+                          </TableCell>
                           <TableCell className="min-w-44 align-top">
                             <Badge className={cn("status", statusBadgeClasses(probe.status))}>
                               {probe.status}
@@ -751,10 +783,12 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
                           <TableCell className="align-top">
                             {formatDate(probe.submitted_at)}
                           </TableCell>
-                          <TableCell className="align-top">{formatDate(probe.expire_by)}</TableCell>
+                          <TableCell className="align-top text-foreground/90">
+                            {formatDate(probe.expire_by)}
+                          </TableCell>
                           <TableCell
                             className={cn(
-                              "shadow-sticky-edge sticky right-0 align-top",
+                              "shadow-sticky-edge sticky right-0 align-top border-l border-border/70 dark:border-white/8",
                               stickyRowBg,
                             )}
                           >
