@@ -51,3 +51,32 @@ Before merging frontend styling work, confirm:
 2. Can this be expressed with existing Tailwind utilities and tokens?
 3. If inline style is used, is it truly runtime-calculated or browser-integrated?
 4. If an arbitrary value is repeated, should it become a named utility or token?
+
+## UX Validation
+1. Functional automated tests stay functional; they do not prove UX validity.
+2. UX-affecting changes require screenshot-based visual inspection before commit/push.
+3. Use the existing Playwright setup for that inspection instead of adding a separate browser tool by default.
+4. The project provides `npm run ux:capture -- --plan <file>` for repeatable screenshot capture.
+5. Store temporary visual artifacts under `test-results/ux/` unless a task explicitly needs a different location.
+6. For viewport-sensitive UX, inspect at least one desktop-sized capture and one narrow/mobile capture when relevant.
+7. If the requirement is subjective or design-sensitive, visual approval is required in addition to green functional checks.
+
+### Capture Plan Format
+`ux:capture` reads a JSON plan file with:
+1. `browser`
+   - optional, defaults to `chromium`
+2. `viewport`
+   - optional `width` and `height`
+3. `steps`
+   - ordered steps, each optionally containing:
+   - `url`
+   - `screenshot`
+   - `actions`
+
+Supported actions:
+1. `goto`
+2. `clickRole`
+3. `waitForTimeout`
+4. `screenshot`
+
+See `scripts/ux-capture.example.json` for a working example.

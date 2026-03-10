@@ -1,0 +1,27 @@
+{
+  "browser": "chromium",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  },
+  "steps": [
+    {
+      "url": "http://127.0.0.1:8787/admin?onboarding=force",
+      "screenshot": "onboarding-step1.png"
+    },
+    {
+      "actions": [
+        {
+          "clickRole": {
+            "role": "button",
+            "name": "Weiter"
+          }
+        },
+        {
+          "waitForTimeout": 300
+        }
+      ],
+      "screenshot": "onboarding-step2.png"
+    }
+  ]
+}

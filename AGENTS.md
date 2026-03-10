@@ -31,6 +31,7 @@ This file is orchestration-only:
    - formatter
    - linter
    - integration tests (Workers-runtime semantics where applicable)
+   - for UX-affecting changes: screenshot-based visual inspection using the project UX capture flow
 4. If all green: commit and push.
 5. One commit per requirement-linked slice after green checks.
 6. If a step fails: do not commit; fix and rerun from the failed step.
