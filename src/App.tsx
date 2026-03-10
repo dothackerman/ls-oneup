@@ -610,29 +610,29 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
           <p className="mt-1 text-sm font-medium text-muted-foreground">Adminbereich</p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-end gap-2">
           <Button type="button" variant="outline" onClick={startOnboarding}>
             Tour erneut starten
           </Button>
 
-          <div data-onboarding="theme-toggle" className="grid gap-1">
-            <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
-              Farbmodus
-            </p>
-            <Select
-              value={themePreference}
-              onValueChange={(value) => onThemePreferenceChange(value as AdminThemePreference)}
+          <Select
+            value={themePreference}
+            onValueChange={(value) => onThemePreferenceChange(value as AdminThemePreference)}
+          >
+            <SelectTrigger
+              aria-label="Farbmodus"
+              data-onboarding="theme-toggle"
+              className="min-w-44 gap-2"
             >
-              <SelectTrigger aria-label="Farbmodus" className="min-w-36">
-                <SelectValue>{themePreferenceLabel(themePreference)}</SelectValue>
-              </SelectTrigger>
-              <SelectContent align="end" position="popper">
-                <SelectItem value="system">System</SelectItem>
-                <SelectItem value="light">Hell</SelectItem>
-                <SelectItem value="dark">Dunkel</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+              <span className="text-muted-foreground">Farbmodus:</span>
+              <SelectValue>{themePreferenceLabel(themePreference)}</SelectValue>
+            </SelectTrigger>
+            <SelectContent align="end" position="popper">
+              <SelectItem value="system">System</SelectItem>
+              <SelectItem value="light">Hell</SelectItem>
+              <SelectItem value="dark">Dunkel</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </header>
 
