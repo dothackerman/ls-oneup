@@ -74,14 +74,7 @@ export function AdminNewLinksCard({
               herunterladen. Nach Seitenaktualisierung verschwindet die Darstellung.
             </AlertDescription>
           </Alert>
-        ) : (
-          <Alert className="border-primary/30 bg-primary/10 text-foreground">
-            <AlertDescription>
-              Onboarding-Vorschau: So sieht dieser Bereich aus, sobald Sie im vorherigen Schritt auf
-              &quot;Links erstellen&quot; klicken.
-            </AlertDescription>
-          </Alert>
-        )}
+        ) : null}
 
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {cardModels.map((model) => (
