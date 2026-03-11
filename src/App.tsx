@@ -701,6 +701,7 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
               viewportProps={{ id: "admin-table-scroll-viewport" }}
               viewportClassName="max-h-[65vh]"
               horizontalScrollbar="both"
+              reserveVerticalScrollbarSpace
             >
               <Table
                 wrapInScrollContainer={false}

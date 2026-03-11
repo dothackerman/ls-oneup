@@ -17,6 +17,7 @@ type ScrollAreaProps = React.ComponentProps<typeof ScrollAreaPrimitive.Root> & {
   viewportProps?: ScrollAreaViewportProps;
   horizontalScrollbar?: HorizontalScrollbarMode;
   showVerticalScrollbar?: boolean;
+  reserveVerticalScrollbarSpace?: boolean;
   topScrollbarProps?: ScrollAreaScrollbarProps;
   bottomScrollbarProps?: ScrollAreaScrollbarProps;
   verticalScrollbarProps?: ScrollAreaScrollbarProps;
@@ -31,6 +32,7 @@ function ScrollArea({
   viewportProps,
   horizontalScrollbar = "bottom",
   showVerticalScrollbar = true,
+  reserveVerticalScrollbarSpace = false,
   topScrollbarProps,
   bottomScrollbarProps,
   verticalScrollbarProps,
@@ -41,6 +43,7 @@ function ScrollArea({
     horizontalScrollbar === "top" || horizontalScrollbar === "both";
   const showBottomHorizontalScrollbar =
     horizontalScrollbar === "bottom" || horizontalScrollbar === "both";
+  const showsReservedVerticalRail = showVerticalScrollbar && reserveVerticalScrollbarSpace;
 
   return (
     <ScrollAreaPrimitive.Root
@@ -49,7 +52,15 @@ function ScrollArea({
       {...props}
     >
       {showTopHorizontalScrollbar ? (
-        <ScrollBar orientation="horizontal" position="top" {...topScrollbarProps} />
+        <div className="flex min-w-0">
+          <ScrollBar
+            orientation="horizontal"
+            position="top"
+            className="min-w-0 flex-1"
+            {...topScrollbarProps}
+          />
+          {showsReservedVerticalRail ? <ScrollAreaRail /> : null}
+        </div>
       ) : null}
 
       <div className="flex min-h-0 min-w-0 flex-1">
@@ -65,15 +76,37 @@ function ScrollArea({
         </ScrollAreaPrimitive.Viewport>
 
         {showVerticalScrollbar ? (
-          <ScrollBar orientation="vertical" {...verticalScrollbarProps} />
+          showsReservedVerticalRail ? (
+            <ScrollAreaRail>
+              <ScrollBar
+                orientation="vertical"
+                className="h-full w-full border-l-0 bg-transparent"
+                {...verticalScrollbarProps}
+              />
+            </ScrollAreaRail>
+          ) : (
+            <ScrollBar orientation="vertical" {...verticalScrollbarProps} />
+          )
         ) : null}
       </div>
 
       {showBottomHorizontalScrollbar ? (
-        <ScrollBar orientation="horizontal" position="bottom" {...bottomScrollbarProps} />
+        <div className="flex min-w-0">
+          <ScrollBar
+            orientation="horizontal"
+            position="bottom"
+            className="min-w-0 flex-1"
+            {...bottomScrollbarProps}
+          />
+          {showsReservedVerticalRail ? <ScrollAreaRail /> : null}
+        </div>
       ) : null}
     </ScrollAreaPrimitive.Root>
   );
+}
+
+function ScrollAreaRail({ children }: { children?: React.ReactNode }) {
+  return <div className="w-2.5 shrink-0 border-l border-border/60 bg-muted/35">{children}</div>;
 }
 
 function ScrollBar({
