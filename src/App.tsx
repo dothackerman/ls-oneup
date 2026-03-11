@@ -25,6 +25,7 @@ import {
 import { Dialog, DialogContent, DialogTitle } from "@shared/components/ui/dialog";
 import { Input } from "@shared/components/ui/input";
 import { Label } from "@shared/components/ui/label";
+import { ScrollArea } from "@shared/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -265,18 +266,11 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
   const [previewRetryNonce, setPreviewRetryNonce] = useState(0);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
-  const [tableScrollMetrics, setTableScrollMetrics] = useState({
-    viewportWidth: 0,
-    contentWidth: 0,
-  });
 
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [copiedProbeId, setCopiedProbeId] = useState<string | null>(null);
   const copyFeedbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const topScrollbarRef = useRef<HTMLDivElement | null>(null);
-  const tableScrollRef = useRef<HTMLDivElement | null>(null);
-  const isSyncingScrollRef = useRef(false);
 
   const qrData = useQrData(createdItems);
   const previewProbe = probes.find((probe) => probe.probe_id === previewProbeId) ?? null;
@@ -320,116 +314,6 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
       }
     };
   }, []);
-
-  useEffect(() => {
-    const scrollContainerElement = tableScrollRef.current;
-
-    if (!scrollContainerElement) {
-      return;
-    }
-
-    const scrollContainer = scrollContainerElement;
-
-    function getHorizontalScrollElement(): HTMLDivElement | null {
-      const element = scrollContainer.querySelector("[data-slot='table-container']");
-      return element instanceof HTMLDivElement ? element : null;
-    }
-
-    function updateTableScrollMetrics(): void {
-      const horizontalScrollElement = getHorizontalScrollElement();
-      if (!horizontalScrollElement) {
-        return;
-      }
-
-      const nextViewportWidth = horizontalScrollElement.clientWidth;
-      const nextContentWidth = Math.max(horizontalScrollElement.scrollWidth, nextViewportWidth);
-
-      setTableScrollMetrics((prev) => {
-        if (prev.viewportWidth === nextViewportWidth && prev.contentWidth === nextContentWidth) {
-          return prev;
-        }
-
-        return {
-          viewportWidth: nextViewportWidth,
-          contentWidth: nextContentWidth,
-        };
-      });
-    }
-
-    updateTableScrollMetrics();
-
-    const resizeObserver =
-      typeof ResizeObserver === "undefined"
-        ? null
-        : new ResizeObserver(() => {
-            updateTableScrollMetrics();
-          });
-
-    resizeObserver?.observe(scrollContainer);
-
-    const horizontalScrollElement = getHorizontalScrollElement();
-    if (horizontalScrollElement) {
-      resizeObserver?.observe(horizontalScrollElement);
-    }
-
-    window.addEventListener("resize", updateTableScrollMetrics);
-    return () => {
-      resizeObserver?.disconnect();
-      window.removeEventListener("resize", updateTableScrollMetrics);
-    };
-  }, [page, probes.length, overrideEditingProbeId, showOverrideOnboardingPreview]);
-
-  useEffect(() => {
-    const topScrollbarElement = topScrollbarRef.current;
-    const scrollContainerElement = tableScrollRef.current;
-
-    if (!topScrollbarElement || !scrollContainerElement) {
-      return;
-    }
-
-    const topScrollbar = topScrollbarElement;
-    const horizontalScrollElement = scrollContainerElement.querySelector(
-      "[data-slot='table-container']",
-    );
-
-    if (!(horizontalScrollElement instanceof HTMLDivElement)) {
-      return;
-    }
-
-    const scrollContainer = horizontalScrollElement;
-
-    function syncScroll(source: HTMLDivElement, target: HTMLDivElement): void {
-      if (isSyncingScrollRef.current) {
-        return;
-      }
-
-      isSyncingScrollRef.current = true;
-      target.scrollLeft = source.scrollLeft;
-
-      requestAnimationFrame(() => {
-        isSyncingScrollRef.current = false;
-      });
-    }
-
-    function handleTopScroll(): void {
-      syncScroll(topScrollbar, scrollContainer);
-    }
-
-    function handleTableScroll(): void {
-      syncScroll(scrollContainer, topScrollbar);
-    }
-
-    topScrollbar.scrollLeft = scrollContainer.scrollLeft;
-    topScrollbar.addEventListener("scroll", handleTopScroll);
-    scrollContainer.addEventListener("scroll", handleTableScroll);
-
-    return () => {
-      topScrollbar.removeEventListener("scroll", handleTopScroll);
-      scrollContainer.removeEventListener("scroll", handleTableScroll);
-    };
-  }, [tableScrollMetrics.contentWidth, tableScrollMetrics.viewportWidth]);
-
-  const showsTopScrollbar = tableScrollMetrics.contentWidth > tableScrollMetrics.viewportWidth;
 
   async function loadProbes({ resetPage = false }: { resetPage?: boolean } = {}): Promise<void> {
     const res = await fetch("/api/admin/probes");
@@ -809,29 +693,19 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
             onNext={() => setPage((prev) => Math.min(totalPages, prev + 1))}
           />
 
-          {showsTopScrollbar ? (
-            <div className="space-y-1">
-              <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
-                <span>Tabelle horizontal scrollen</span>
-                <span>Alternative Scrollleiste oben</span>
-              </div>
-              <div
-                ref={topScrollbarRef}
-                data-testid="admin-table-scroll-top"
-                className="overflow-x-auto overflow-y-hidden rounded-md border border-border/70 bg-muted/35"
-              >
-                <div style={{ width: `${tableScrollMetrics.contentWidth}px`, height: "1rem" }} />
-              </div>
-            </div>
-          ) : null}
-
           <div className="admin-table-surface overflow-hidden rounded-xl border border-border/80">
-            <div
-              ref={tableScrollRef}
-              data-testid="admin-table-scroll"
-              className="max-h-[65vh] overflow-auto"
+            <ScrollArea
+              className="max-h-[65vh]"
+              topScrollbarProps={{ id: "admin-table-scroll-top", forceMount: true }}
+              bottomScrollbarProps={{ id: "admin-table-scroll-bottom", forceMount: true }}
+              viewportProps={{ id: "admin-table-scroll-viewport" }}
+              viewportClassName="max-h-[65vh]"
+              horizontalScrollbar="both"
             >
-              <Table className="min-w-[1440px] border-collapse text-sm">
+              <Table
+                wrapInScrollContainer={false}
+                className="min-w-[1440px] border-collapse text-sm"
+              >
                 <TableHeader>
                   <TableRow className="hover:bg-transparent">
                     <TableHead className="admin-table-head sticky top-0 z-20 text-foreground">
@@ -1066,7 +940,7 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
                   )}
                 </TableBody>
               </Table>
-            </div>
+            </ScrollArea>
           </div>
 
           <TablePager

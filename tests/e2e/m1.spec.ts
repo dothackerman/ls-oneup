@@ -554,25 +554,25 @@ test("E2E-ADMIN-007 keeps Bild action visible on narrow screens", async ({ page,
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/admin?onboarding=off");
 
-  const topScrollbar = page.getByTestId("admin-table-scroll-top");
-  const scrollContainer = page
-    .getByTestId("admin-table-scroll")
-    .locator("[data-slot='table-container']");
+  const topScrollbar = page.locator("#admin-table-scroll-top");
+  const bottomScrollbar = page.locator("#admin-table-scroll-bottom");
+  const scrollViewport = page.locator("#admin-table-scroll-viewport");
   await expect(topScrollbar).toBeVisible();
+  await expect(bottomScrollbar).toBeVisible();
 
-  await topScrollbar.evaluate((element) => {
+  await scrollViewport.evaluate((element) => {
     element.scrollLeft = element.scrollWidth;
   });
   await expect
-    .poll(() => scrollContainer.evaluate((element) => element.scrollLeft))
+    .poll(() => scrollViewport.evaluate((element) => element.scrollLeft))
     .toBeGreaterThan(0);
 
   const row = page.locator("tbody tr", { hasText: orderNumber });
   await expect(row).toHaveCount(1);
   await expect(row.getByRole("button", { name: "Anzeigen" })).toBeVisible();
 
-  await scrollContainer.evaluate((element) => {
+  await scrollViewport.evaluate((element) => {
     element.scrollLeft = 0;
   });
-  await expect.poll(() => topScrollbar.evaluate((element) => element.scrollLeft)).toBe(0);
+  await expect.poll(() => scrollViewport.evaluate((element) => element.scrollLeft)).toBe(0);
 });
