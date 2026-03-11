@@ -1,85 +1,65 @@
 # AGENTS.md - ls-oneup
 
-## Purpose
-Define how coding agents and subagents execute work in this repository.
+Minimal first-read dispatcher for new agent sessions.
 
-This file is orchestration-only:
-1. It does not duplicate product requirements, API contracts, data model, or security rules.
-2. It points to canonical documents under `docs/requirements/`.
+## Start Here (Always)
+1. `docs/requirements/00-index.md`
+2. `.agents/00-router.md`
+3. `.agents/20-task-routing.json`
 
-## Active Scope Resolution
-1. Delivery scope comes from the current task prompt plus the requirements docs.
-2. If prompt and docs conflict, stop and clarify before implementation.
-3. Do not implement out-of-scope future features preemptively.
+## Classify Task First
+Choose one primary route before loading more docs:
+1. UX/UI/onboarding/visual
+2. Backend/runtime/API behavior
+3. Data model/migrations/contract
+4. Security/ASVS
+5. Docs-only
 
-## Source of Truth
-1. Start with `docs/requirements/00-index.md` (or `docs/requirements/README.md`) to locate the current requirement set.
-2. Use the referenced requirement docs as authoritative for behavior and constraints.
-3. Keep this file stable and reusable; store feature/milestone specifics in requirement docs, not here.
-4. For frontend UX/styling work, follow `docs/requirements/14-frontend-styling-policy.md`.
+If unsure, start with the smallest route and expand only if blocked.
 
-## Repo-Level Agent Rules
-1. Respect `SOLID`, `YAGNI`, `KISS`, high cohesion, low coupling.
-2. Keep changes small, reviewable, and requirement-linked.
-3. No hidden assumptions: if behavior changes, update the relevant docs in the same change.
-4. Prefer Web-standards runtime compatibility for Workers code paths.
+## Route To Docs (Load Only What Is Needed)
+1. UX route:
+   - `docs/requirements/14-frontend-styling-policy.md`
+   - `docs/requirements/15-ux-governance.md`
+   - `docs/requirements/16-onboarding-parity.md`
+   - `.agents/checklists/ux-change.md`
+2. Backend route:
+   - `docs/requirements/07-m1-agent-execution-contract.md`
+   - `docs/requirements/08-local-testing-and-first-release-runbook.md`
+   - `.agents/checklists/backend-change.md`
+3. Data/contract route:
+   - `docs/requirements/09-m1-api-contract.md`
+   - `docs/requirements/10-m1-data-model-and-migrations.md`
+   - `.agents/checklists/data-contract-change.md`
+4. Security route:
+   - `docs/requirements/12-m1-security-decision-record.md`
+   - `docs/requirements/13-m1-asvs-audit-agent-and-checklist.md`
+   - `.agents/checklists/backend-change.md`
 
-## Required Execution Flow (Per Change)
-1. Discover applicable requirements and acceptance criteria.
-2. Implement the minimal slice.
-3. Run local quality loop:
-   - formatter
-   - linter
-   - integration tests (Workers-runtime semantics where applicable)
-   - for UX-affecting changes: screenshot-based visual inspection using the project UX capture flow
-4. If all green: commit and push.
-5. One commit per requirement-linked slice after green checks.
-6. If a step fails: do not commit; fix and rerun from the failed step.
-7. For UX work, "green" includes screenshot-based visual inspection per `docs/requirements/14-frontend-styling-policy.md`, not just passing functional tests.
+## Architecture Decision Pointers
+1. Deployment/application stack decisions: `docs/requirements/04-tech-stack-decision-memo.md`, `docs/requirements/06-application-tech-stack-memo.md`
+2. Security decisions: `docs/requirements/12-m1-security-decision-record.md`
+3. UX governance decisions: `docs/requirements/15-ux-governance.md`, `docs/requirements/16-onboarding-parity.md`
 
-## Subagent Structure (Default)
-1. `research-subagent`
-   - resolve unknowns and verify technical decisions.
-2. `discovery-subagent`
-   - map codebase structure, dependencies, and impact areas.
-3. `implementation-subagent`
-   - implement feature slices with explicit requirement linkage.
-4. `quality-subagent`
-   - run/maintain formatter, lint, integration tests, and E2E coverage.
-5. `docs-subagent`
-   - maintain requirement consistency and ADR updates.
+## QA Matrix
+1. Always:
+   - `npm run format`
+   - `npm run lint`
+   - `npm run typecheck`
+2. Backend/data/security changes:
+   - `npm run test:integration`
+   - `npm run test:e2e` if user-visible flow changes
+3. UX changes:
+   - `npm run test:integration`
+   - `npm run test:e2e`
+   - `npm run ux:capture -- --plan <plan-file>` when runnable
 
-Use only the minimal set needed for a task.
+## Git Cadence
+1. One logical requirement-linked slice per commit.
+2. Commit only after required checks are green.
+3. Push after each green logical slice.
 
-## Decision Logging (ADR-Inspired)
-1. Any non-trivial technical decision discovered during implementation must be documented.
-2. Decision docs must include:
-   - context
-   - decision
-   - consequences
-   - references
-3. Prefer updating existing docs when the decision belongs there; create a new ADR-style doc only when needed.
-
-## Verification Protocol
-Verification protocol means the required evidence an agent must produce before claiming a task is done.
-
-Minimum evidence:
-1. Requirement trace: which active acceptance criterion is covered.
-2. Test evidence: which integration/E2E tests were run and passed.
-3. Contract evidence: API/data/security docs are still aligned (or updated).
-4. Runtime evidence: behavior validated under local runtime semantics.
-
-Feature/milestone completion additionally requires:
-1. Full acceptance-criteria coverage implemented.
-2. Required integration/E2E suite green.
-3. `ci:local` green (once scaffold defines it).
-
-## Deployment Boundary
-1. Agents may prepare deployment instructions and configs.
-2. Agents must not execute Cloudflare release/deployment commands unless explicitly requested and environment is ready.
-3. Human operator performs release actions by default.
-
-## File Growth Policy
-1. Keep this top-level `AGENTS.md` as the single repo-wide contract for now.
-2. Keep routing metadata/checklists under `.agents/` to reduce default context load and support conditional document loading by change type.
-3. Introduce additional subdirectory-level agent files only when codebase size/complexity justifies it.
+## Hard Constraints
+1. Keep changes minimal and requirement-linked.
+2. Update requirement docs in the same change when behavior/contract changes.
+3. Do not run Cloudflare release/deploy commands unless explicitly requested.
