@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
 import { SpotlightOverlay } from "@shared/components/patterns/spotlight-overlay";
 import { Alert, AlertDescription } from "@shared/components/ui/alert";
 import { Button } from "@shared/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@shared/components/ui/dialog";
+import { cn } from "@shared/lib/utils";
 import { ADMIN_ONBOARDING_STEPS, type AdminOnboardingStep } from "./admin-onboarding-steps";
 
 type AdminOnboardingDialogProps = {
@@ -13,6 +15,29 @@ type AdminOnboardingDialogProps = {
   onNext: () => void;
 };
 
+type DialogPlacement = {
+  top: number;
+  left: number;
+};
+
+const DIALOG_MARGIN = 16;
+const DIALOG_GAP = 16;
+const ESTIMATED_DIALOG_WIDTH = 560;
+const ESTIMATED_DIALOG_HEIGHT = 320;
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
+}
+
+function overlapArea(
+  a: { left: number; top: number; right: number; bottom: number },
+  b: { left: number; top: number; right: number; bottom: number },
+): number {
+  const overlapWidth = Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left));
+  const overlapHeight = Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+  return overlapWidth * overlapHeight;
+}
+
 export function AdminOnboardingDialog({
   onboardingStepIndex,
   onboardingStep,
@@ -21,65 +46,132 @@ export function AdminOnboardingDialog({
   onSkip,
   onNext,
 }: AdminOnboardingDialogProps): JSX.Element {
-  const showPreview =
-    Boolean(onboardingStep?.preview) && (!onboardingStep?.selector || !onboardingTargetFound);
-  const spotlightSelector = showPreview
-    ? onboardingStep?.preview?.selector
-    : onboardingStep?.selector;
+  const [dialogPlacement, setDialogPlacement] = useState<DialogPlacement | null>(null);
+
+  useEffect(() => {
+    const selector = onboardingStep?.selector;
+
+    if (!selector || !onboardingTargetFound) {
+      setDialogPlacement(null);
+      return;
+    }
+    const targetSelector = selector;
+
+    function measurePlacement(): void {
+      const target = document.querySelector(targetSelector);
+      if (!(target instanceof HTMLElement)) {
+        setDialogPlacement(null);
+        return;
+      }
+
+      const bounds = target.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      const dialogWidth = Math.min(ESTIMATED_DIALOG_WIDTH, viewportWidth - DIALOG_MARGIN * 2);
+      const dialogHeight = Math.min(ESTIMATED_DIALOG_HEIGHT, viewportHeight - DIALOG_MARGIN * 2);
+      const maxLeft = Math.max(DIALOG_MARGIN, viewportWidth - dialogWidth - DIALOG_MARGIN);
+      const maxTop = Math.max(DIALOG_MARGIN, viewportHeight - dialogHeight - DIALOG_MARGIN);
+
+      const candidates: DialogPlacement[] = [];
+
+      const canFitTop = bounds.top - DIALOG_GAP - DIALOG_MARGIN >= dialogHeight;
+      if (canFitTop) {
+        candidates.push({
+          left: clamp(bounds.right - dialogWidth, DIALOG_MARGIN, maxLeft),
+          top: clamp(bounds.top - dialogHeight - DIALOG_GAP, DIALOG_MARGIN, maxTop),
+        });
+      }
+
+      const canFitBottom =
+        viewportHeight - bounds.bottom - DIALOG_GAP - DIALOG_MARGIN >= dialogHeight;
+      if (canFitBottom) {
+        candidates.push({
+          left: clamp(bounds.right - dialogWidth, DIALOG_MARGIN, maxLeft),
+          top: clamp(bounds.bottom + DIALOG_GAP, DIALOG_MARGIN, maxTop),
+        });
+      }
+
+      const canFitLeft = bounds.left - DIALOG_GAP - DIALOG_MARGIN >= dialogWidth;
+      if (canFitLeft) {
+        candidates.push({
+          left: clamp(bounds.left - dialogWidth - DIALOG_GAP, DIALOG_MARGIN, maxLeft),
+          top: clamp(bounds.top, DIALOG_MARGIN, maxTop),
+        });
+      }
+
+      const canFitRight = viewportWidth - bounds.right - DIALOG_GAP - DIALOG_MARGIN >= dialogWidth;
+      if (canFitRight) {
+        candidates.push({
+          left: clamp(bounds.right + DIALOG_GAP, DIALOG_MARGIN, maxLeft),
+          top: clamp(bounds.top, DIALOG_MARGIN, maxTop),
+        });
+      }
+
+      if (candidates.length > 0) {
+        setDialogPlacement(candidates[0]);
+        return;
+      }
+
+      const fallbackCandidates: DialogPlacement[] = [
+        { left: DIALOG_MARGIN, top: DIALOG_MARGIN },
+        { left: maxLeft, top: DIALOG_MARGIN },
+        { left: DIALOG_MARGIN, top: maxTop },
+        { left: maxLeft, top: maxTop },
+      ];
+
+      const targetRect = {
+        left: bounds.left,
+        top: bounds.top,
+        right: bounds.right,
+        bottom: bounds.bottom,
+      };
+
+      const bestFallback = fallbackCandidates.reduce(
+        (best, candidate) => {
+          const dialogRect = {
+            left: candidate.left,
+            top: candidate.top,
+            right: candidate.left + dialogWidth,
+            bottom: candidate.top + dialogHeight,
+          };
+          const overlap = overlapArea(dialogRect, targetRect);
+          if (overlap < best.overlap) {
+            return { overlap, candidate };
+          }
+          return best;
+        },
+        { overlap: Number.POSITIVE_INFINITY, candidate: fallbackCandidates[0] },
+      );
+
+      setDialogPlacement(bestFallback.candidate);
+    }
+
+    measurePlacement();
+    window.addEventListener("resize", measurePlacement);
+    window.addEventListener("scroll", measurePlacement, true);
+    return () => {
+      window.removeEventListener("resize", measurePlacement);
+      window.removeEventListener("scroll", measurePlacement, true);
+    };
+  }, [onboardingStep?.selector, onboardingTargetFound]);
 
   return (
     <Dialog open={Boolean(onboardingStep)}>
       {onboardingStep && (
         <>
-          <SpotlightOverlay selector={spotlightSelector} />
-          {showPreview && onboardingStep.preview ? (
-            <div
-              data-onboarding-preview={onboardingStep.preview.id}
-              aria-hidden="true"
-              className="pointer-events-none fixed inset-x-4 bottom-4 z-[45] rounded-2xl border border-primary/70 bg-card/96 p-4 shadow-spotlight-frame backdrop-blur-sm md:left-auto md:right-6 md:w-[26rem]"
-            >
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-primary">
-                {onboardingStep.preview.eyebrow}
-              </p>
-              <div className="mt-3 rounded-xl border border-border/70 bg-muted/35 p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-display text-lg text-foreground">
-                      {onboardingStep.preview.title}
-                    </p>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {onboardingStep.preview.description}
-                    </p>
-                  </div>
-                  <span className="rounded-full border border-border/70 bg-background px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
-                    Vorschau · nicht interaktiv
-                  </span>
-                </div>
-
-                {onboardingStep.preview.items?.length ? (
-                  <div className="mt-4 grid gap-2">
-                    {onboardingStep.preview.items.map((item) => (
-                      <div
-                        key={item}
-                        className="rounded-lg border border-border/70 bg-background/90 px-3 py-2 text-sm font-medium text-foreground"
-                      >
-                        {item}
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-
-                <p className="mt-4 text-xs text-muted-foreground">
-                  Diese Vorschau erscheint nur während der Einführung, damit jeder Schritt einen
-                  klaren Fokuspunkt behält.
-                </p>
-              </div>
-            </div>
-          ) : null}
+          <SpotlightOverlay selector={onboardingStep.selector} />
           <DialogContent
             showCloseButton={false}
             hideOverlay
-            className="max-w-xl"
+            className={cn(
+              "max-w-xl",
+              dialogPlacement ? "top-0 left-0 -translate-x-0 -translate-y-0" : "",
+            )}
+            style={
+              dialogPlacement
+                ? { top: `${dialogPlacement.top}px`, left: `${dialogPlacement.left}px` }
+                : undefined
+            }
             onInteractOutside={(event) => event.preventDefault()}
             onEscapeKeyDown={(event) => event.preventDefault()}
           >
@@ -98,7 +190,7 @@ export function AdminOnboardingDialog({
                 <Alert className="border-amber-300 bg-amber-500/10 text-amber-900 dark:text-amber-200">
                   <AlertDescription>
                     {onboardingStep.missingTargetHint ||
-                      "Der markierte Bereich ist aktuell nicht sichtbar. Eine Vorschau markiert den erwarteten Bereich."}
+                      "Der markierte Bereich ist aktuell nicht sichtbar. Gehe zum vorherigen Schritt oder erstelle zuerst Proben, damit der Bereich erscheint."}
                   </AlertDescription>
                 </Alert>
               )}

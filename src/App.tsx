@@ -603,7 +603,7 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
         qrData={qrData}
         copiedProbeId={copiedProbeId}
         onCopyToClipboard={copyToClipboard}
-        formatDate={formatDate}
+        showOnboardingPreview={onboardingStep?.id === "links" && createdItems.length === 0}
       />
 
       <Card data-onboarding="probe-table">

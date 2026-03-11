@@ -96,7 +96,7 @@ export function SpotlightOverlay({ selector }: SpotlightOverlayProps): JSX.Eleme
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed z-[45] rounded-xl border border-primary/70 shadow-spotlight-frame transition-all duration-300"
+        className="pointer-events-none fixed z-[45] border border-primary/70 shadow-spotlight-frame transition-all duration-300"
         style={{
           top: rect.top,
           left: rect.left,
