@@ -63,6 +63,10 @@
   background: color-mix(in oklab, var(--muted) 72%, var(--card) 28%);
 }
 
+@utility admin-table-row-preview {
+  background: color-mix(in oklab, var(--card) 84%, var(--primary) 16%);
+}
+
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.153 0.006 107.1);

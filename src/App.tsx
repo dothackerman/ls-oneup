@@ -84,8 +84,12 @@ type ApiError = {
   message: string;
 };
 
+type ApiPayload<T> = Partial<T> & Partial<ApiError>;
+
 const ADMIN_PAGE_SIZE = 20;
 const ADMIN_THEME_STORAGE_KEY = "ls-oneup-admin-theme";
+const ONBOARDING_PREVIEW_PROBE_ID = "__onboarding-preview-probe__";
+const ONBOARDING_PREVIEW_IMAGE_URL = "/__onboarding-preview__/image";
 
 function formatDate(value: string | null): string {
   if (!value) {
@@ -161,6 +165,50 @@ function buildImagePreviewUrl(baseUrl: string, retryNonce: number): string {
   }
   const delimiter = baseUrl.includes("?") ? "&" : "?";
   return `${baseUrl}${delimiter}retry=${retryNonce}`;
+}
+
+async function readApiPayload<T>(
+  response: Response,
+  fallbackMessage: string,
+): Promise<ApiPayload<T>> {
+  const text = await response.text();
+
+  if (!text) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(text) as ApiPayload<T>;
+  } catch {
+    return {
+      message: response.ok ? fallbackMessage : `Serverfehler: ${fallbackMessage}`,
+    } as ApiPayload<T>;
+  }
+}
+
+function isOnboardingPreviewProbe(probeId: string): boolean {
+  return probeId === ONBOARDING_PREVIEW_PROBE_ID;
+}
+
+function buildOnboardingPreviewProbe(): AdminProbe {
+  return {
+    probe_id: ONBOARDING_PREVIEW_PROBE_ID,
+    customer_name: "Muster Kunde",
+    order_number: "MUSTER-001",
+    probe_number: 1,
+    status: "eingereicht",
+    created_at: "",
+    expire_by: "",
+    submitted_at: "",
+    crop_name: "Beispielkultur",
+    plant_vitality: "normal",
+    soil_moisture: "normal",
+    gps_lat: null,
+    gps_lon: null,
+    gps_captured_at: null,
+    crop_overridden_at: null,
+    image_url: ONBOARDING_PREVIEW_IMAGE_URL,
+  };
 }
 
 function useQrData(createdItems: CreatedProbe[]): Record<string, string> {
@@ -295,13 +343,28 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
     onboardingStep?.id === "override-editing" && !hasSubmittedProbe;
   const showOverrideOnboardingPreview =
     showOverrideEntryOnboardingPreview || showOverrideEditingOnboardingPreview;
+  const onboardingPreviewProbe = useMemo(
+    () => (showOverrideOnboardingPreview ? buildOnboardingPreviewProbe() : null),
+    [showOverrideOnboardingPreview],
+  );
   const paginatedProbes = useMemo(() => {
     const start = (page - 1) * ADMIN_PAGE_SIZE;
     return probes.slice(start, start + ADMIN_PAGE_SIZE);
   }, [page, probes]);
-
   const rangeStart = probes.length === 0 ? 0 : (page - 1) * ADMIN_PAGE_SIZE + 1;
   const rangeEnd = probes.length === 0 ? 0 : Math.min(page * ADMIN_PAGE_SIZE, probes.length);
+  const visibleProbes = onboardingPreviewProbe ? [onboardingPreviewProbe] : paginatedProbes;
+  const displayProbeCount = onboardingPreviewProbe ? visibleProbes.length : probes.length;
+  const displayPage = onboardingPreviewProbe ? (visibleProbes.length === 0 ? 0 : 1) : page;
+  const displayTotalPages = onboardingPreviewProbe ? 1 : totalPages;
+  const displayRangeStart =
+    visibleProbes.length === 0 ? 0 : onboardingPreviewProbe ? 1 : rangeStart;
+  const displayRangeEnd =
+    visibleProbes.length === 0 ? 0 : onboardingPreviewProbe ? visibleProbes.length : rangeEnd;
+  const effectiveOverrideEditingProbeId =
+    showOverrideEditingOnboardingPreview && onboardingPreviewProbe
+      ? onboardingPreviewProbe.probe_id
+      : overrideEditingProbeId;
 
   useEffect(() => {
     setPage((prev) => Math.min(prev, totalPages));
@@ -315,15 +378,31 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
     };
   }, []);
 
+  useEffect(() => {
+    if (!onboardingPreviewProbe) {
+      cancelOverrideEdit(ONBOARDING_PREVIEW_PROBE_ID);
+      return;
+    }
+
+    setOverrideDrafts((prev) => ({
+      ...prev,
+      [onboardingPreviewProbe.probe_id]: onboardingPreviewProbe.crop_name ?? "",
+    }));
+    setOverrideBlurReminderProbeId(null);
+  }, [onboardingPreviewProbe]);
+
   async function loadProbes({ resetPage = false }: { resetPage?: boolean } = {}): Promise<void> {
     const res = await fetch("/api/admin/probes");
-    const payload = (await res.json()) as { items?: AdminProbe[] } & ApiError;
+    const payload = await readApiPayload<{ items?: AdminProbe[] }>(
+      res,
+      "Proben konnten nicht geladen werden.",
+    );
 
     if (!res.ok) {
       throw new Error(payload.message || "Laden fehlgeschlagen.");
     }
 
-    setProbes(payload.items ?? []);
+    setProbes(Array.isArray(payload.items) ? payload.items : []);
     if (resetPage) {
       setPage(1);
     }
@@ -351,14 +430,17 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
         }),
       });
 
-      const payload = (await response.json()) as { items?: CreatedProbe[] } & ApiError;
+      const payload = await readApiPayload<{ items?: CreatedProbe[] }>(
+        response,
+        "Proben konnten nicht erstellt werden.",
+      );
 
       if (!response.ok) {
         setError(payload.message || "Erstellung fehlgeschlagen.");
         return;
       }
 
-      setCreatedItems(payload.items ?? []);
+      setCreatedItems(Array.isArray(payload.items) ? payload.items : []);
       setCustomerName("");
       setOrderNumber("");
       setProbeCount(1);
@@ -412,6 +494,11 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
 
   async function submitOverride(probe: AdminProbe): Promise<void> {
     const probeId = probe.probe_id;
+    if (isOnboardingPreviewProbe(probeId)) {
+      cancelOverrideEdit(probeId);
+      return;
+    }
+
     const cropName = normalizeCropName(overrideDrafts[probeId]);
 
     if (cropName === normalizeCropName(probe.crop_name)) {
@@ -437,7 +524,7 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
         body: JSON.stringify({ crop_name: cropName }),
       });
 
-      const payload = (await res.json()) as ApiError;
+      const payload = await readApiPayload(res, "Kulturname konnte nicht überschrieben werden.");
 
       if (!res.ok) {
         setError(payload.message || "Überschreiben fehlgeschlagen.");
@@ -479,7 +566,7 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
   }
 
   function openPreview(probe: AdminProbe): void {
-    if (!probe.image_url) {
+    if (!probe.image_url || isOnboardingPreviewProbe(probe.probe_id)) {
       return;
     }
 
@@ -684,11 +771,11 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
           )}
 
           <TablePager
-            page={page}
-            totalPages={totalPages}
-            totalItems={probes.length}
-            rangeStart={rangeStart}
-            rangeEnd={rangeEnd}
+            page={displayPage}
+            totalPages={displayTotalPages}
+            totalItems={displayProbeCount}
+            rangeStart={displayRangeStart}
+            rangeEnd={displayRangeEnd}
             onPrev={() => setPage((prev) => Math.max(1, prev - 1))}
             onNext={() => setPage((prev) => Math.min(totalPages, prev + 1))}
           />
@@ -749,59 +836,6 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
                 </TableHeader>
 
                 <TableBody>
-                  {showOverrideOnboardingPreview && (
-                    <TableRow className="border-b border-primary/30 bg-primary/6 hover:bg-primary/10">
-                      <TableCell className="align-top font-medium">Muster Kunde</TableCell>
-                      <TableCell className="align-top text-foreground/90">MUSTER-001</TableCell>
-                      <TableCell className="align-top text-foreground/90">1</TableCell>
-                      <TableCell className="min-w-44 align-top">
-                        <Badge className={cn("status", statusBadgeClasses("eingereicht"))}>
-                          eingereicht
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="align-top">
-                        {showOverrideEntryOnboardingPreview ? (
-                          <div>
-                            <p className="text-foreground/90">Beispielkultur</p>
-                            <Button
-                              type="button"
-                              aria-label="Kultur bearbeiten"
-                              variant="outline"
-                              size="icon-sm"
-                              className="mt-2"
-                            >
-                              <EditIcon />
-                            </Button>
-                          </div>
-                        ) : (
-                          <div className="grid gap-2">
-                            <Input value="Beispielkultur" readOnly />
-                            <p className="text-xs text-muted-foreground">
-                              Enter speichert, Esc verwirft.
-                            </p>
-                          </div>
-                        )}
-                      </TableCell>
-                      <TableCell className="align-top text-foreground/90">normal</TableCell>
-                      <TableCell className="align-top text-foreground/90">normal</TableCell>
-                      <TableCell className="align-top text-foreground/90">-</TableCell>
-                      <TableCell className="align-top text-foreground/90">-</TableCell>
-                      <TableCell className="align-top text-foreground/90">-</TableCell>
-                      <TableCell className="align-top text-foreground/90">-</TableCell>
-                      <TableCell
-                        className={cn(
-                          "w-28 min-w-28 align-top text-center",
-                          "shadow-sticky-edge sticky right-0 z-10 border-l border-border/60",
-                          "bg-primary/6",
-                        )}
-                      >
-                        <Button type="button" variant="outline" size="sm">
-                          Anzeigen
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  )}
-
                   {paginatedProbes.length === 0 && !showOverrideOnboardingPreview ? (
                     <TableRow>
                       <TableCell
@@ -812,15 +846,20 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
                       </TableCell>
                     </TableRow>
                   ) : (
-                    paginatedProbes.map((probe, rowIndex) => {
+                    visibleProbes.map((probe, rowIndex) => {
                       const rowBg =
                         rowIndex % 2 === 0 ? "admin-table-row-even" : "admin-table-row-odd";
-                      const stickyRowBg = rowBg;
+                      const isPreviewProbe = isOnboardingPreviewProbe(probe.probe_id);
+                      const stickyRowBg = isPreviewProbe ? "admin-table-row-preview" : rowBg;
 
                       return (
                         <TableRow
                           key={probe.probe_id}
-                          className={cn(rowBg, "border-b border-border/70 hover:bg-accent/35")}
+                          className={cn(
+                            isPreviewProbe ? "admin-table-row-preview border-primary/30" : rowBg,
+                            "border-b border-border/70",
+                            isPreviewProbe ? "hover:bg-primary/10" : "hover:bg-accent/35",
+                          )}
                         >
                           <TableCell className="align-top font-medium">
                             {probe.customer_name}
@@ -837,13 +876,13 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
                             </Badge>
                           </TableCell>
                           <TableCell className="align-top">
-                            {overrideEditingProbeId === probe.probe_id &&
+                            {effectiveOverrideEditingProbeId === probe.probe_id &&
                             probe.status === "eingereicht" ? (
                               <div className="grid gap-2 rounded-md bg-background/60 p-1">
                                 <Input
                                   placeholder="Kultur anpassen"
                                   value={overrideDrafts[probe.probe_id] ?? ""}
-                                  autoFocus
+                                  autoFocus={effectiveOverrideEditingProbeId === probe.probe_id}
                                   disabled={overrideSavingProbeId === probe.probe_id}
                                   aria-describedby={`crop-override-help-${probe.probe_id}`}
                                   onChange={(event) => {
@@ -945,11 +984,11 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
           </div>
 
           <TablePager
-            page={page}
-            totalPages={totalPages}
-            totalItems={probes.length}
-            rangeStart={rangeStart}
-            rangeEnd={rangeEnd}
+            page={displayPage}
+            totalPages={displayTotalPages}
+            totalItems={displayProbeCount}
+            rangeStart={displayRangeStart}
+            rangeEnd={displayRangeEnd}
             onPrev={() => setPage((prev) => Math.max(1, prev - 1))}
             onNext={() => setPage((prev) => Math.min(totalPages, prev + 1))}
           />
@@ -1107,7 +1146,10 @@ function FarmerPage({ token }: { token: string }): JSX.Element {
       }
 
       const response = await fetch(`/api/probe/${token}`);
-      const payload = (await response.json()) as ProbeLookup & ApiError;
+      const payload = await readApiPayload<ProbeLookup>(
+        response,
+        "Link konnte nicht geladen werden.",
+      );
 
       setLoading(false);
 
@@ -1116,7 +1158,21 @@ function FarmerPage({ token }: { token: string }): JSX.Element {
         return;
       }
 
-      setLookup(payload);
+      if (
+        typeof payload.customer_name !== "string" ||
+        typeof payload.order_number !== "string" ||
+        typeof payload.probe_number !== "number"
+      ) {
+        setError("Link konnte nicht geladen werden.");
+        return;
+      }
+
+      setLookup({
+        token_state: "open",
+        customer_name: payload.customer_name,
+        order_number: payload.order_number,
+        probe_number: payload.probe_number,
+      });
     }
 
     void loadToken().catch((err: Error) => {
@@ -1227,7 +1283,10 @@ function FarmerPage({ token }: { token: string }): JSX.Element {
       body: formData,
     });
 
-    const payload = (await response.json()) as { submitted_at?: string } & ApiError;
+    const payload = await readApiPayload<{ submitted_at?: string }>(
+      response,
+      "Senden fehlgeschlagen.",
+    );
 
     if (!response.ok) {
       setError(payload.message || "Senden fehlgeschlagen.");
