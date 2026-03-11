@@ -46,10 +46,17 @@ export const ADMIN_ONBOARDING_STEPS: AdminOnboardingStep[] = [
     selector: '[data-onboarding="probe-table"]',
   },
   {
-    id: "override",
+    id: "override-entry",
+    title: "Kultur bearbeiten starten",
+    description:
+      'Bei Status "eingereicht" erscheint in der Spalte Kultur der Button "Kultur bearbeiten". Damit startest du die manuelle Überschreibung.',
+    selector: '[data-onboarding="probe-table"]',
+  },
+  {
+    id: "override-editing",
     title: "Kultur überschreiben",
     description:
-      "Wenn eine Probe eingereicht ist, kannst du den Kulturnamen bearbeiten. Beim Speichern übernimmt der Admin die Verantwortung.",
+      "Nach Klick auf den Bearbeiten-Button wird die Zeile in den Editiermodus gesetzt. Beim Speichern übernimmt der Admin die Verantwortung.",
     selector: '[data-onboarding="probe-table"]',
   },
   {

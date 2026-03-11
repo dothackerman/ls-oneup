@@ -280,7 +280,12 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
 
   const totalPages = Math.max(1, Math.ceil(probes.length / ADMIN_PAGE_SIZE));
   const hasSubmittedProbe = probes.some((probe) => probe.status === "eingereicht");
-  const showOverrideOnboardingPreview = onboardingStep?.id === "override" && !hasSubmittedProbe;
+  const showOverrideEntryOnboardingPreview =
+    onboardingStep?.id === "override-entry" && !hasSubmittedProbe;
+  const showOverrideEditingOnboardingPreview =
+    onboardingStep?.id === "override-editing" && !hasSubmittedProbe;
+  const showOverrideOnboardingPreview =
+    showOverrideEntryOnboardingPreview || showOverrideEditingOnboardingPreview;
   const paginatedProbes = useMemo(() => {
     const start = (page - 1) * ADMIN_PAGE_SIZE;
     return probes.slice(start, start + ADMIN_PAGE_SIZE);
@@ -679,9 +684,9 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
 
                 <TableBody>
                   {showOverrideOnboardingPreview && (
-                    <TableRow className="border-b border-dashed border-primary/40 bg-primary/6 hover:bg-primary/10">
-                      <TableCell className="align-top font-medium">Vorschau Kunde</TableCell>
-                      <TableCell className="align-top text-foreground/90">VORSCHAU-001</TableCell>
+                    <TableRow className="border-b border-primary/30 bg-primary/6 hover:bg-primary/10">
+                      <TableCell className="align-top font-medium">Muster Kunde</TableCell>
+                      <TableCell className="align-top text-foreground/90">MUSTER-001</TableCell>
                       <TableCell className="align-top text-foreground/90">1</TableCell>
                       <TableCell className="min-w-44 align-top">
                         <Badge className={cn("status", statusBadgeClasses("eingereicht"))}>
@@ -689,35 +694,37 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
                         </Badge>
                       </TableCell>
                       <TableCell className="align-top">
-                        <div className="grid gap-2">
-                          <Input placeholder="Kultur anpassen" value="Beispielkultur" disabled />
-                          <div className="flex flex-wrap gap-2">
-                            <Button type="button" disabled>
-                              Speichern
-                            </Button>
-                            <Button type="button" variant="outline" disabled>
-                              Abbrechen
+                        {showOverrideEntryOnboardingPreview ? (
+                          <div>
+                            <p className="text-foreground/90">Beispielkultur</p>
+                            <Button
+                              type="button"
+                              aria-label="Kultur bearbeiten"
+                              variant="outline"
+                              size="icon-sm"
+                              className="mt-2"
+                            >
+                              <EditIcon />
                             </Button>
                           </div>
-                          <p className="text-xs text-muted-foreground">
-                            Vorschau: So überschreibt Admin den Kulturnamen nach Einreichung.
-                          </p>
-                        </div>
+                        ) : (
+                          <div className="grid gap-2">
+                            <Input value="Beispielkultur" readOnly />
+                            <div className="flex flex-wrap gap-2">
+                              <Button type="button">Speichern</Button>
+                              <Button type="button" variant="outline">
+                                Abbrechen
+                              </Button>
+                            </div>
+                          </div>
+                        )}
                       </TableCell>
                       <TableCell className="align-top text-foreground/90">normal</TableCell>
                       <TableCell className="align-top text-foreground/90">normal</TableCell>
-                      <TableCell className="align-top text-foreground/90">
-                        47.37690, 8.54170
-                      </TableCell>
-                      <TableCell className="align-top text-foreground/90">
-                        11.03.2026, 07:16
-                      </TableCell>
-                      <TableCell className="align-top text-foreground/90">
-                        11.03.2026, 08:16
-                      </TableCell>
-                      <TableCell className="align-top text-foreground/90">
-                        10.05.2026, 08:16
-                      </TableCell>
+                      <TableCell className="align-top text-foreground/90">-</TableCell>
+                      <TableCell className="align-top text-foreground/90">-</TableCell>
+                      <TableCell className="align-top text-foreground/90">-</TableCell>
+                      <TableCell className="align-top text-foreground/90">-</TableCell>
                       <TableCell
                         className={cn(
                           "align-top text-center",
@@ -725,7 +732,9 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
                           "bg-primary/6",
                         )}
                       >
-                        <span className="text-muted-foreground">-</span>
+                        <Button type="button" variant="outline" size="sm">
+                          Anzeigen
+                        </Button>
                       </TableCell>
                     </TableRow>
                   )}
