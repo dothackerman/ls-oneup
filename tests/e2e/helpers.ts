@@ -2,9 +2,22 @@ import { Buffer } from "node:buffer";
 import { execFile } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { promisify } from "node:util";
+import { deflateSync } from "node:zlib";
 import type { APIRequestContext } from "@playwright/test";
 
 const execFileAsync = promisify(execFile);
+const PNG_SIGNATURE = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+const CRC32_TABLE = (() => {
+  const table = new Uint32Array(256);
+  for (let n = 0; n < 256; n += 1) {
+    let c = n;
+    for (let k = 0; k < 8; k += 1) {
+      c = (c & 1) === 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+    }
+    table[n] = c >>> 0;
+  }
+  return table;
+})();
 
 type CreateProbeResponse = {
   items: Array<{ probe_id: string; token_url: string }>;
@@ -25,6 +38,65 @@ export type MultipartSubmitPayload = {
   gps_captured_at: string;
   image: ImagePayload;
 };
+
+function crc32(input: Buffer): number {
+  let crc = 0xffffffff;
+  for (let index = 0; index < input.length; index += 1) {
+    crc = CRC32_TABLE[(crc ^ input[index]) & 0xff] ^ (crc >>> 8);
+  }
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+function pngChunk(type: string, data: Buffer): Buffer {
+  const typeBuffer = Buffer.from(type, "ascii");
+  const length = Buffer.alloc(4);
+  length.writeUInt32BE(data.length, 0);
+  const payload = Buffer.concat([typeBuffer, data]);
+  const crc = Buffer.alloc(4);
+  crc.writeUInt32BE(crc32(payload), 0);
+  return Buffer.concat([length, payload, crc]);
+}
+
+function buildSolidPng(width: number, height: number): Buffer {
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(width, 0);
+  ihdr.writeUInt32BE(height, 4);
+  ihdr.writeUInt8(8, 8); // bit depth
+  ihdr.writeUInt8(6, 9); // color type RGBA
+  ihdr.writeUInt8(0, 10); // compression
+  ihdr.writeUInt8(0, 11); // filter
+  ihdr.writeUInt8(0, 12); // interlace
+
+  const rowLength = 1 + width * 4;
+  const raw = Buffer.alloc(rowLength * height, 0);
+  for (let y = 0; y < height; y += 1) {
+    const rowOffset = y * rowLength;
+    raw[rowOffset] = 0; // filter type None
+    for (let x = 0; x < width; x += 1) {
+      const pixel = rowOffset + 1 + x * 4;
+      raw[pixel] = 28; // R
+      raw[pixel + 1] = 120; // G
+      raw[pixel + 2] = 60; // B
+      raw[pixel + 3] = 255; // A
+    }
+  }
+
+  const idat = deflateSync(raw);
+  return Buffer.concat([
+    PNG_SIGNATURE,
+    pngChunk("IHDR", ihdr),
+    pngChunk("IDAT", idat),
+    pngChunk("IEND", Buffer.alloc(0)),
+  ]);
+}
+
+export function buildTinyPng4x4ImagePayload(): ImagePayload {
+  return {
+    name: "probe.png",
+    mimeType: "image/png",
+    buffer: buildSolidPng(4, 4),
+  };
+}
 
 export async function createProbeOrder(
   request: APIRequestContext,
@@ -86,11 +158,7 @@ export function buildMultipartSubmitPayload(overrides?: {
     gps_lat: overrides?.gps_lat ?? "47.3769",
     gps_lon: overrides?.gps_lon ?? "8.5417",
     gps_captured_at: overrides?.gps_captured_at ?? new Date().toISOString(),
-    image: overrides?.image ?? {
-      name: "probe.jpg",
-      mimeType: "image/jpeg",
-      buffer: Buffer.alloc(1024, 1),
-    },
+    image: overrides?.image ?? buildTinyPng4x4ImagePayload(),
   };
 }
 

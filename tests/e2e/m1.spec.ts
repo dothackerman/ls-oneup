@@ -1,6 +1,11 @@
 import { expect, test, type Page } from "@playwright/test";
 import { Buffer } from "node:buffer";
-import { createProbeOrder, expireProbeById, submitProbe } from "./helpers";
+import {
+  buildTinyPng4x4ImagePayload,
+  createProbeOrder,
+  expireProbeById,
+  submitProbe,
+} from "./helpers";
 
 async function chooseSelectOption(page: Page, label: string, optionText: string): Promise<void> {
   await page.getByRole("combobox", { name: label }).click();
@@ -210,11 +215,7 @@ test("E2E-FARM-001 and E2E-FARM-003 submit once then reject second submit", asyn
   await chooseSelectOption(page, "Bodenfeuchte", "normal");
   await page.getByRole("button", { name: "GPS erfassen" }).click();
 
-  await page.setInputFiles("input[type='file']", {
-    name: "probe.jpg",
-    mimeType: "image/jpeg",
-    buffer: Buffer.alloc(1024, 1),
-  });
+  await page.setInputFiles("input[type='file']", buildTinyPng4x4ImagePayload());
 
   await page.getByRole("button", { name: "Absenden" }).click();
   await expect(page.getByText("Erfolgreich eingereicht")).toBeVisible();
@@ -227,11 +228,7 @@ test("E2E-FARM-001 and E2E-FARM-003 submit once then reject second submit", asyn
       gps_lat: "47.3769",
       gps_lon: "8.5417",
       gps_captured_at: new Date().toISOString(),
-      image: {
-        name: "probe.jpg",
-        mimeType: "image/jpeg",
-        buffer: Buffer.alloc(1024, 1),
-      },
+      image: buildTinyPng4x4ImagePayload(),
     },
   });
 
@@ -266,11 +263,7 @@ test("E2E-FARM-004 blocks submit when offline", async ({ page, request, context 
   await chooseSelectOption(page, "Pflanzenvitalität", "normal");
   await chooseSelectOption(page, "Bodenfeuchte", "normal");
   await page.getByRole("button", { name: "GPS erfassen" }).click();
-  await page.setInputFiles("input[type='file']", {
-    name: "probe.jpg",
-    mimeType: "image/jpeg",
-    buffer: Buffer.alloc(1024, 1),
-  });
+  await page.setInputFiles("input[type='file']", buildTinyPng4x4ImagePayload());
 
   await context.setOffline(true);
   await expect(page.getByText("Keine Internetverbindung erkannt.")).toBeVisible();
@@ -441,11 +434,7 @@ test("E2E-FARM-006 requires explicit select choices before submit", async ({
   await page.goto(`/p/${token}`);
   await page.getByLabel("Kulturname").fill("Kartoffeln");
   await page.getByRole("button", { name: "GPS erfassen" }).click();
-  await page.setInputFiles("input[type='file']", {
-    name: "probe.jpg",
-    mimeType: "image/jpeg",
-    buffer: Buffer.alloc(1024, 1),
-  });
+  await page.setInputFiles("input[type='file']", buildTinyPng4x4ImagePayload());
 
   const submitButton = page.getByRole("button", { name: "Absenden" });
   await expect(submitButton).toBeDisabled();

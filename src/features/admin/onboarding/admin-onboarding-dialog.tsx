@@ -2,7 +2,12 @@ import { useEffect, useState } from "react";
 import { SpotlightOverlay } from "@shared/components/patterns/spotlight-overlay";
 import { Alert, AlertDescription } from "@shared/components/ui/alert";
 import { Button } from "@shared/components/ui/button";
-import { Dialog, DialogContent, DialogTitle } from "@shared/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@shared/components/ui/dialog";
 import { cn } from "@shared/lib/utils";
 import { ADMIN_ONBOARDING_STEPS, type AdminOnboardingStep } from "./admin-onboarding-steps";
 
@@ -177,6 +182,9 @@ export function AdminOnboardingDialog({
           >
             <div className="space-y-3">
               <DialogTitle className="font-display text-xl">Admin Einführung</DialogTitle>
+              <DialogDescription className="sr-only">
+                Schrittweise Einführung durch die wichtigsten Bereiche im Adminbereich.
+              </DialogDescription>
               <p className="text-xs text-muted-foreground">
                 Schritt {onboardingStepIndex! + 1} von {ADMIN_ONBOARDING_STEPS.length}
               </p>
