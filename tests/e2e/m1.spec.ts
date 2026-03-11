@@ -411,12 +411,44 @@ test("E2E-ADMIN-005 stores override timestamp only after submitted status", asyn
   await expect(row).toHaveCount(1);
   await expect(row.locator(".status")).toHaveText("eingereicht");
   await row.getByRole("button", { name: "Kultur bearbeiten" }).click();
-  await expect(row).toContainText("Mit Speichern übernimmt Admin die Verantwortung.");
+  await expect(row).toContainText("Enter speichert, Esc verwirft.");
   await row.getByPlaceholder("Kultur anpassen").fill("Randen");
-  await row.getByRole("button", { name: "Speichern" }).click();
+  await row.getByPlaceholder("Kultur anpassen").press("Enter");
 
   await expect(row).toContainText("Randen");
   await expect(row).toContainText("Überschrieben am:");
+});
+
+test("E2E-ADMIN-015 cancels inline crop override with Escape and blur without changes", async ({
+  page,
+  request,
+}) => {
+  const { orderNumber, token } = await createProbeOrder(request, {
+    orderPrefix: "E2E-ADMIN-015",
+  });
+
+  const submitStatus = await submitProbe(request, token);
+  expect(submitStatus).toBe(201);
+
+  await page.goto("/admin?onboarding=off");
+  const row = page.locator("tbody tr", { hasText: orderNumber });
+  await expect(row).toHaveCount(1);
+
+  await row.getByRole("button", { name: "Kultur bearbeiten" }).click();
+  const input = row.getByPlaceholder("Kultur anpassen");
+  await expect(input).toBeFocused();
+  await expect(row).toContainText("Enter speichert, Esc verwirft.");
+
+  await input.fill("Randen");
+  await input.press("Escape");
+  await expect(input).toHaveCount(0);
+  await expect(row).toContainText("Kartoffeln");
+  await expect(row).not.toContainText("Randen");
+
+  await row.getByRole("button", { name: "Kultur bearbeiten" }).click();
+  const unchangedInput = row.getByPlaceholder("Kultur anpassen");
+  await unchangedInput.blur();
+  await expect(unchangedInput).toHaveCount(0);
 });
 
 test("E2E-FARM-006 requires explicit select choices before submit", async ({
@@ -522,12 +554,25 @@ test("E2E-ADMIN-007 keeps Bild action visible on narrow screens", async ({ page,
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/admin?onboarding=off");
 
-  const scrollContainer = page.getByTestId("admin-table-scroll");
-  await scrollContainer.evaluate((element) => {
-    element.scrollLeft = 0;
+  const topScrollbar = page.getByTestId("admin-table-scroll-top");
+  const scrollContainer = page
+    .getByTestId("admin-table-scroll")
+    .locator("[data-slot='table-container']");
+  await expect(topScrollbar).toBeVisible();
+
+  await topScrollbar.evaluate((element) => {
+    element.scrollLeft = element.scrollWidth;
   });
+  await expect
+    .poll(() => scrollContainer.evaluate((element) => element.scrollLeft))
+    .toBeGreaterThan(0);
 
   const row = page.locator("tbody tr", { hasText: orderNumber });
   await expect(row).toHaveCount(1);
   await expect(row.getByRole("button", { name: "Anzeigen" })).toBeVisible();
+
+  await scrollContainer.evaluate((element) => {
+    element.scrollLeft = 0;
+  });
+  await expect.poll(() => topScrollbar.evaluate((element) => element.scrollLeft)).toBe(0);
 });

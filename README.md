@@ -32,6 +32,28 @@ npm run test:e2e
 npm run ci:local
 ```
 
+### Browser Debugging
+
+The repo now includes a local Playwright CLI setup for browser-session debugging beyond static screenshots.
+
+```bash
+npm run pw:cli:init
+npm run pw:cli:install-browser
+npm run pw:cli:open -- http://127.0.0.1:8787/admin?onboarding=force
+npm run pw:cli:show
+npm run pw:cli:list
+npm run pw:cli:snapshot
+```
+
+Notes:
+
+- Base repo config lives in [.playwright/cli.config.json](.playwright/cli.config.json).
+- Runtime normalization lives in [scripts/playwright-cli-run.mjs](scripts/playwright-cli-run.mjs).
+- Official CLI skills are installed into `.claude/skills/playwright-cli/`.
+- Use the CLI when browser state, DOM inspection, console/network logs, or iterative UI debugging matter more than a one-shot screenshot plan.
+- Do not use the CLI as a CI dependency or a replacement for the existing Playwright test suite.
+- The wrapper forces repo-local `chromium` and workspace-local daemon state so future agents do not depend on a system Chrome install or global cache assumptions.
+
 ## Cloudflare Deployment (Manual, via Local CLI)
 
 This repository uses [Cloudflare Workers](https://developers.cloudflare.com/workers/) with [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/), [D1](https://developers.cloudflare.com/d1/), and [R2](https://developers.cloudflare.com/r2/).

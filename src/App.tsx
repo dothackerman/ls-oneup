@@ -1,4 +1,4 @@
-import type { FormEvent } from "react";
+import type { FormEvent, KeyboardEvent } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as QRCode from "qrcode";
 import { AdminNewLinksCard } from "./features/admin/new-links/admin-new-links-card";
@@ -115,6 +115,10 @@ function themePreferenceLabel(value: AdminThemePreference): string {
     return "Hell";
   }
   return "Dunkel";
+}
+
+function normalizeCropName(value: string | null | undefined): string {
+  return value?.trim() ?? "";
 }
 
 function parseThemePreference(value: string | null): AdminThemePreference {
@@ -252,16 +256,27 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
 
   const [overrideDrafts, setOverrideDrafts] = useState<Record<string, string>>({});
   const [overrideEditingProbeId, setOverrideEditingProbeId] = useState<string | null>(null);
+  const [overrideSavingProbeId, setOverrideSavingProbeId] = useState<string | null>(null);
+  const [overrideBlurReminderProbeId, setOverrideBlurReminderProbeId] = useState<string | null>(
+    null,
+  );
 
   const [previewProbeId, setPreviewProbeId] = useState<string | null>(null);
   const [previewRetryNonce, setPreviewRetryNonce] = useState(0);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
+  const [tableScrollMetrics, setTableScrollMetrics] = useState({
+    viewportWidth: 0,
+    contentWidth: 0,
+  });
 
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [copiedProbeId, setCopiedProbeId] = useState<string | null>(null);
   const copyFeedbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const topScrollbarRef = useRef<HTMLDivElement | null>(null);
+  const tableScrollRef = useRef<HTMLDivElement | null>(null);
+  const isSyncingScrollRef = useRef(false);
 
   const qrData = useQrData(createdItems);
   const previewProbe = probes.find((probe) => probe.probe_id === previewProbeId) ?? null;
@@ -305,6 +320,116 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
       }
     };
   }, []);
+
+  useEffect(() => {
+    const scrollContainerElement = tableScrollRef.current;
+
+    if (!scrollContainerElement) {
+      return;
+    }
+
+    const scrollContainer = scrollContainerElement;
+
+    function getHorizontalScrollElement(): HTMLDivElement | null {
+      const element = scrollContainer.querySelector("[data-slot='table-container']");
+      return element instanceof HTMLDivElement ? element : null;
+    }
+
+    function updateTableScrollMetrics(): void {
+      const horizontalScrollElement = getHorizontalScrollElement();
+      if (!horizontalScrollElement) {
+        return;
+      }
+
+      const nextViewportWidth = horizontalScrollElement.clientWidth;
+      const nextContentWidth = Math.max(horizontalScrollElement.scrollWidth, nextViewportWidth);
+
+      setTableScrollMetrics((prev) => {
+        if (prev.viewportWidth === nextViewportWidth && prev.contentWidth === nextContentWidth) {
+          return prev;
+        }
+
+        return {
+          viewportWidth: nextViewportWidth,
+          contentWidth: nextContentWidth,
+        };
+      });
+    }
+
+    updateTableScrollMetrics();
+
+    const resizeObserver =
+      typeof ResizeObserver === "undefined"
+        ? null
+        : new ResizeObserver(() => {
+            updateTableScrollMetrics();
+          });
+
+    resizeObserver?.observe(scrollContainer);
+
+    const horizontalScrollElement = getHorizontalScrollElement();
+    if (horizontalScrollElement) {
+      resizeObserver?.observe(horizontalScrollElement);
+    }
+
+    window.addEventListener("resize", updateTableScrollMetrics);
+    return () => {
+      resizeObserver?.disconnect();
+      window.removeEventListener("resize", updateTableScrollMetrics);
+    };
+  }, [page, probes.length, overrideEditingProbeId, showOverrideOnboardingPreview]);
+
+  useEffect(() => {
+    const topScrollbarElement = topScrollbarRef.current;
+    const scrollContainerElement = tableScrollRef.current;
+
+    if (!topScrollbarElement || !scrollContainerElement) {
+      return;
+    }
+
+    const topScrollbar = topScrollbarElement;
+    const horizontalScrollElement = scrollContainerElement.querySelector(
+      "[data-slot='table-container']",
+    );
+
+    if (!(horizontalScrollElement instanceof HTMLDivElement)) {
+      return;
+    }
+
+    const scrollContainer = horizontalScrollElement;
+
+    function syncScroll(source: HTMLDivElement, target: HTMLDivElement): void {
+      if (isSyncingScrollRef.current) {
+        return;
+      }
+
+      isSyncingScrollRef.current = true;
+      target.scrollLeft = source.scrollLeft;
+
+      requestAnimationFrame(() => {
+        isSyncingScrollRef.current = false;
+      });
+    }
+
+    function handleTopScroll(): void {
+      syncScroll(topScrollbar, scrollContainer);
+    }
+
+    function handleTableScroll(): void {
+      syncScroll(scrollContainer, topScrollbar);
+    }
+
+    topScrollbar.scrollLeft = scrollContainer.scrollLeft;
+    topScrollbar.addEventListener("scroll", handleTopScroll);
+    scrollContainer.addEventListener("scroll", handleTableScroll);
+
+    return () => {
+      topScrollbar.removeEventListener("scroll", handleTopScroll);
+      scrollContainer.removeEventListener("scroll", handleTableScroll);
+    };
+  }, [tableScrollMetrics.contentWidth, tableScrollMetrics.viewportWidth]);
+
+  const showsTopScrollbar = tableScrollMetrics.contentWidth > tableScrollMetrics.viewportWidth;
 
   async function loadProbes({ resetPage = false }: { resetPage?: boolean } = {}): Promise<void> {
     const res = await fetch("/api/admin/probes");
@@ -380,6 +505,7 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
 
   function startOverrideEdit(probe: AdminProbe): void {
     setOverrideEditingProbeId(probe.probe_id);
+    setOverrideBlurReminderProbeId(null);
     setOverrideDrafts((prev) => ({
       ...prev,
       [probe.probe_id]: probe.crop_name ?? "",
@@ -388,39 +514,84 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
 
   function cancelOverrideEdit(probeId: string): void {
     setOverrideEditingProbeId((prev) => (prev === probeId ? null : prev));
+    setOverrideSavingProbeId((prev) => (prev === probeId ? null : prev));
+    setOverrideBlurReminderProbeId((prev) => (prev === probeId ? null : prev));
     setOverrideDrafts((prev) => ({
       ...prev,
       [probeId]: "",
     }));
   }
 
-  async function submitOverride(probeId: string): Promise<void> {
-    const cropName = overrideDrafts[probeId]?.trim();
+  function hasChangedOverrideDraft(probe: AdminProbe): boolean {
+    return normalizeCropName(overrideDrafts[probe.probe_id]) !== normalizeCropName(probe.crop_name);
+  }
+
+  async function submitOverride(probe: AdminProbe): Promise<void> {
+    const probeId = probe.probe_id;
+    const cropName = normalizeCropName(overrideDrafts[probeId]);
+
+    if (cropName === normalizeCropName(probe.crop_name)) {
+      cancelOverrideEdit(probeId);
+      return;
+    }
+
     if (!cropName) {
       setError("Kulturname ist obligatorisch.");
       return;
     }
 
     setError(null);
+    setOverrideSavingProbeId(probeId);
+    setOverrideBlurReminderProbeId(null);
 
-    const res = await fetch(`/api/admin/probes/${probeId}/crop-override`, {
-      method: "PATCH",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({ crop_name: cropName }),
-    });
+    try {
+      const res = await fetch(`/api/admin/probes/${probeId}/crop-override`, {
+        method: "PATCH",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ crop_name: cropName }),
+      });
 
-    const payload = (await res.json()) as ApiError;
+      const payload = (await res.json()) as ApiError;
 
-    if (!res.ok) {
-      setError(payload.message || "Überschreiben fehlgeschlagen.");
+      if (!res.ok) {
+        setError(payload.message || "Überschreiben fehlgeschlagen.");
+        return;
+      }
+
+      setOverrideDrafts((prev) => ({ ...prev, [probeId]: "" }));
+      setOverrideEditingProbeId(null);
+      await loadProbes({ resetPage: true });
+    } finally {
+      setOverrideSavingProbeId((prev) => (prev === probeId ? null : prev));
+    }
+  }
+
+  function handleOverrideBlur(probe: AdminProbe): void {
+    if (overrideSavingProbeId === probe.probe_id) {
       return;
     }
 
-    setOverrideDrafts((prev) => ({ ...prev, [probeId]: "" }));
-    setOverrideEditingProbeId(null);
-    await loadProbes({ resetPage: true });
+    if (!hasChangedOverrideDraft(probe)) {
+      cancelOverrideEdit(probe.probe_id);
+      return;
+    }
+
+    setOverrideBlurReminderProbeId(probe.probe_id);
+  }
+
+  function handleOverrideKeyDown(event: KeyboardEvent<HTMLInputElement>, probe: AdminProbe): void {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      void submitOverride(probe);
+      return;
+    }
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      cancelOverrideEdit(probe.probe_id);
+    }
   }
 
   function openPreview(probe: AdminProbe): void {
@@ -638,8 +809,28 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
             onNext={() => setPage((prev) => Math.min(totalPages, prev + 1))}
           />
 
+          {showsTopScrollbar ? (
+            <div className="space-y-1">
+              <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+                <span>Tabelle horizontal scrollen</span>
+                <span>Alternative Scrollleiste oben</span>
+              </div>
+              <div
+                ref={topScrollbarRef}
+                data-testid="admin-table-scroll-top"
+                className="overflow-x-auto overflow-y-hidden rounded-md border border-border/70 bg-muted/35"
+              >
+                <div style={{ width: `${tableScrollMetrics.contentWidth}px`, height: "1rem" }} />
+              </div>
+            </div>
+          ) : null}
+
           <div className="admin-table-surface overflow-hidden rounded-xl border border-border/80">
-            <div data-testid="admin-table-scroll" className="max-h-[65vh] overflow-auto">
+            <div
+              ref={tableScrollRef}
+              data-testid="admin-table-scroll"
+              className="max-h-[65vh] overflow-auto"
+            >
               <Table className="min-w-[1440px] border-collapse text-sm">
                 <TableHeader>
                   <TableRow className="hover:bg-transparent">
@@ -710,12 +901,9 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
                         ) : (
                           <div className="grid gap-2">
                             <Input value="Beispielkultur" readOnly />
-                            <div className="flex flex-wrap gap-2">
-                              <Button type="button">Speichern</Button>
-                              <Button type="button" variant="outline">
-                                Abbrechen
-                              </Button>
-                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              Enter speichert, Esc verwirft.
+                            </p>
                           </div>
                         )}
                       </TableCell>
@@ -776,34 +964,41 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
                           <TableCell className="align-top">
                             {overrideEditingProbeId === probe.probe_id &&
                             probe.status === "eingereicht" ? (
-                              <div className="grid gap-2">
+                              <div className="grid gap-2 rounded-md bg-background/60 p-1">
                                 <Input
                                   placeholder="Kultur anpassen"
                                   value={overrideDrafts[probe.probe_id] ?? ""}
-                                  onChange={(event) =>
+                                  autoFocus
+                                  disabled={overrideSavingProbeId === probe.probe_id}
+                                  aria-describedby={`crop-override-help-${probe.probe_id}`}
+                                  onChange={(event) => {
+                                    setOverrideBlurReminderProbeId((prev) =>
+                                      prev === probe.probe_id ? null : prev,
+                                    );
                                     setOverrideDrafts((prev) => ({
                                       ...prev,
                                       [probe.probe_id]: event.target.value,
-                                    }))
-                                  }
+                                    }));
+                                  }}
+                                  onBlur={() => handleOverrideBlur(probe)}
+                                  onKeyDown={(event) => handleOverrideKeyDown(event, probe)}
                                 />
-                                <div className="flex flex-wrap gap-2">
-                                  <Button
-                                    type="button"
-                                    onClick={() => void submitOverride(probe.probe_id)}
-                                  >
-                                    Speichern
-                                  </Button>
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => cancelOverrideEdit(probe.probe_id)}
-                                  >
-                                    Abbrechen
-                                  </Button>
-                                </div>
-                                <p className="text-xs text-muted-foreground">
-                                  Mit Speichern übernimmt Admin die Verantwortung.
+                                <p
+                                  id={`crop-override-help-${probe.probe_id}`}
+                                  className={cn(
+                                    "text-xs",
+                                    normalizeCropName(overrideDrafts[probe.probe_id]) === ""
+                                      ? "text-destructive"
+                                      : "text-muted-foreground",
+                                  )}
+                                >
+                                  {overrideSavingProbeId === probe.probe_id
+                                    ? "Speichert..."
+                                    : normalizeCropName(overrideDrafts[probe.probe_id]) === ""
+                                      ? "Kulturname ist obligatorisch."
+                                      : overrideBlurReminderProbeId === probe.probe_id
+                                        ? "Noch nicht gespeichert. Enter speichert, Esc verwirft."
+                                        : "Enter speichert, Esc verwirft."}
                                 </p>
                               </div>
                             ) : (

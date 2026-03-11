@@ -53,6 +53,7 @@ If unsure, start with the smallest route and expand only if blocked.
    - `npm run test:integration`
    - `npm run test:e2e`
    - `npm run ux:capture -- --plan <plan-file>` when runnable
+   - `npm run pw:cli -- <command>` for clean-session interactive UI debugging when screenshots alone are insufficient
 
 ## Git Cadence
 1. One logical requirement-linked slice per commit.

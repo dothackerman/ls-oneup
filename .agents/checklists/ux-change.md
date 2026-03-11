@@ -17,8 +17,14 @@ Use for UI/UX/onboarding/visual behavior changes.
 4. `npm run test:integration`
 5. `npm run test:e2e`
 6. `npm run ux:capture -- --plan <plan-file>` (when runnable)
+7. `npm run pw:cli -- <command>` when a clean browser session, DOM inspection, or console/network evidence is needed to explain a visual bug
 
 ## Failure Modes
 1. Onboarding state diverges from production state.
 2. Overlay/highlight geometry mismatch.
 3. Mock state misleads user about real persistence.
+
+## Tool Choice
+1. Prefer `npm run ux:capture -- --plan <plan-file>` for repeatable screenshot plans and known visual checks.
+2. Prefer `npm run pw:cli -- <command>` for iterative debugging, stateful reproduction, DOM inspection, and console/network evidence.
+3. Do not treat Playwright CLI as a CI gate or a replacement for the existing Playwright test suite.

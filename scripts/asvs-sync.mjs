@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-/* eslint-env node */
-/* global fetch, console, process */
 import fs from "node:fs/promises";
 import path from "node:path";
 

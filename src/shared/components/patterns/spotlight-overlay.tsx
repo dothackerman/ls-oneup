@@ -60,39 +60,25 @@ export function SpotlightOverlay({ selector }: SpotlightOverlayProps): JSX.Eleme
   }, [selector]);
 
   if (!selector) {
-    return (
-      <div
-        data-slot="spotlight-overlay"
-        className="fixed inset-0 z-40 bg-black/45 supports-backdrop-filter:backdrop-blur-xs"
-      />
-    );
+    return <div data-slot="spotlight-overlay" className="fixed inset-0 z-40 bg-black/45" />;
   }
 
   if (!rect) {
     return null;
   }
 
-  const bottom = rect.top + rect.height;
-  const right = rect.left + rect.width;
-
   return (
     <>
       <div
         data-slot="spotlight-overlay"
-        className="fixed inset-x-0 top-0 z-40 bg-black/45 supports-backdrop-filter:backdrop-blur-xs"
-        style={{ height: rect.top }}
-      />
-      <div
-        className="fixed inset-x-0 bottom-0 z-40 bg-black/45 supports-backdrop-filter:backdrop-blur-xs"
-        style={{ top: bottom }}
-      />
-      <div
-        className="fixed left-0 z-40 bg-black/45 supports-backdrop-filter:backdrop-blur-xs"
-        style={{ top: rect.top, width: rect.left, height: rect.height }}
-      />
-      <div
-        className="fixed right-0 z-40 bg-black/45 supports-backdrop-filter:backdrop-blur-xs"
-        style={{ top: rect.top, left: right, height: rect.height }}
+        className="pointer-events-none fixed z-40 rounded-sm"
+        style={{
+          top: rect.top,
+          left: rect.left,
+          width: rect.width,
+          height: rect.height,
+          boxShadow: "0 0 0 9999px rgba(0, 0, 0, 0.45)",
+        }}
       />
       <div
         aria-hidden="true"

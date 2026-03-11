@@ -73,6 +73,26 @@ npm run db:reset:local
 ```bash
 npm run build
 ```
+3. Browser debugging with Playwright CLI:
+```bash
+npm run pw:cli:init
+npm run pw:cli:install-browser
+npm run pw:cli:open -- http://127.0.0.1:8787/admin?onboarding=force
+npm run pw:cli:list
+npm run pw:cli:snapshot
+```
+
+### When To Use Playwright CLI
+1. Use it for iterative UI/UX debugging where you need a clean browser session, DOM inspection, console logs, network logs, or repeated manual state transitions.
+2. Prefer the existing Playwright test suite for automated regression coverage.
+3. Prefer `npm run ux:capture` for repeatable screenshot plans when the workflow is already known.
+4. Do not treat Playwright CLI as a CI requirement or a full replacement for browser devtools.
+
+### Playwright CLI Stability Notes
+1. The repo wrapper `scripts/playwright-cli-run.mjs` forces repo-local Chromium from `.playwright-browsers/`.
+2. The wrapper also keeps CLI daemon/session state under `.playwright/daemon/` so the setup remains workspace-local and reproducible.
+3. The base config lives in `.playwright/cli.config.json`; the wrapper generates `.playwright/cli.runtime.json` at runtime.
+4. This setup avoids the CLI's Chrome-channel default and removes the need for a system Chrome install on this machine.
 
 ## Manual Cloudflare Release (From Local CLI)
 Run only when release is explicitly requested and environment is ready.

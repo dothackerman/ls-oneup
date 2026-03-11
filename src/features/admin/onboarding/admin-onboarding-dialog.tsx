@@ -168,13 +168,18 @@ export function AdminOnboardingDialog({
           <DialogContent
             showCloseButton={false}
             hideOverlay
+            disableAnimation
             className={cn(
               "max-w-xl",
               dialogPlacement ? "top-0 left-0 -translate-x-0 -translate-y-0" : "",
             )}
             style={
               dialogPlacement
-                ? { top: `${dialogPlacement.top}px`, left: `${dialogPlacement.left}px` }
+                ? {
+                    top: `${dialogPlacement.top}px`,
+                    left: `${dialogPlacement.left}px`,
+                    transform: "none",
+                  }
                 : undefined
             }
             onInteractOutside={(event) => event.preventDefault()}

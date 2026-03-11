@@ -3,6 +3,9 @@ dist
 .wrangler
 .wrangler-config
 .playwright-browsers
+.playwright/daemon
+.playwright/cli.runtime.json
+.claude/skills
 playwright-report
 test-results
 coverage

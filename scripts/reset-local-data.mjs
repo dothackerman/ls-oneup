@@ -1,5 +1,3 @@
-/* global console, process */
-
 import { spawn } from "node:child_process";
 import { rm } from "node:fs/promises";
 import path from "node:path";
