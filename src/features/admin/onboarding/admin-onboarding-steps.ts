@@ -57,6 +57,5 @@ export const ADMIN_ONBOARDING_STEPS: AdminOnboardingStep[] = [
     title: "Gesamtablauf",
     description:
       'Der Farmer öffnet den Link, erfasst Pflichtfelder, GPS und Bild und sendet einmalig ab. Danach siehst du den Status "eingereicht" und kannst die Daten prüfen.',
-    selector: '[data-onboarding="probe-table"]',
   },
 ];

@@ -11,7 +11,7 @@ type SpotlightOverlayProps = {
   selector?: string;
 };
 
-const SPOTLIGHT_PADDING = 14;
+const SPOTLIGHT_PADDING = 8;
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
