@@ -8,7 +8,9 @@ import { cn } from "@shared/lib/utils";
 type HorizontalScrollbarMode = "bottom" | "top" | "both";
 type ScrollAreaViewportProps = React.ComponentProps<typeof ScrollAreaPrimitive.Viewport> &
   React.HTMLAttributes<HTMLDivElement>;
-type ScrollAreaScrollbarProps = React.ComponentProps<typeof ScrollAreaPrimitive.ScrollAreaScrollbar> &
+type ScrollAreaScrollbarProps = React.ComponentProps<
+  typeof ScrollAreaPrimitive.ScrollAreaScrollbar
+> &
   React.HTMLAttributes<HTMLDivElement>;
 type ScrollAreaProps = React.ComponentProps<typeof ScrollAreaPrimitive.Root> & {
   viewportClassName?: string;

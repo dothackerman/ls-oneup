@@ -570,6 +570,14 @@ test("E2E-ADMIN-007 keeps Bild action visible on narrow screens", async ({ page,
   const row = page.locator("tbody tr", { hasText: orderNumber });
   await expect(row).toHaveCount(1);
   await expect(row.getByRole("button", { name: "Anzeigen" })).toBeVisible();
+  const imageHeader = page.getByRole("columnheader", { name: "Bild" });
+  const imageCell = row.locator("td").last();
+  await expect(imageHeader).toHaveCSS("border-bottom-width", "1px");
+  const headerBox = await imageHeader.boundingBox();
+  const cellBox = await imageCell.boundingBox();
+  expect(headerBox?.width).toBeTruthy();
+  expect(cellBox?.width).toBeTruthy();
+  expect(Math.abs((headerBox?.width ?? 0) - (cellBox?.width ?? 0))).toBeLessThanOrEqual(1);
 
   await scrollViewport.evaluate((element) => {
     element.scrollLeft = 0;

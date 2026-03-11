@@ -741,7 +741,7 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
                     <TableHead className="admin-table-head sticky top-0 z-20 text-foreground">
                       Ablauf
                     </TableHead>
-                    <TableHead className="admin-table-head shadow-sticky-edge sticky top-0 right-0 z-30 w-28 border-l border-border/60 text-center text-foreground">
+                    <TableHead className="admin-table-head shadow-sticky-edge sticky top-0 right-0 z-30 w-28 min-w-28 border-l border-border/60 text-center text-foreground">
                       Bild
                     </TableHead>
                   </TableRow>
@@ -789,7 +789,7 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
                       <TableCell className="align-top text-foreground/90">-</TableCell>
                       <TableCell
                         className={cn(
-                          "align-top text-center",
+                          "w-28 min-w-28 align-top text-center",
                           "shadow-sticky-edge sticky right-0 z-10 border-l border-border/60",
                           "bg-primary/6",
                         )}
@@ -920,7 +920,7 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
                           </TableCell>
                           <TableCell
                             className={cn(
-                              "shadow-sticky-edge sticky right-0 align-top border-l border-border/70 dark:border-white/8",
+                              "shadow-sticky-edge sticky right-0 w-28 min-w-28 align-top border-l border-border/70 dark:border-white/8",
                               stickyRowBg,
                             )}
                           >
