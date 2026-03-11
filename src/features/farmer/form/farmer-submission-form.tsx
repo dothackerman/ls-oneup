@@ -1,4 +1,5 @@
 import type { FormEvent } from "react";
+import { useState } from "react";
 import { Button } from "@shared/components/ui/button";
 import { Card, CardContent, CardHeader, CardDescription } from "@shared/components/ui/card";
 import { Input } from "@shared/components/ui/input";
@@ -59,6 +60,8 @@ export function FarmerSubmissionForm({
   onImageFileChange,
   onCaptureGps,
 }: FarmerSubmissionFormProps): JSX.Element {
+  const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
+
   return (
     <Card>
       <CardHeader>
@@ -121,13 +124,36 @@ export function FarmerSubmissionForm({
 
           <div className="grid gap-1.5">
             <Label htmlFor="image-file">Bild (JPEG oder PNG)</Label>
-            <Input
-              id="image-file"
-              type="file"
-              accept="image/jpeg,image/png"
-              onChange={(event) => onImageFileChange(event.target.files?.[0] ?? null)}
-              required
-            />
+            <div className="rounded-lg border border-dashed border-border/80 bg-muted/20 p-3">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-foreground" aria-live="polite">
+                    {selectedFileName ?? "Noch keine Datei ausgewählt"}
+                  </p>
+                  <p id="image-file-help" className="text-xs text-muted-foreground">
+                    Wählen Sie genau ein Bild im Format JPEG oder PNG.
+                  </p>
+                </div>
+
+                <Button asChild variant="outline" className="w-full sm:w-auto">
+                  <label htmlFor="image-file">Datei auswählen</label>
+                </Button>
+              </div>
+
+              <Input
+                id="image-file"
+                type="file"
+                accept="image/jpeg,image/png"
+                className="sr-only"
+                aria-describedby="image-file-help"
+                onChange={(event) => {
+                  const file = event.target.files?.[0] ?? null;
+                  setSelectedFileName(file?.name ?? null);
+                  onImageFileChange(file);
+                }}
+                required
+              />
+            </div>
           </div>
 
           <div>

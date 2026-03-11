@@ -1,0 +1,95 @@
+{
+  "browser": "chromium",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  },
+  "steps": [
+    {
+      "url": "http://127.0.0.1:8787/admin?onboarding=off",
+      "actions": [
+        {
+          "fillLabel": {
+            "label": "Kunde",
+            "value": "UX Lane B Kunde"
+          }
+        },
+        {
+          "fillLabel": {
+            "label": "Auftragsnummer",
+            "value": "UX-LANE-B-1"
+          }
+        },
+        {
+          "fillLabel": {
+            "label": "Anzahl Proben",
+            "value": "2"
+          }
+        },
+        {
+          "clickRole": {
+            "role": "button",
+            "name": "Links erstellen"
+          }
+        },
+        {
+          "waitForText": {
+            "text": "Neue Links und QR-Codes"
+          }
+        },
+        {
+          "waitForTimeout": 300
+        }
+      ],
+      "screenshot": "01-admin-generated-light-desktop.png"
+    },
+    {
+      "actions": [
+        {
+          "selectRoleOption": {
+            "trigger": {
+              "role": "combobox",
+              "name": "Farbmodus"
+            },
+            "option": "Dunkel"
+          }
+        },
+        {
+          "waitForTimeout": 300
+        }
+      ],
+      "screenshot": "02-admin-generated-dark-desktop.png"
+    },
+    {
+      "actions": [
+        {
+          "resizeViewport": {
+            "width": 430,
+            "height": 932
+          }
+        },
+        {
+          "waitForTimeout": 300
+        }
+      ],
+      "screenshot": "03-admin-generated-dark-mobile.png"
+    },
+    {
+      "actions": [
+        {
+          "selectRoleOption": {
+            "trigger": {
+              "role": "combobox",
+              "name": "Farbmodus"
+            },
+            "option": "Hell"
+          }
+        },
+        {
+          "waitForTimeout": 300
+        }
+      ],
+      "screenshot": "04-admin-generated-light-mobile.png"
+    }
+  ]
+}
