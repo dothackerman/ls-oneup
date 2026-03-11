@@ -3,6 +3,8 @@
 This folder contains the living requirement and implementation-guidance documents for `ls-oneup`.
 
 ## Document Order
+0. `00-index.md`
+   - quick-start index with conditional loading guidance for agents
 1. `01-customer-wishes.md`
    - clarified customer wishes and product intent
 2. `02-milestones.md`
@@ -31,6 +33,10 @@ This folder contains the living requirement and implementation-guidance document
    - ASVS/vOS audit agent contract, source sync, and checklist workflow
 14. `14-frontend-styling-policy.md`
    - frontend styling rules for shadcn base components, Tailwind composition, and runtime-style exceptions
+15. `15-ux-governance.md`
+   - operator-grade UX principles and validation contract
+16. `16-onboarding-parity.md`
+   - onboarding parity rules to avoid preview/production drift
 
 ## Working Rules
 1. Keep docs aligned with code and architecture decisions.

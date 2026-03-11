@@ -13,7 +13,7 @@ This file is orchestration-only:
 3. Do not implement out-of-scope future features preemptively.
 
 ## Source of Truth
-1. Start with `docs/requirements/README.md` to locate the current requirement set.
+1. Start with `docs/requirements/00-index.md` (or `docs/requirements/README.md`) to locate the current requirement set.
 2. Use the referenced requirement docs as authoritative for behavior and constraints.
 3. Keep this file stable and reusable; store feature/milestone specifics in requirement docs, not here.
 4. For frontend UX/styling work, follow `docs/requirements/14-frontend-styling-policy.md`.
@@ -81,4 +81,5 @@ Feature/milestone completion additionally requires:
 
 ## File Growth Policy
 1. Keep this top-level `AGENTS.md` as the single repo-wide contract for now.
-2. Introduce subdirectory-level agent files only when codebase size/complexity justifies it.
+2. Keep routing metadata/checklists under `.agents/` to reduce default context load and support conditional document loading by change type.
+3. Introduce additional subdirectory-level agent files only when codebase size/complexity justifies it.

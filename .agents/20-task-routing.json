@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "default_load": [
+    "AGENTS.md",
+    ".agents/10-global-rules.md",
+    "docs/requirements/00-index.md"
+  ],
+  "routes": [
+    {
+      "id": "security",
+      "priority": 1,
+      "keywords": ["security", "asvs", "auth", "token", "abuse", "validation"],
+      "paths": ["worker/**", "tests/integration/**", "docs/requirements/12-*", "docs/requirements/13-*"],
+      "load": ["docs/requirements/12-m1-security-decision-record.md", "docs/requirements/13-m1-asvs-audit-agent-and-checklist.md", ".agents/checklists/backend-change.md"]
+    },
+    {
+      "id": "data-contract",
+      "priority": 2,
+      "keywords": ["api", "contract", "schema", "migration", "d1", "payload"],
+      "paths": ["worker/**", "src/db/**", "migrations/**", "docs/requirements/09-*", "docs/requirements/10-*"],
+      "load": ["docs/requirements/09-m1-api-contract.md", "docs/requirements/10-m1-data-model-and-migrations.md", ".agents/checklists/data-contract-change.md"]
+    },
+    {
+      "id": "ux",
+      "priority": 3,
+      "keywords": ["ux", "ui", "onboarding", "layout", "spacing", "highlight", "dialog", "visual", "copy"],
+      "paths": ["src/features/**", "src/shared/components/**", "src/styles.css", "scripts/ux-capture*"],
+      "load": ["docs/requirements/14-frontend-styling-policy.md", "docs/requirements/15-ux-governance.md", "docs/requirements/16-onboarding-parity.md", ".agents/checklists/ux-change.md"]
+    },
+    {
+      "id": "backend",
+      "priority": 4,
+      "keywords": ["worker", "endpoint", "runtime", "integration"],
+      "paths": ["worker/**", "tests/integration/**"],
+      "load": ["docs/requirements/07-m1-agent-execution-contract.md", "docs/requirements/08-local-testing-and-first-release-runbook.md", ".agents/checklists/backend-change.md"]
+    },
+    {
+      "id": "frontend-non-ux",
+      "priority": 5,
+      "keywords": ["component", "react", "frontend"],
+      "paths": ["src/**"],
+      "load": ["docs/requirements/14-frontend-styling-policy.md"]
+    }
+  ]
+}
