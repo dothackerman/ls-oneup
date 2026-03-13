@@ -80,6 +80,38 @@
       "agility_plan": "The versioned s1 envelope records the key id and algorithm so decryptors can support dual-read migration to future envelope versions without rewriting all rows in one release."
     },
     {
+      "id": "probe-image-object-encryption",
+      "purpose": "Encrypt uploaded probe-image bytes before persisting them to R2, while keeping legacy raw-object reads available during rollout.",
+      "scope": "runtime",
+      "algorithm": "AES-256-GCM",
+      "key_source": "SUBMISSION_DATA_KEYS_JSON current+legacy key ring in Cloudflare Secrets or local .dev.vars",
+      "rotation_policy": "Rotate by introducing a new current key, keep legacy decrypt-only keys until encrypted objects are either rewrapped or naturally retired, then remove the legacy key.",
+      "code_references": [
+        "worker/submission-security.ts",
+        "worker/index.ts",
+        "tests/integration/m1.integration.test.ts"
+      ],
+      "discovery": [
+        {
+          "marker_id": "webcrypto-get-random-values",
+          "path": "worker/submission-security.ts"
+        },
+        {
+          "marker_id": "webcrypto-subtle-import-key",
+          "path": "worker/submission-security.ts"
+        },
+        {
+          "marker_id": "webcrypto-subtle-encrypt",
+          "path": "worker/submission-security.ts"
+        },
+        {
+          "marker_id": "webcrypto-subtle-decrypt",
+          "path": "worker/submission-security.ts"
+        }
+      ],
+      "agility_plan": "The versioned b1 image envelope records the key id and algorithm so readers can decrypt legacy objects during rotation and rewrap to future formats without exposing raw image bytes at rest."
+    },
+    {
       "id": "test-fixture-rng",
       "purpose": "Generate synthetic image bytes and oversize payloads for integration coverage.",
       "scope": "test-only",
@@ -106,6 +138,7 @@
   "migration_plan": [
     "Keep version identifiers in stored token hashes so readers can distinguish future algorithms or key formats.",
     "Move submitted probe payloads from legacy plaintext columns to `submission_ciphertext` and retire plaintext fallback only after historical rows are migrated or naturally expire.",
+    "Move uploaded probe-image objects from raw R2 bytes to encrypted envelopes and retire raw-object fallback only after historical objects are rewrapped or expired.",
     "Treat any new runtime cryptographic primitive as inventory drift until it is documented here and validated by npm run crypto:run.",
     "Remove legacy token HMAC keys only after the longest issued token lifetime has elapsed.",
     "Remove legacy submission encryption keys only after stored ciphertext has been re-encrypted or the protected records are no longer needed."

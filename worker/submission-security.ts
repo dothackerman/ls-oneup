@@ -15,8 +15,10 @@ type SubmissionDataKeyRing = {
   legacy: SubmissionDataKey[];
 };
 
+type SubmissionEnvelopeVersion = "s1" | "b1";
+
 type SubmissionEnvelope = {
-  version: "s1";
+  version: SubmissionEnvelopeVersion;
   alg: "A256GCM";
   key_id: string;
   iv: string;
@@ -39,6 +41,8 @@ export class SubmissionSecurityConfigError extends Error {
     this.name = "SubmissionSecurityConfigError";
   }
 }
+
+export const ENCRYPTED_IMAGE_OBJECT_CONTENT_TYPE = "application/vnd.ls-oneup.encrypted-image+json";
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
@@ -191,7 +195,10 @@ function assertSubmissionPayload(value: unknown): asserts value is SubmissionPay
   }
 }
 
-function parseEnvelope(value: string): SubmissionEnvelope {
+function parseEnvelope(
+  value: string,
+  expectedVersion: SubmissionEnvelopeVersion,
+): SubmissionEnvelope {
   let parsed: unknown;
   try {
     parsed = JSON.parse(value);
@@ -210,7 +217,7 @@ function parseEnvelope(value: string): SubmissionEnvelope {
   const ciphertext = String(parsed.ciphertext ?? "");
 
   if (
-    version !== "s1" ||
+    version !== expectedVersion ||
     alg !== "A256GCM" ||
     keyId.length === 0 ||
     iv.length === 0 ||
@@ -220,7 +227,7 @@ function parseEnvelope(value: string): SubmissionEnvelope {
   }
 
   return {
-    version: "s1",
+    version: expectedVersion,
     alg: "A256GCM",
     key_id: keyId,
     iv,
@@ -228,20 +235,23 @@ function parseEnvelope(value: string): SubmissionEnvelope {
   };
 }
 
-export async function encryptSubmissionPayload(
-  payload: SubmissionPayload,
+async function encryptSubmissionBytes(
+  version: SubmissionEnvelopeVersion,
+  plaintextBytes: Uint8Array,
   env: {
     SUBMISSION_DATA_KEYS_JSON?: string;
   },
 ): Promise<string> {
-  assertSubmissionPayload(payload);
+  if (plaintextBytes.byteLength === 0) {
+    throw new SubmissionSecurityConfigError("Submission ciphertext plaintext must not be empty.");
+  }
+
   const { current } = resolveSubmissionDataKeyRing(env);
   const key = await importAesKey(current.secret, ["encrypt"]);
 
   const iv = new Uint8Array(12);
   crypto.getRandomValues(iv);
 
-  const plaintextBytes = encoder.encode(JSON.stringify(payload));
   try {
     const ciphertext = await crypto.subtle.encrypt(
       { name: "AES-GCM", iv: toArrayBuffer(iv) },
@@ -251,7 +261,7 @@ export async function encryptSubmissionPayload(
     const ciphertextBytes = new Uint8Array(ciphertext);
     try {
       return JSON.stringify({
-        version: "s1",
+        version,
         alg: "A256GCM",
         key_id: current.id,
         iv: encodeBase64Url(iv),
@@ -266,13 +276,14 @@ export async function encryptSubmissionPayload(
   }
 }
 
-export async function decryptSubmissionPayload(
+async function decryptSubmissionBytes(
   value: string,
+  expectedVersion: SubmissionEnvelopeVersion,
   env: {
     SUBMISSION_DATA_KEYS_JSON?: string;
   },
-): Promise<SubmissionPayload> {
-  const envelope = parseEnvelope(value);
+): Promise<Uint8Array> {
+  const envelope = parseEnvelope(value, expectedVersion);
   const keyRing = resolveSubmissionDataKeyRing(env);
   const keyEntry = [keyRing.current, ...keyRing.legacy].find(
     (candidate) => candidate.id === envelope.key_id,
@@ -294,20 +305,7 @@ export async function decryptSubmissionPayload(
       key,
       toArrayBuffer(ciphertext),
     );
-
-    const plaintextBytes = new Uint8Array(plaintext);
-    try {
-      const payload = JSON.parse(decoder.decode(plaintextBytes)) as unknown;
-      assertSubmissionPayload(payload);
-      return payload;
-    } catch (error) {
-      if (error instanceof SubmissionSecurityConfigError) {
-        throw error;
-      }
-      throw new SubmissionSecurityConfigError("Submission payload could not be decrypted.");
-    } finally {
-      plaintextBytes.fill(0);
-    }
+    return new Uint8Array(plaintext);
   } catch (error) {
     if (error instanceof SubmissionSecurityConfigError) {
       throw error;
@@ -317,4 +315,58 @@ export async function decryptSubmissionPayload(
     iv.fill(0);
     ciphertext.fill(0);
   }
+}
+
+export async function encryptSubmissionPayload(
+  payload: SubmissionPayload,
+  env: {
+    SUBMISSION_DATA_KEYS_JSON?: string;
+  },
+): Promise<string> {
+  assertSubmissionPayload(payload);
+  return encryptSubmissionBytes("s1", encoder.encode(JSON.stringify(payload)), env);
+}
+
+export async function decryptSubmissionPayload(
+  value: string,
+  env: {
+    SUBMISSION_DATA_KEYS_JSON?: string;
+  },
+): Promise<SubmissionPayload> {
+  const plaintextBytes = await decryptSubmissionBytes(value, "s1", env);
+  try {
+    const payload = JSON.parse(decoder.decode(plaintextBytes)) as unknown;
+    assertSubmissionPayload(payload);
+    return payload;
+  } catch (error) {
+    if (error instanceof SubmissionSecurityConfigError) {
+      throw error;
+    }
+    throw new SubmissionSecurityConfigError("Submission payload could not be decrypted.");
+  } finally {
+    plaintextBytes.fill(0);
+  }
+}
+
+export async function encryptSubmissionImageBytes(
+  imageBytes: Uint8Array,
+  env: {
+    SUBMISSION_DATA_KEYS_JSON?: string;
+  },
+): Promise<string> {
+  return encryptSubmissionBytes("b1", imageBytes, env);
+}
+
+export async function decryptSubmissionImageBytes(
+  value: string,
+  env: {
+    SUBMISSION_DATA_KEYS_JSON?: string;
+  },
+): Promise<Uint8Array> {
+  const plaintextBytes = await decryptSubmissionBytes(value, "b1", env);
+  if (plaintextBytes.byteLength === 0) {
+    plaintextBytes.fill(0);
+    throw new SubmissionSecurityConfigError("Submission image payload could not be decrypted.");
+  }
+  return plaintextBytes;
 }

@@ -10,7 +10,9 @@ import {
 } from "../worker/security";
 import {
   SubmissionSecurityConfigError,
+  decryptSubmissionImageBytes,
   decryptSubmissionPayload,
+  encryptSubmissionImageBytes,
   encryptSubmissionPayload,
 } from "../worker/submission-security";
 
@@ -118,6 +120,27 @@ describe("worker/security", () => {
     const decrypted = await decryptSubmissionPayload(ciphertext, ROTATED_SUBMISSION_ENV);
     expect(decrypted.crop_name).toBe("Mais");
     expect(decrypted.soil_moisture).toBe("trocken");
+  });
+
+  it("encrypts and decrypts uploaded image bytes with AES-GCM envelopes", async () => {
+    const originalBytes = Uint8Array.from([255, 216, 255, 219, 1, 2, 3, 4, 5, 6]);
+    const encrypted = await encryptSubmissionImageBytes(Uint8Array.from(originalBytes), TEST_ENV);
+
+    expect(encrypted.includes('"version":"b1"')).toBe(true);
+    const decrypted = await decryptSubmissionImageBytes(encrypted, TEST_ENV);
+    expect(Array.from(decrypted)).toEqual(Array.from(originalBytes));
+    decrypted.fill(0);
+  });
+
+  it("decrypts uploaded image bytes after key rotation via legacy entries", async () => {
+    const encrypted = await encryptSubmissionImageBytes(
+      Uint8Array.from([137, 80, 78, 71, 13, 10, 26, 10, 1, 2, 3, 4]),
+      TEST_ENV,
+    );
+
+    const decrypted = await decryptSubmissionImageBytes(encrypted, ROTATED_SUBMISSION_ENV);
+    expect(Array.from(decrypted)).toEqual([137, 80, 78, 71, 13, 10, 26, 10, 1, 2, 3, 4]);
+    decrypted.fill(0);
   });
 
   it("fails closed when submission data encryption is not configured", async () => {

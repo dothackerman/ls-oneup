@@ -2,6 +2,7 @@ import { env, SELF } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
 import { buildValidForm, createProbeOrder, tokenFromUrl } from "./helpers";
 import { hashTokenForStorage, legacyPlainTokenHash } from "../../worker/security";
+import { decryptSubmissionImageBytes } from "../../worker/submission-security";
 
 async function expectD1Failure(run: () => Promise<unknown>): Promise<void> {
   let failed = false;
@@ -218,6 +219,40 @@ describe("M1 integration", () => {
     expect(row?.submission_ciphertext?.includes('"ciphertext"')).toBe(true);
     expect(row?.image_mime).toBe("image/jpeg");
     expect((row?.image_bytes ?? 0) > 0).toBe(true);
+  });
+
+  it("INT-DATA-004 stores uploaded image bytes encrypted in R2", async () => {
+    const { tokenUrl } = await createProbeOrder({ order_number: "ORD-IMAGE-ENCRYPTED" });
+    const token = tokenFromUrl(tokenUrl);
+
+    const originalImageBytes = Uint8Array.from([255, 216, 255, 224, 0, 16, 74, 70, 73, 70]);
+    const form = buildValidForm();
+    form.delete("image");
+    form.append("image", new File([originalImageBytes], "probe.jpg", { type: "image/jpeg" }));
+
+    const submit = await SELF.fetch(`https://example.test/api/probe/${token}/submit`, {
+      method: "POST",
+      body: form,
+    });
+    expect(submit.status).toBe(201);
+
+    const listed = await env.PROBE_IMAGES.list();
+    expect(listed.objects).toHaveLength(1);
+
+    const obj = await env.PROBE_IMAGES.get(listed.objects[0].key);
+    expect(obj).not.toBeNull();
+
+    const metadata = new Headers();
+    obj?.writeHttpMetadata(metadata);
+    expect(metadata.get("content-type")).toBe("application/vnd.ls-oneup.encrypted-image+json");
+
+    const storedEnvelope = await obj?.text();
+    expect(storedEnvelope?.includes('"version":"b1"')).toBe(true);
+    expect(storedEnvelope?.includes('"ciphertext"')).toBe(true);
+
+    const decrypted = await decryptSubmissionImageBytes(storedEnvelope ?? "", env);
+    expect(Array.from(decrypted)).toEqual(Array.from(originalImageBytes));
+    decrypted.fill(0);
   });
 
   it("INT-SUBMIT-003 first-submit-wins with race and cleanup", async () => {

@@ -13,7 +13,7 @@ Security requirements:
 2. Token must not be stored in plain text.
 3. Link must be one-time and time-bounded.
 4. Submit race conditions must not allow double acceptance.
-5. Submitted probe details must not remain plaintext in D1 storage.
+5. Submitted probe details and uploaded image objects must not remain plaintext in application-managed storage.
 
 ## Decision
 1. Token generation:
@@ -43,8 +43,9 @@ Security requirements:
    - keep key lifecycle, fail-secure behavior, and crypto-agility rules in `docs/security/crypto-policy.md`.
 7. Submission storage:
    - encrypt submitted crop, vitality, moisture, GPS, and image-key data before writing to D1.
+   - encrypt uploaded image bytes before writing them to R2.
    - keep non-sensitive upload metadata (`image_mime`, `image_bytes`, `image_uploaded_at`) in plaintext for validation and delivery.
-   - preserve legacy plaintext rows for backward-compatible reads while new submissions write only encrypted payloads.
+   - preserve legacy plaintext rows and legacy raw R2 image objects for backward-compatible reads while new submissions write encrypted storage only.
 8. Logging:
    - never log raw tokens.
    - log only probe ID and non-sensitive state (`accepted`, `expired`, `already_used`, `invalid`).
@@ -58,12 +59,13 @@ Positive:
 3. One-time semantics robust against concurrent submits.
 4. Crypto ownership and rotation evidence are reviewable from repository artifacts instead of ad hoc memory.
 5. Newly submitted probe details are no longer stored as plaintext business data in D1.
+6. Newly uploaded probe images are no longer stored as plaintext object bodies in R2.
 
 Trade-offs:
 1. Token cannot be recovered from DB; admin must regenerate only in later milestone if needed.
 2. HMAC and submission-key ring management become required operational setup.
 3. Rotation requires retaining legacy secrets until outstanding token lifetimes have elapsed or protected records have been re-encrypted.
-4. Admin read paths now depend on successful decryption and key availability.
+4. Admin read paths now depend on successful payload and image decryption plus key availability.
 
 ## Alternatives Considered
 1. Plain token stored in DB:

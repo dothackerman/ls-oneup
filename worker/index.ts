@@ -27,8 +27,11 @@ import {
   tokenHashCandidates,
 } from "./security";
 import {
+  ENCRYPTED_IMAGE_OBJECT_CONTENT_TYPE,
   SubmissionSecurityConfigError,
+  decryptSubmissionImageBytes,
   decryptSubmissionPayload,
+  encryptSubmissionImageBytes,
   encryptSubmissionPayload,
 } from "./submission-security";
 import type { Env } from "./types";
@@ -346,13 +349,28 @@ app.get("/api/admin/probes/:id/image", async (c) => {
     return jsonError(404, "IMAGE_NOT_FOUND", "Bild konnte nicht geladen werden.");
   }
 
+  const storedHeaders = new Headers();
+  obj.writeHttpMetadata(storedHeaders);
+
   const headers = new Headers();
-  obj.writeHttpMetadata(headers);
-  headers.set("etag", obj.httpEtag);
   headers.set("cache-control", "private, max-age=60");
-  headers.set("content-type", headers.get("content-type") ?? imageRef.image_mime ?? "image/jpeg");
+  headers.set("content-type", imageRef.image_mime ?? "image/jpeg");
   headers.set("content-disposition", "inline");
 
+  if (storedHeaders.get("content-type") === ENCRYPTED_IMAGE_OBJECT_CONTENT_TYPE) {
+    let decryptedImageBytes: Uint8Array;
+    try {
+      decryptedImageBytes = await decryptSubmissionImageBytes(await obj.text(), c.env);
+    } catch (error) {
+      return handleCryptoSecurityError("submission", error);
+    }
+
+    const responseBytes = new Uint8Array(decryptedImageBytes);
+    decryptedImageBytes.fill(0);
+    return new Response(responseBytes, { headers });
+  }
+
+  headers.set("etag", obj.httpEtag);
   return new Response(obj.body, { headers });
 });
 
@@ -479,6 +497,7 @@ app.post("/api/probe/:token/submit", async (c) => {
 
   const extension = image.type === "image/png" ? "png" : "jpg";
   const imageKey = `${initialState.id}/${crypto.randomUUID()}.${extension}`;
+  const imageBytes = new Uint8Array(await image.arrayBuffer());
   let submissionCiphertext: string;
   try {
     submissionCiphertext = await encryptSubmissionPayload(
@@ -497,10 +516,17 @@ app.post("/api/probe/:token/submit", async (c) => {
     return handleCryptoSecurityError("submission", error);
   }
 
+  let encryptedImageObject: string;
   try {
-    await c.env.PROBE_IMAGES.put(imageKey, image.stream(), {
+    encryptedImageObject = await encryptSubmissionImageBytes(imageBytes, c.env);
+  } catch (error) {
+    return handleCryptoSecurityError("submission", error);
+  }
+
+  try {
+    await c.env.PROBE_IMAGES.put(imageKey, encryptedImageObject, {
       httpMetadata: {
-        contentType: image.type,
+        contentType: ENCRYPTED_IMAGE_OBJECT_CONTENT_TYPE,
       },
     });
   } catch (error) {

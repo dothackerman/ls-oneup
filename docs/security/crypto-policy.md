@@ -2,7 +2,7 @@
 
 ## Scope
 This policy covers all application-managed cryptographic operations in `ls-oneup`.
-The current runtime scope includes one-time probe-token protection, encrypted submission payload storage, and the platform CSPRNG used to support both flows.
+The current runtime scope includes one-time probe-token protection, encrypted submission payload storage, encrypted probe-image object storage, and the platform CSPRNG used to support both flows.
 
 ## Key Management
 1. Runtime secrets must come from Cloudflare secret management in deployed environments and from gitignored `.dev.vars` in local development.
@@ -23,7 +23,7 @@ The current runtime scope includes one-time probe-token protection, encrypted su
 
 ## Approved Runtime Usage
 1. Token hashing uses HMAC-SHA-256 via Web Crypto.
-2. Submission payload encryption uses AES-256-GCM via Web Crypto.
+2. Submission payload and uploaded image-object encryption use AES-256-GCM via Web Crypto.
 3. Token generation and AES-GCM IV generation use `crypto.getRandomValues`.
 4. No password-derived keys are in scope for the current milestone.
 
@@ -37,7 +37,7 @@ The current runtime scope includes one-time probe-token protection, encrypted su
 1. Missing or malformed crypto configuration must fail closed.
 2. Client-facing responses must stay generic and must not expose raw tokens, decrypted submission data, key identifiers, or stack traces.
 3. Operational logs may record the failure class and affected probe identifier, but never secret material.
-4. Submission-payload decryption failures must block admin reads instead of falling back to silent corruption or partial plaintext reconstruction.
+4. Submission-payload or encrypted-image decryption failures must block admin reads instead of falling back to silent corruption or partial plaintext reconstruction.
 
 ## Constant-Time Handling
 1. Token-hash comparisons must not rely on short-circuit string equality.
@@ -45,5 +45,5 @@ The current runtime scope includes one-time probe-token protection, encrypted su
 
 ## Randomness Expectations
 1. The application relies on the platform Web Crypto CSPRNG rather than a custom entropy pool.
-2. Token issuance and submission-envelope IV generation keep randomness centralized in small worker security modules so demand, size, and fallback behavior remain reviewable.
+2. Token issuance plus submission-payload and image-envelope IV generation keep randomness centralized in small worker security modules so demand, size, and fallback behavior remain reviewable.
 3. Load-related validation is provided by integration coverage and inventory review rather than a separate bespoke RNG implementation. Clever entropy daemons are how teams accidentally become folklore collectors.
