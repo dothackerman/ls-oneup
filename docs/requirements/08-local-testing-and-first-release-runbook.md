@@ -30,13 +30,15 @@ Optional but recommended:
 2. `npm run test:unit`
 3. `npm run ci:local` (single command to run full local quality loop)
 4. `npm run test:manual:prep` (start local services for browser-based manual testing)
+5. `npm run crypto:run` (verify crypto inventory metadata and discovery coverage)
 
 ### Local Quality Loop (Mandatory)
 1. Implement change
 2. `npm run format`
 3. `npm run lint`
-4. `npm run test:integration`
-5. If green: commit and push
+4. `npm run crypto:run`
+5. `npm run test:integration`
+6. If green: commit and push
 
 Before milestone sign-off:
 1. Run complete E2E suite (`npm run test:e2e`) covering M1 business logic.

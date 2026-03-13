@@ -19,6 +19,7 @@ Use this as the single instruction manual for local CLI usage:
 - [M1 test traceability matrix](docs/requirements/11-m1-test-traceability-matrix.md)
 - [M1 security decision record](docs/requirements/12-m1-security-decision-record.md)
 - [Local testing and first release runbook](docs/requirements/08-local-testing-and-first-release-runbook.md)
+- [Crypto inventory pipeline](docs/security/crypto/README.md)
 
 ### Local quality commands
 
@@ -30,6 +31,7 @@ npm run lint
 npm run typecheck
 npm run test:integration
 npm run test:e2e
+npm run crypto:run
 npm run ci:local
 ```
 
@@ -74,13 +76,15 @@ npx wrangler login
 2. Verify local quality gate is green.
 
 ```bash
+npm run crypto:run
 npm run ci:local
 ```
 
-3. Ensure production bindings are configured in [wrangler.jsonc](wrangler.jsonc) and token secrets are configured with Wrangler secrets.
+3. Ensure production bindings are configured in [wrangler.jsonc](wrangler.jsonc), crypto inventory is current, and token secrets are configured with Wrangler secrets.
 4. Apply D1 migrations to the target environment.
 
 ```bash
+npm run crypto:run
 echo '<token-hmac-keys-json>' | npx wrangler secret put TOKEN_HMAC_KEYS_JSON
 npx wrangler d1 migrations apply ls-oneup-db --remote --config wrangler.jsonc
 ```

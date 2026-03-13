@@ -1,0 +1,52 @@
+{
+  "generated_at": "2026-03-13T18:33:41.932Z",
+  "inventory_path": "docs/security/crypto-inventory.json",
+  "scanned_paths": [
+    "src",
+    "worker",
+    "tests",
+    "scripts",
+    "migrations"
+  ],
+  "marker_count": 5,
+  "inventory_entries": 3,
+  "observations": [
+    {
+      "marker_id": "webcrypto-subtle-import-key",
+      "primitive": "Web Crypto importKey",
+      "path": "worker/security.ts",
+      "line": 129,
+      "snippet": "return await crypto.subtle.importKey("
+    },
+    {
+      "marker_id": "webcrypto-subtle-sign",
+      "primitive": "Web Crypto sign",
+      "path": "worker/security.ts",
+      "line": 146,
+      "snippet": "const signature = await crypto.subtle.sign(\"HMAC\", key, tokenBuffer);"
+    },
+    {
+      "marker_id": "webcrypto-get-random-values",
+      "primitive": "Web Crypto CSPRNG",
+      "path": "worker/security.ts",
+      "line": 165,
+      "snippet": "crypto.getRandomValues(bytes);"
+    },
+    {
+      "marker_id": "webcrypto-get-random-values",
+      "primitive": "Web Crypto CSPRNG",
+      "path": "tests/integration/helpers.ts",
+      "line": 49,
+      "snippet": "crypto.getRandomValues(bytes);"
+    },
+    {
+      "marker_id": "webcrypto-get-random-values",
+      "primitive": "Web Crypto CSPRNG",
+      "path": "tests/integration/m1.integration.test.ts",
+      "line": 101,
+      "snippet": "crypto.getRandomValues(b.subarray(0, 65536));"
+    }
+  ],
+  "unmatched_observations": [],
+  "missing_inventory_references": []
+}

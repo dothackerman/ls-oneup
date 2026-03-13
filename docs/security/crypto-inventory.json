@@ -1,0 +1,77 @@
+{
+  "reviewed_at": "2026-03-13",
+  "owner": "application-engineering",
+  "policy_ref": "docs/security/crypto-policy.md",
+  "inventory": [
+    {
+      "id": "probe-token-hmac",
+      "purpose": "Hash one-time probe tokens for storage and lookup without persisting the raw token.",
+      "scope": "runtime",
+      "algorithm": "HMAC-SHA-256",
+      "key_source": "TOKEN_HMAC_KEYS_JSON current+legacy key ring in Cloudflare Secrets or local .dev.vars",
+      "rotation_policy": "Rotate by introducing a new current key, keep legacy keys for at least the maximum token lifetime, then remove them.",
+      "code_references": [
+        "worker/security.ts",
+        "worker/index.ts",
+        "worker/repository.ts"
+      ],
+      "discovery": [
+        {
+          "marker_id": "webcrypto-subtle-import-key",
+          "path": "worker/security.ts"
+        },
+        {
+          "marker_id": "webcrypto-subtle-sign",
+          "path": "worker/security.ts"
+        }
+      ],
+      "agility_plan": "Versioned h1.<keyId>.<digest> hashes and current+legacy readers allow phased key rotation and future algorithm migration without breaking active links."
+    },
+    {
+      "id": "probe-token-rng",
+      "purpose": "Generate one-time probe tokens with 32 bytes of entropy.",
+      "scope": "runtime",
+      "algorithm": "Web Crypto getRandomValues",
+      "key_source": "none",
+      "rotation_policy": "Platform CSPRNG; no application-managed key material.",
+      "code_references": [
+        "worker/security.ts"
+      ],
+      "discovery": [
+        {
+          "marker_id": "webcrypto-get-random-values",
+          "path": "worker/security.ts"
+        }
+      ],
+      "agility_plan": "If platform guidance changes, keep token length at or above 32 random bytes and update the generator in one place."
+    },
+    {
+      "id": "test-fixture-rng",
+      "purpose": "Generate synthetic image bytes and oversize payloads for integration coverage.",
+      "scope": "test-only",
+      "algorithm": "Web Crypto getRandomValues",
+      "key_source": "none",
+      "rotation_policy": "Not applicable.",
+      "code_references": [
+        "tests/integration/helpers.ts",
+        "tests/integration/m1.integration.test.ts"
+      ],
+      "discovery": [
+        {
+          "marker_id": "webcrypto-get-random-values",
+          "path": "tests/integration/helpers.ts"
+        },
+        {
+          "marker_id": "webcrypto-get-random-values",
+          "path": "tests/integration/m1.integration.test.ts"
+        }
+      ],
+      "agility_plan": "Keep test fixtures on the same platform RNG APIs as runtime code so compatibility issues surface during test maintenance."
+    }
+  ],
+  "migration_plan": [
+    "Keep version identifiers in stored token hashes so readers can distinguish future algorithms or key formats.",
+    "Treat any new runtime cryptographic primitive as inventory drift until it is documented here and validated by npm run crypto:inventory.",
+    "Remove legacy token HMAC keys only after the longest issued token lifetime has elapsed."
+  ]
+}

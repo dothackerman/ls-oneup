@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write --ignore-unknown \"{src,worker,tests,migrations}/**/*\" package.json tsconfig.json tailwind.config.ts vite.config.ts vitest.integration.config.ts playwright.config.ts wrangler.jsonc drizzle.config.ts eslint.config.js index.html",
     "lint": "eslint .",
-    "test:unit": "vitest run",
+    "test:unit": "vitest run --config vitest.unit.config.ts",
     "test:integration": "mkdir -p dist .wrangler-config && XDG_CONFIG_HOME=.wrangler-config vitest run --config vitest.integration.config.ts",
     "test:e2e": "mkdir -p dist .wrangler-config .playwright-browsers && XDG_CONFIG_HOME=.wrangler-config PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers playwright test",
     "ux:capture": "node scripts/ux-capture.mjs",
@@ -23,11 +23,15 @@
     "pw:cli:list": "node scripts/playwright-cli-run.mjs list",
     "pw:cli:show": "node scripts/playwright-cli-run.mjs show",
     "pw:cli:snapshot": "node scripts/playwright-cli-run.mjs snapshot",
-    "ci:local": "npm run format && npm run lint && npm run typecheck && npm run test:integration && npm run test:e2e",
+    "crypto:inventory": "node scripts/crypto-inventory.mjs",
+    "ci:local": "npm run crypto:run && npm run format && npm run lint && npm run typecheck && npm run test:integration && npm run test:e2e",
     "asvs:sync": "node scripts/asvs-sync.mjs",
     "asvs:audit": "node scripts/asvs-audit.mjs",
     "asvs:gate": "node scripts/asvs-gate.mjs",
-    "asvs:run": "npm run asvs:sync && npm run asvs:audit && npm run asvs:gate"
+    "asvs:run": "npm run asvs:sync && npm run asvs:audit && npm run asvs:gate",
+    "crypto:audit": "npm run crypto:inventory",
+    "crypto:gate": "node scripts/crypto-gate.mjs",
+    "crypto:run": "npm run crypto:inventory && npm run crypto:gate"
   },
   "dependencies": {
     "@fontsource-variable/nunito-sans": "^5.2.7",

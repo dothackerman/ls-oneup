@@ -65,6 +65,7 @@ npm run lint
 npm run typecheck
 npm run test:integration
 npm run test:e2e
+npm run crypto:run
 npm run ci:local
 ```
 
@@ -107,6 +108,7 @@ npx wrangler login
 ```
 2. Verify local gate:
 ```bash
+npm run crypto:run
 npm run ci:local
 ```
 3. Configure production token secrets:
@@ -145,3 +147,6 @@ npm run db:migrate:local
 1. `README.md`
 2. `docs/requirements/08-local-testing-and-first-release-runbook.md`
 3. `docs/requirements/11-m1-test-traceability-matrix.md`
+4. `docs/security/crypto/README.md`
+5. `docs/security/crypto-policy.md`
+6. `docs/security/crypto-inventory.json`

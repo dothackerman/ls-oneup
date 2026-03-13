@@ -36,10 +36,14 @@ Security requirements:
 5. Rotation:
    - model token HMAC keys as a current key plus optional legacy keys so secrets can rotate without immediately invalidating still-live links.
    - remove legacy keys only after the longest issued link lifetime has elapsed.
-6. Logging:
+6. Inventory and policy:
+   - maintain a repository-level cryptographic inventory in `docs/security/crypto-inventory.json`.
+   - validate inventory coverage with `npm run crypto:run` before release-oriented changes.
+   - keep key lifecycle, fail-secure behavior, and crypto-agility rules in `docs/security/crypto-policy.md`.
+7. Logging:
    - never log raw tokens.
    - log only probe ID and non-sensitive state (`accepted`, `expired`, `already_used`, `invalid`).
-7. Orphan object handling:
+8. Orphan object handling:
    - if R2 upload succeeds but submit write loses race/fails, run best-effort delete and log result.
 
 ## Consequences
@@ -47,6 +51,7 @@ Positive:
 1. No reusable plaintext token at rest in DB.
 2. Strong resistance to token guessing.
 3. One-time semantics robust against concurrent submits.
+4. Crypto ownership and rotation evidence are reviewable from repository artifacts instead of ad hoc memory.
 
 Trade-offs:
 1. Token cannot be recovered from DB; admin must regenerate only in later milestone if needed.
