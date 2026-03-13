@@ -6,7 +6,7 @@
     "source_commit_sha": "ae4ab5b261a72b63edd6a10b4e2d600ea6937e2b",
     "source_blob_sha": "f7ae2926598c4648ff7614a6968e4c8fd89524bd",
     "source_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json",
-    "last_audited_at": "2026-03-13T18:49:16.944Z",
+    "last_audited_at": "2026-03-13T19:01:16.313Z",
     "audited_item_count": 345,
     "pre_filtered_count": 17
   },
@@ -5009,18 +5009,17 @@
       "level": "2",
       "status": "completed",
       "severity": "none",
-      "reasoning": "The repository now maintains an explicit cryptographic key-management policy. `docs/security/crypto-policy.md` defines secret custody, local-versus-production handling, current-plus-legacy key lifecycles, and retirement rules, while the security decision record ties those rules to the token HMAC and submission-encryption key rings implemented in code.",
+      "reasoning": "The repository now maintains an explicit cryptographic policy and decision record. `docs/security/crypto-policy.md` defines key sources, lifecycle, rotation, fail-secure handling, and review cadence, while the security decision record documents both token HMAC handling and encrypted submission storage.",
       "code_references": [
+        "docs/security/crypto-policy.md:3",
         "docs/security/crypto-policy.md:7",
-        "docs/requirements/12-m1-security-decision-record.md:40",
-        "worker/security.ts:78",
-        "worker/submission-security.ts:111"
+        "docs/requirements/12-m1-security-decision-record.md:18"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-13T18:49:16.944Z"
+      "last_audited_at": "2026-03-13T18:51:03.040Z"
     },
     {
       "requirement_id": "V11.1.2",
@@ -5029,17 +5028,17 @@
       "level": "2",
       "status": "completed",
       "severity": "none",
-      "reasoning": "A maintained cryptographic inventory now exists in `docs/security/crypto-inventory.json`. It records the active HMAC, AES-GCM, and CSPRNG uses together with their key sources, protected data, code references, and permitted usage scope.",
+      "reasoning": "A maintained cryptographic inventory is present in the repository. `docs/security/crypto-inventory.json` records active primitives, purposes, key sources, rotation rules, discovery mappings, and review date for both token protection and submission-payload encryption.",
       "code_references": [
         "docs/security/crypto-inventory.json:1",
-        "docs/security/crypto-policy.md:20",
-        "docs/requirements/12-m1-security-decision-record.md:40"
+        "docs/security/crypto-inventory.json:7",
+        "docs/security/crypto-inventory.json:49"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-13T18:49:16.944Z"
+      "last_audited_at": "2026-03-13T18:51:03.040Z"
     },
     {
       "requirement_id": "V11.1.3",
@@ -5048,18 +5047,17 @@
       "level": "3",
       "status": "completed",
       "severity": "none",
-      "reasoning": "The repository now employs a recurring crypto discovery mechanism. `npm run crypto:inventory` scans the codebase for Web Crypto call sites, writes `docs/security/crypto-discovery.json`, and `npm run crypto:gate` fails if the observed primitives are not covered by the maintained inventory.",
+      "reasoning": "The repository includes a recurring cryptographic discovery mechanism. `scripts/crypto-inventory.mjs` scans runtime, test, and migration files for Web Crypto usage, writes `docs/security/crypto-discovery.json`, and `scripts/crypto-gate.mjs` fails if observed crypto is not covered by the maintained inventory.",
       "code_references": [
-        "package.json:26",
-        "scripts/crypto-inventory.mjs:1",
-        "scripts/crypto-gate.mjs:1",
+        "scripts/crypto-inventory.mjs:84",
+        "scripts/crypto-gate.mjs:34",
         "docs/security/crypto-discovery.json:1"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-13T18:49:16.944Z"
+      "last_audited_at": "2026-03-13T18:51:03.040Z"
     },
     {
       "requirement_id": "V11.1.4",
@@ -5068,17 +5066,17 @@
       "level": "3",
       "status": "completed",
       "severity": "none",
-      "reasoning": "The maintained cryptographic inventory now includes migration guidance. Inventory entries document agility plans for both the versioned token-hash format and the AES-GCM submission envelope, and the top-level migration plan requires inventory updates before any new primitive or migration is merged.",
+      "reasoning": "The cryptographic inventory now includes migration planning. `docs/security/crypto-inventory.json` records migration steps for versioned token hashes, encrypted submission payloads, inventory drift handling, and legacy-key retirement; the decision record also documents current-plus-legacy rotation for both token and submission keys.",
       "code_references": [
-        "docs/security/crypto-inventory.json:49",
         "docs/security/crypto-inventory.json:106",
-        "docs/security/crypto-policy.md:30"
+        "docs/requirements/12-m1-security-decision-record.md:37",
+        "docs/requirements/12-m1-security-decision-record.md:44"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-13T18:49:16.944Z"
+      "last_audited_at": "2026-03-13T18:51:03.040Z"
     },
     {
       "requirement_id": "V11.2.1",
@@ -5107,18 +5105,19 @@
       "level": "2",
       "status": "completed",
       "severity": "none",
-      "reasoning": "The crypto design now includes explicit agility hooks. Token hashes are versioned as `h1.<keyId>.<digest>`, submission payloads use an `s1` envelope with algorithm and key identifiers, and both token and submission secrets support current-plus-legacy key rings so keys and protected data can be migrated without a flag day.",
+      "reasoning": "The crypto design now supports upgrade and replacement without a flag day. Token hashes use a versioned `h1.<keyId>.<digest>` format with current-plus-legacy readers, and encrypted submission payloads use versioned `s1` AES-GCM envelopes carrying algorithm and key identifiers for dual-read rotation.",
       "code_references": [
+        "worker/security.ts:11",
         "worker/security.ts:158",
-        "worker/submission-security.ts:223",
-        "docs/security/crypto-policy.md:30",
-        "docs/security/crypto-inventory.json:49"
+        "worker/submission-security.ts:18",
+        "worker/submission-security.ts:231",
+        "docs/security/crypto-policy.md:30"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-13T18:49:16.944Z"
+      "last_audited_at": "2026-03-13T18:51:03.040Z"
     },
     {
       "requirement_id": "V11.2.3",
@@ -5146,17 +5145,18 @@
       "level": "3",
       "status": "completed",
       "severity": "none",
-      "reasoning": "Secret-dependent equality in the token-verification path now uses a dedicated non-short-circuit comparison helper, and the remaining low-level cryptographic operations are delegated to Web Crypto rather than custom arithmetic. The repository also includes unit coverage for the constant-time comparison helper and the matching behavior built on top of it.",
+      "reasoning": "Repository-level secret comparisons now avoid short-circuit equality. Token hash matching uses `constantTimeEqual()` over full byte-length loops, while HMAC and AES-GCM operations are delegated to platform Web Crypto primitives rather than custom arithmetic or comparison code. The crypto policy explicitly requires this handling and unit tests cover the token comparison path.",
       "code_references": [
         "worker/security.ts:214",
-        "worker/security.ts:233",
-        "tests/security.unit.test.ts:74"
+        "worker/security.ts:229",
+        "docs/security/crypto-policy.md:42",
+        "tests/security.unit.test.ts:73"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-13T18:49:16.944Z"
+      "last_audited_at": "2026-03-13T18:51:03.040Z"
     },
     {
       "requirement_id": "V11.2.5",
@@ -5165,18 +5165,20 @@
       "level": "3",
       "status": "completed",
       "severity": "none",
-      "reasoning": "Cryptographic configuration and decryption failures now fail closed with generic 503 responses and scoped server-side logging. The policy documents fail-secure behavior, the Worker routes funnel token and submission crypto failures through a common handler, and unit coverage exercises the missing-configuration paths for both token and submission protection.",
+      "reasoning": "Token and submission crypto modules fail closed with generic client responses. `worker/index.ts` routes cryptographic configuration and decryption failures through `handleCryptoSecurityError()`, returning `SECURITY_UNAVAILABLE` without exposing token values, decrypted payloads, or key identifiers; policy and unit tests cover the expected secure-failure posture.",
       "code_references": [
         "worker/index.ts:75",
-        "worker/index.ts:497",
-        "tests/security.unit.test.ts:123",
-        "docs/security/crypto-policy.md:36"
+        "worker/index.ts:181",
+        "worker/index.ts:234",
+        "docs/security/crypto-policy.md:36",
+        "tests/security.unit.test.ts:54",
+        "tests/security.unit.test.ts:123"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-13T18:49:16.944Z"
+      "last_audited_at": "2026-03-13T18:51:03.040Z"
     },
     {
       "requirement_id": "V11.3.1",
@@ -5185,9 +5187,9 @@
       "level": "1",
       "status": "completed",
       "severity": "none",
-      "reasoning": "The repository no longer relies solely on hashing; application-layer encryption now uses AES-256-GCM and does not implement insecure block modes such as ECB or legacy padding schemes. No separate cipher or padding code path exists outside the Web Crypto AES-GCM usage.",
+      "reasoning": "The repository now implements application-layer encryption only with AES-GCM and does not use ECB, CBC, or padding-based block-cipher compositions. Submission payload protection imports AES-GCM keys directly and no insecure block mode or padding scheme appears in the runtime crypto modules.",
       "code_references": [
-        "worker/submission-security.ts:154",
+        "worker/submission-security.ts:145",
         "worker/submission-security.ts:246",
         "docs/security/crypto-inventory.json:49"
       ],
@@ -5195,7 +5197,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-13T18:49:16.944Z"
+      "last_audited_at": "2026-03-13T18:51:03.040Z"
     },
     {
       "requirement_id": "V11.3.2",
@@ -5204,17 +5206,18 @@
       "level": "1",
       "status": "completed",
       "severity": "none",
-      "reasoning": "The application-layer encryption path uses an approved cipher and mode: AES-256-GCM via Web Crypto for submitted probe payloads. The maintained crypto inventory records that AES-GCM is the active runtime encryption primitive for this protected data.",
+      "reasoning": "Application-layer encryption uses an approved cipher and mode. Submission payloads are encrypted with AES-256-GCM via Web Crypto, with 32-byte keys enforced before import and the envelope metadata recording `A256GCM` explicitly.",
       "code_references": [
-        "worker/submission-security.ts:154",
+        "worker/submission-security.ts:145",
+        "worker/submission-security.ts:212",
         "worker/submission-security.ts:246",
-        "docs/security/crypto-inventory.json:49"
+        "docs/security/crypto-policy.md:24"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-13T18:49:16.944Z"
+      "last_audited_at": "2026-03-13T18:51:03.040Z"
     },
     {
       "requirement_id": "V11.3.3",
@@ -5223,17 +5226,18 @@
       "level": "2",
       "status": "completed",
       "severity": "none",
-      "reasoning": "Submitted probe data is now protected with an authenticated encryption primitive rather than plaintext persistence. AES-GCM provides confidentiality and integrity for the encrypted submission envelope before the payload is written to D1 and again when it is decrypted for authorized admin reads.",
+      "reasoning": "Encrypted submission data is integrity-protected by the AEAD mode in use. Submission payloads are wrapped with AES-GCM, and decryption rejects malformed or unauthenticated ciphertext before the payload is returned to admin read paths.",
       "code_references": [
         "worker/submission-security.ts:246",
-        "worker/submission-security.ts:293",
-        "worker/repository.ts:204"
+        "worker/submission-security.ts:291",
+        "worker/index.ts:121",
+        "worker/index.ts:333"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-13T18:49:16.944Z"
+      "last_audited_at": "2026-03-13T18:51:03.040Z"
     },
     {
       "requirement_id": "V11.3.4",
@@ -5242,17 +5246,17 @@
       "level": "3",
       "status": "completed",
       "severity": "none",
-      "reasoning": "The submission-encryption path generates a fresh 12-byte IV with the platform CSPRNG for each AES-GCM encryption operation, and the IV is stored inside the versioned envelope alongside the ciphertext and key identifier. The repository does not reuse a fixed IV or derive IVs deterministically from application data.",
+      "reasoning": "Submission-payload IVs are generated as single-use random values per encryption call. `encryptSubmissionPayload()` allocates a fresh 12-byte IV with `crypto.getRandomValues()` and stores it inside the envelope alongside the key identifier and ciphertext.",
       "code_references": [
-        "worker/submission-security.ts:242",
-        "worker/submission-security.ts:247",
-        "docs/security/crypto-policy.md:46"
+        "worker/submission-security.ts:241",
+        "worker/submission-security.ts:253",
+        "docs/security/crypto-policy.md:24"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-13T18:49:16.944Z"
+      "last_audited_at": "2026-03-13T18:51:03.040Z"
     },
     {
       "requirement_id": "V11.3.5",
@@ -5261,17 +5265,17 @@
       "level": "3",
       "status": "not_applicable",
       "severity": "none",
-      "reasoning": "The repository does not compose a standalone encryption algorithm with a separate MAC in an encrypt-then-MAC construction. Submitted payloads are protected with AES-GCM as a single AEAD primitive, so this specific combination-mode requirement is not applicable to the implemented design.",
+      "reasoning": "The repository does not implement a custom composition of a block cipher with a separate MAC. Submission payload confidentiality uses AES-GCM as an AEAD primitive, so there is no application-managed encrypt-then-MAC construction to validate.",
       "code_references": [
+        "worker/submission-security.ts:18",
         "worker/submission-security.ts:246",
-        "worker/submission-security.ts:293",
-        "docs/security/crypto-inventory.json:49"
+        "docs/security/crypto-policy.md:24"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-13T18:49:16.944Z"
+      "last_audited_at": "2026-03-13T18:51:03.040Z"
     },
     {
       "requirement_id": "V11.4.1",
@@ -5338,17 +5342,17 @@
       "level": "2",
       "status": "not_applicable",
       "severity": "none",
-      "reasoning": "The repository does not derive cryptographic keys from passwords. Token HMAC and submission-encryption keys are provisioned directly through `TOKEN_HMAC_KEYS_JSON` and `SUBMISSION_DATA_KEYS_JSON`, and the policy explicitly keeps password-derived keys out of scope for the current milestone.",
+      "reasoning": "The repository does not derive cryptographic keys from passwords. Token HMAC material is supplied directly from `TOKEN_HMAC_KEYS_JSON` or the bounded legacy fallback `TOKEN_PEPPER`, and submission encryption keys are supplied directly from `SUBMISSION_DATA_KEYS_JSON`; no password-based KDF is implemented in the application code.",
       "code_references": [
         "worker/security.ts:78",
-        "worker/submission-security.ts:111",
-        "docs/security/crypto-policy.md:25"
+        "worker/submission-security.ts:110",
+        "docs/security/crypto-policy.md:7"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-13T18:49:16.944Z"
+      "last_audited_at": "2026-03-13T18:51:03.040Z"
     },
     {
       "requirement_id": "V11.5.1",
@@ -5376,19 +5380,19 @@
       "level": "3",
       "status": "completed",
       "severity": "none",
-      "reasoning": "The random generation mechanism remains the platform Web Crypto CSPRNG, and the repository now documents and tests that usage rather than implementing a custom pool. Token issuance and AES-GCM IV generation are centralized in worker security modules, inventoried, and covered by unit and integration tests instead of bespoke fallback randomness code.",
+      "reasoning": "The application relies on stateless platform CSPRNG calls rather than an application-managed entropy pool. Token issuance and AES-GCM IV generation both use `crypto.getRandomValues()` in small centralized security modules, and the repository includes policy, inventory, and automated tests covering those code paths rather than a custom generator implementation.",
       "code_references": [
-        "worker/security.ts:165",
-        "worker/submission-security.ts:242",
+        "worker/security.ts:162",
+        "worker/submission-security.ts:241",
         "docs/security/crypto-policy.md:46",
-        "docs/security/crypto-inventory.json:31",
-        "tests/security.unit.test.ts:84"
+        "tests/security.unit.test.ts:84",
+        "tests/integration/m1.integration.test.ts:176"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-13T18:49:16.944Z"
+      "last_audited_at": "2026-03-13T18:51:03.040Z"
     },
     {
       "requirement_id": "V11.6.1",
@@ -5435,17 +5439,18 @@
       "level": "3",
       "status": "todo",
       "severity": "high",
-      "reasoning": "The repository now minimizes persisted plaintext business data, but it still does not evidence full memory encryption or confidential-computing controls while sensitive data is in use. Tokens, decrypted submission payloads, and image streams are still processed in normal Worker memory, and no repository-level infrastructure control documents protected in-use memory.",
+      "reasoning": "The repository still contains no mechanism to enable full memory encryption or confidential-computing controls for the Worker runtime. Even with encrypted D1 rows and encrypted R2 image objects, tokens, decrypted submission payloads, and decrypted image bytes still enter normal process memory during request handling.",
       "code_references": [
-        "worker/index.ts:294",
-        "worker/index.ts:334",
-        "docs/requirements/12-m1-security-decision-record.md:44"
+        "worker/index.ts:124",
+        "worker/index.ts:363",
+        "worker/submission-security.ts:336",
+        "worker/submission-security.ts:366"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-13T18:49:16.944Z"
+      "last_audited_at": "2026-03-13T19:01:16.313Z"
     },
     {
       "requirement_id": "V11.7.2",
@@ -5454,18 +5459,21 @@
       "level": "3",
       "status": "completed",
       "severity": "none",
-      "reasoning": "Data exposure during processing is now reduced and the sensitive submission payload is encrypted as soon as feasible for persistence. New submissions are written to D1 as an AES-GCM `submission_ciphertext` envelope while the previous plaintext business columns are nulled, and integration coverage verifies that the sensitive fields no longer remain at rest in plaintext.",
+      "reasoning": "New submissions null plaintext D1 business fields, store crop, vitality, moisture, GPS, and image-key data inside `submission_ciphertext`, and persist uploaded image bytes to R2 as AES-GCM `b1` envelopes. Admin list and image reads decrypt only on demand for the requested response, and integration coverage verifies both encrypted D1 rows and encrypted R2 objects at rest.",
       "code_references": [
-        "worker/repository.ts:204",
-        "migrations/0003_m1_submission_ciphertext.sql:1",
-        "tests/integration/m1.integration.test.ts:176",
-        "docs/requirements/12-m1-security-decision-record.md:44"
+        "worker/repository.ts:189",
+        "worker/index.ts:124",
+        "worker/index.ts:360",
+        "worker/index.ts:500",
+        "worker/submission-security.ts:351",
+        "tests/integration/m1.integration.test.ts:177",
+        "tests/integration/m1.integration.test.ts:224"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-13T18:49:16.944Z"
+      "last_audited_at": "2026-03-13T19:01:16.313Z"
     },
     {
       "requirement_id": "V12.1.1",
