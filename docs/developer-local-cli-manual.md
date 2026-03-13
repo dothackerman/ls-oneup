@@ -111,9 +111,10 @@ npx wrangler login
 npm run crypto:run
 npm run ci:local
 ```
-3. Configure production token secrets:
+3. Configure production crypto secrets:
 ```bash
 echo '<token-hmac-keys-json>' | npx wrangler secret put TOKEN_HMAC_KEYS_JSON
+echo '<submission-data-keys-json>' | npx wrangler secret put SUBMISSION_DATA_KEYS_JSON
 ```
 4. Apply remote D1 migrations:
 ```bash

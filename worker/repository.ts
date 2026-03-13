@@ -18,6 +18,7 @@ export type ProbeListItem = {
   gps_captured_at: string | null;
   crop_overridden_at: string | null;
   image_key: string | null;
+  submission_ciphertext: string | null;
 };
 
 export type ProbeTokenState = {
@@ -105,7 +106,8 @@ export async function listProbes(
       gps_lon,
       gps_captured_at,
       crop_overridden_at,
-      image_key
+      image_key,
+      submission_ciphertext
     FROM probes
     ${where.length > 0 ? `WHERE ${where.join(" AND ")}` : ""}
     ORDER BY created_at DESC, probe_number ASC`;
@@ -129,6 +131,7 @@ export async function listProbes(
       gps_captured_at: string | null;
       crop_overridden_at: string | null;
       image_key: string | null;
+      submission_ciphertext: string | null;
     }>();
 
   const items = (rows.results ?? []).map((row) => ({
@@ -148,6 +151,7 @@ export async function listProbes(
     gps_captured_at: row.gps_captured_at,
     crop_overridden_at: row.crop_overridden_at,
     image_key: row.image_key,
+    submission_ciphertext: row.submission_ciphertext,
   }));
 
   if (filters.status) {
@@ -187,13 +191,7 @@ export async function applySubmit(
   payload: {
     token_hash: string;
     now_iso: string;
-    crop_name: string;
-    plant_vitality: Vitality;
-    soil_moisture: SoilMoisture;
-    gps_lat: number;
-    gps_lon: number;
-    gps_captured_at: string;
-    image_key: string;
+    submission_ciphertext: string;
     image_mime: string;
     image_bytes: number;
     image_uploaded_at: string;
@@ -203,29 +201,24 @@ export async function applySubmit(
     .prepare(
       `UPDATE probes
        SET submitted_at = ?1,
-           crop_name = ?2,
-           plant_vitality = ?3,
-           soil_moisture = ?4,
-           gps_lat = ?5,
-           gps_lon = ?6,
-           gps_captured_at = ?7,
-           image_key = ?8,
-           image_mime = ?9,
-           image_bytes = ?10,
-           image_uploaded_at = ?11
-       WHERE token_hash = ?12
+           submission_ciphertext = ?2,
+           crop_name = NULL,
+           plant_vitality = NULL,
+           soil_moisture = NULL,
+           gps_lat = NULL,
+           gps_lon = NULL,
+           gps_captured_at = NULL,
+           image_key = NULL,
+           image_mime = ?3,
+           image_bytes = ?4,
+           image_uploaded_at = ?5
+       WHERE token_hash = ?6
          AND submitted_at IS NULL
-         AND expire_by > ?13`,
+         AND expire_by > ?7`,
     )
     .bind(
       payload.now_iso,
-      payload.crop_name,
-      payload.plant_vitality,
-      payload.soil_moisture,
-      payload.gps_lat,
-      payload.gps_lon,
-      payload.gps_captured_at,
-      payload.image_key,
+      payload.submission_ciphertext,
       payload.image_mime,
       payload.image_bytes,
       payload.image_uploaded_at,
@@ -238,6 +231,23 @@ export async function applySubmit(
 }
 
 export type OverrideCropResult = "updated" | "not_found" | "not_submitted";
+
+export type ProbeSubmissionRecord = {
+  id: string;
+  submitted_at: string | null;
+  crop_name: string | null;
+  plant_vitality: Vitality | null;
+  soil_moisture: SoilMoisture | null;
+  gps_lat: number | null;
+  gps_lon: number | null;
+  gps_captured_at: string | null;
+  crop_overridden_at: string | null;
+  image_key: string | null;
+  image_mime: string | null;
+  image_bytes: number | null;
+  image_uploaded_at: string | null;
+  submission_ciphertext: string | null;
+};
 
 export async function overrideCrop(
   db: D1Database,
@@ -268,14 +278,85 @@ export async function overrideCrop(
   return "not_submitted";
 }
 
+export async function getProbeSubmission(
+  db: D1Database,
+  probeId: string,
+): Promise<ProbeSubmissionRecord | null> {
+  const row = await db
+    .prepare(
+      `SELECT id,
+              submitted_at,
+              crop_name,
+              plant_vitality,
+              soil_moisture,
+              gps_lat,
+              gps_lon,
+              gps_captured_at,
+              crop_overridden_at,
+              image_key,
+              image_mime,
+              image_bytes,
+              image_uploaded_at,
+              submission_ciphertext
+         FROM probes
+        WHERE id = ?1`,
+    )
+    .bind(probeId)
+    .first<ProbeSubmissionRecord>();
+
+  return row ?? null;
+}
+
+export async function overrideEncryptedSubmission(
+  db: D1Database,
+  probeId: string,
+  submissionCiphertext: string,
+  nowIso: string,
+): Promise<OverrideCropResult> {
+  const result = await db
+    .prepare(
+      `UPDATE probes
+          SET submission_ciphertext = ?1,
+              crop_overridden_at = ?2,
+              crop_name = NULL
+        WHERE id = ?3
+          AND submitted_at IS NOT NULL`,
+    )
+    .bind(submissionCiphertext, nowIso, probeId)
+    .run();
+
+  if ((result.meta.changes ?? 0) > 0) {
+    return "updated";
+  }
+
+  const row = await db
+    .prepare("SELECT submitted_at FROM probes WHERE id = ?1")
+    .bind(probeId)
+    .first<{ submitted_at: string | null }>();
+
+  if (!row) {
+    return "not_found";
+  }
+
+  return "not_submitted";
+}
+
 export async function getProbeImage(
   db: D1Database,
   probeId: string,
-): Promise<{ image_key: string | null; image_mime: string | null } | null> {
+): Promise<{
+  image_key: string | null;
+  image_mime: string | null;
+  submission_ciphertext: string | null;
+} | null> {
   const row = await db
-    .prepare("SELECT image_key, image_mime FROM probes WHERE id = ?1")
+    .prepare("SELECT image_key, image_mime, submission_ciphertext FROM probes WHERE id = ?1")
     .bind(probeId)
-    .first<{ image_key: string | null; image_mime: string | null }>();
+    .first<{
+      image_key: string | null;
+      image_mime: string | null;
+      submission_ciphertext: string | null;
+    }>();
 
   return row ?? null;
 }

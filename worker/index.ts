@@ -1,12 +1,6 @@
 import { Hono } from "hono";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
-import {
-  ALLOWED_IMAGE_MIME,
-  MAX_IMAGE_BYTES,
-  type ProbeStatus,
-  type SoilMoisture,
-  type Vitality,
-} from "../src/shared/domain";
+import { ALLOWED_IMAGE_MIME, MAX_IMAGE_BYTES, type ProbeStatus } from "../src/shared/domain";
 import { jsonError } from "../src/shared/errors";
 import {
   createProbesSchema,
@@ -18,9 +12,11 @@ import {
   applySubmit,
   findByTokenHashes,
   getProbeImage,
+  getProbeSubmission,
   insertProbe,
   listProbes,
   orderExists,
+  overrideEncryptedSubmission,
   overrideCrop,
 } from "./repository";
 import {
@@ -30,6 +26,11 @@ import {
   matchStoredTokenHash,
   tokenHashCandidates,
 } from "./security";
+import {
+  SubmissionSecurityConfigError,
+  decryptSubmissionPayload,
+  encryptSubmissionPayload,
+} from "./submission-security";
 import type { Env } from "./types";
 
 type WorkerEnv = Env & {
@@ -71,14 +72,62 @@ function normalizeStatusError(
   return jsonError(409, "TOKEN_ALREADY_USED", TOKEN_USED_MESSAGE);
 }
 
-function handleTokenSecurityError(error: unknown): Response {
-  console.error("token_security_error", {
+function handleCryptoSecurityError(scope: "token" | "submission", error: unknown): Response {
+  console.error("crypto_security_error", {
+    scope,
     error:
-      error instanceof TokenSecurityConfigError || error instanceof Error
+      error instanceof TokenSecurityConfigError ||
+      error instanceof SubmissionSecurityConfigError ||
+      error instanceof Error
         ? error.message
         : "unknown",
   });
   return jsonError(503, "SECURITY_UNAVAILABLE", "Sicherheitsprüfung temporär nicht verfügbar.");
+}
+
+async function resolveSubmissionView(
+  item: {
+    crop_name: string | null;
+    plant_vitality: string | null;
+    soil_moisture: string | null;
+    gps_lat: number | null;
+    gps_lon: number | null;
+    gps_captured_at: string | null;
+    image_key: string | null;
+    submission_ciphertext: string | null;
+  },
+  env: WorkerEnv,
+): Promise<{
+  crop_name: string | null;
+  plant_vitality: string | null;
+  soil_moisture: string | null;
+  gps_lat: number | null;
+  gps_lon: number | null;
+  gps_captured_at: string | null;
+  image_key: string | null;
+}> {
+  if (!item.submission_ciphertext) {
+    return {
+      crop_name: item.crop_name,
+      plant_vitality: item.plant_vitality,
+      soil_moisture: item.soil_moisture,
+      gps_lat: item.gps_lat,
+      gps_lon: item.gps_lon,
+      gps_captured_at: item.gps_captured_at,
+      image_key: item.image_key,
+    };
+  }
+
+  const decrypted = await decryptSubmissionPayload(item.submission_ciphertext, env);
+  return {
+    crop_name: decrypted.crop_name,
+    plant_vitality: decrypted.plant_vitality,
+    soil_moisture: decrypted.soil_moisture,
+    gps_lat: decrypted.gps_lat,
+    gps_lon: decrypted.gps_lon,
+    gps_captured_at: decrypted.gps_captured_at,
+    image_key: decrypted.image_key,
+  };
 }
 
 app.use("/api/admin/*", async (c, next) => {
@@ -130,7 +179,7 @@ app.post("/api/admin/probes", async (c) => {
       try {
         hashed = await hashTokenForStorage(token, c.env);
       } catch (error) {
-        return handleTokenSecurityError(error);
+        return handleCryptoSecurityError("token", error);
       }
       const probeId = crypto.randomUUID();
 
@@ -179,9 +228,15 @@ app.get("/api/admin/probes", async (c) => {
   };
 
   const items = await listProbes(c.env.DB, filters, nowIso());
+  let resolvedItems: Awaited<ReturnType<typeof resolveSubmissionView>>[];
+  try {
+    resolvedItems = await Promise.all(items.map((item) => resolveSubmissionView(item, c.env)));
+  } catch (error) {
+    return handleCryptoSecurityError("submission", error);
+  }
 
   return c.json({
-    items: items.map((item) => ({
+    items: items.map((item, index) => ({
       probe_id: item.probe_id,
       customer_name: item.customer_name,
       order_number: item.order_number,
@@ -190,14 +245,14 @@ app.get("/api/admin/probes", async (c) => {
       created_at: item.created_at,
       expire_by: item.expire_by,
       submitted_at: item.submitted_at,
-      crop_name: item.crop_name,
-      plant_vitality: item.plant_vitality,
-      soil_moisture: item.soil_moisture,
-      gps_lat: item.gps_lat,
-      gps_lon: item.gps_lon,
-      gps_captured_at: item.gps_captured_at,
+      crop_name: resolvedItems[index].crop_name,
+      plant_vitality: resolvedItems[index].plant_vitality,
+      soil_moisture: resolvedItems[index].soil_moisture,
+      gps_lat: resolvedItems[index].gps_lat,
+      gps_lon: resolvedItems[index].gps_lon,
+      gps_captured_at: resolvedItems[index].gps_captured_at,
       crop_overridden_at: item.crop_overridden_at,
-      image_url: item.image_key ? `/api/admin/probes/${item.probe_id}/image` : null,
+      image_url: resolvedItems[index].image_key ? `/api/admin/probes/${item.probe_id}/image` : null,
     })),
   });
 });
@@ -211,7 +266,46 @@ app.patch("/api/admin/probes/:id/crop-override", async (c) => {
 
   const probeId = c.req.param("id");
   const at = nowIso();
-  const result = await overrideCrop(c.env.DB, probeId, parsed.data.crop_name, at);
+  const submission = await getProbeSubmission(c.env.DB, probeId);
+  if (!submission) {
+    return jsonError(404, "PROBE_NOT_FOUND", "Probe nicht gefunden.");
+  }
+  if (!submission.submitted_at) {
+    return jsonError(
+      409,
+      "PROBE_NOT_SUBMITTED",
+      "Kulturname kann erst nach Einreichung angepasst werden.",
+    );
+  }
+
+  let result;
+  if (submission.submission_ciphertext) {
+    let decrypted;
+    try {
+      decrypted = await decryptSubmissionPayload(submission.submission_ciphertext, c.env);
+    } catch (error) {
+      return handleCryptoSecurityError("submission", error);
+    }
+
+    try {
+      result = await overrideEncryptedSubmission(
+        c.env.DB,
+        probeId,
+        await encryptSubmissionPayload(
+          {
+            ...decrypted,
+            crop_name: parsed.data.crop_name,
+          },
+          c.env,
+        ),
+        at,
+      );
+    } catch (error) {
+      return handleCryptoSecurityError("submission", error);
+    }
+  } else {
+    result = await overrideCrop(c.env.DB, probeId, parsed.data.crop_name, at);
+  }
 
   if (result === "not_found") {
     return jsonError(404, "PROBE_NOT_FOUND", "Probe nicht gefunden.");
@@ -230,11 +324,24 @@ app.patch("/api/admin/probes/:id/crop-override", async (c) => {
 app.get("/api/admin/probes/:id/image", async (c) => {
   const probeId = c.req.param("id");
   const imageRef = await getProbeImage(c.env.DB, probeId);
-  if (!imageRef || !imageRef.image_key) {
+  if (!imageRef) {
     return jsonError(404, "IMAGE_NOT_FOUND", "Kein Bild vorhanden.");
   }
 
-  const obj = await c.env.PROBE_IMAGES.get(imageRef.image_key);
+  let imageKey = imageRef.image_key;
+  if (imageRef.submission_ciphertext) {
+    try {
+      imageKey = (await decryptSubmissionPayload(imageRef.submission_ciphertext, c.env)).image_key;
+    } catch (error) {
+      return handleCryptoSecurityError("submission", error);
+    }
+  }
+
+  if (!imageKey) {
+    return jsonError(404, "IMAGE_NOT_FOUND", "Kein Bild vorhanden.");
+  }
+
+  const obj = await c.env.PROBE_IMAGES.get(imageKey);
   if (!obj) {
     return jsonError(404, "IMAGE_NOT_FOUND", "Bild konnte nicht geladen werden.");
   }
@@ -255,7 +362,7 @@ app.get("/api/probe/:token", async (c) => {
   try {
     tokenHashes = await tokenHashCandidates(token, c.env);
   } catch (error) {
-    return handleTokenSecurityError(error);
+    return handleCryptoSecurityError("token", error);
   }
   const state = await findByTokenHashes(c.env.DB, tokenHashes);
 
@@ -292,7 +399,7 @@ app.post("/api/probe/:token/submit", async (c) => {
   try {
     tokenHashes = await tokenHashCandidates(token, c.env);
   } catch (error) {
-    return handleTokenSecurityError(error);
+    return handleCryptoSecurityError("token", error);
   }
   const initialState = await findByTokenHashes(c.env.DB, tokenHashes);
 
@@ -372,6 +479,23 @@ app.post("/api/probe/:token/submit", async (c) => {
 
   const extension = image.type === "image/png" ? "png" : "jpg";
   const imageKey = `${initialState.id}/${crypto.randomUUID()}.${extension}`;
+  let submissionCiphertext: string;
+  try {
+    submissionCiphertext = await encryptSubmissionPayload(
+      {
+        crop_name: parsed.data.crop_name,
+        plant_vitality: parsed.data.vitality,
+        soil_moisture: parsed.data.soil_moisture,
+        gps_lat: parsed.data.gps_lat,
+        gps_lon: parsed.data.gps_lon,
+        gps_captured_at: parsed.data.gps_captured_at,
+        image_key: imageKey,
+      },
+      c.env,
+    );
+  } catch (error) {
+    return handleCryptoSecurityError("submission", error);
+  }
 
   try {
     await c.env.PROBE_IMAGES.put(imageKey, image.stream(), {
@@ -392,13 +516,7 @@ app.post("/api/probe/:token/submit", async (c) => {
   const submitChanges = await applySubmit(c.env.DB, {
     token_hash: matchedHash,
     now_iso: submitNow,
-    crop_name: parsed.data.crop_name,
-    plant_vitality: parsed.data.vitality as Vitality,
-    soil_moisture: parsed.data.soil_moisture as SoilMoisture,
-    gps_lat: parsed.data.gps_lat,
-    gps_lon: parsed.data.gps_lon,
-    gps_captured_at: parsed.data.gps_captured_at,
-    image_key: imageKey,
+    submission_ciphertext: submissionCiphertext,
     image_mime: image.type,
     image_bytes: image.size,
     image_uploaded_at: submitNow,

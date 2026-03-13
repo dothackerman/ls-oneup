@@ -80,12 +80,13 @@ npm run crypto:run
 npm run ci:local
 ```
 
-3. Ensure production bindings are configured in [wrangler.jsonc](wrangler.jsonc), crypto inventory is current, and token secrets are configured with Wrangler secrets.
+3. Ensure production bindings are configured in [wrangler.jsonc](wrangler.jsonc), crypto inventory is current, and runtime crypto secrets are configured with Wrangler secrets.
 4. Apply D1 migrations to the target environment.
 
 ```bash
 npm run crypto:run
 echo '<token-hmac-keys-json>' | npx wrangler secret put TOKEN_HMAC_KEYS_JSON
+echo '<submission-data-keys-json>' | npx wrangler secret put SUBMISSION_DATA_KEYS_JSON
 npx wrangler d1 migrations apply ls-oneup-db --remote --config wrangler.jsonc
 ```
 

@@ -8,6 +8,11 @@ import {
   resolveTokenHmacKeyRing,
   tokenHashCandidates,
 } from "../worker/security";
+import {
+  SubmissionSecurityConfigError,
+  decryptSubmissionPayload,
+  encryptSubmissionPayload,
+} from "../worker/submission-security";
 
 const TEST_ENV = {
   TOKEN_HMAC_KEYS_JSON: JSON.stringify({
@@ -21,6 +26,12 @@ const TEST_ENV = {
         secret: "legacy-token-secret-0123456789abcdefghijklmnopqrstuvwxyz",
       },
     ],
+  }),
+  SUBMISSION_DATA_KEYS_JSON: JSON.stringify({
+    current: {
+      id: "submit-current",
+      secret: "MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY",
+    },
   }),
 };
 
@@ -53,5 +64,42 @@ describe("worker/security", () => {
       matchStoredTokenHash("h1.test-current.digest", ["wrong", "h1.test-current.digest"]),
     ).toBe("h1.test-current.digest");
     expect(matchStoredTokenHash("h1.test-current.digest", ["wrong", "still-wrong"])).toBeNull();
+  });
+
+  it("encrypts and decrypts submission payloads with AES-GCM envelopes", async () => {
+    const ciphertext = await encryptSubmissionPayload(
+      {
+        crop_name: "Kartoffeln",
+        plant_vitality: "normal",
+        soil_moisture: "normal",
+        gps_lat: 47.3769,
+        gps_lon: 8.5417,
+        gps_captured_at: "2026-03-13T12:00:00.000Z",
+        image_key: "probe-1/image.jpg",
+      },
+      TEST_ENV,
+    );
+
+    expect(ciphertext.includes('"version":"s1"')).toBe(true);
+    const decrypted = await decryptSubmissionPayload(ciphertext, TEST_ENV);
+    expect(decrypted.crop_name).toBe("Kartoffeln");
+    expect(decrypted.image_key).toBe("probe-1/image.jpg");
+  });
+
+  it("fails closed when submission data encryption is not configured", async () => {
+    await expect(
+      encryptSubmissionPayload(
+        {
+          crop_name: "Kartoffeln",
+          plant_vitality: "normal",
+          soil_moisture: "normal",
+          gps_lat: 47.3769,
+          gps_lon: 8.5417,
+          gps_captured_at: "2026-03-13T12:00:00.000Z",
+          image_key: "probe-1/image.jpg",
+        },
+        {},
+      ),
+    ).rejects.toThrow(SubmissionSecurityConfigError);
   });
 });

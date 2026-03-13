@@ -1,4 +1,4 @@
-# Decision Record: M1 Token-Link Security
+# Decision Record: M1 Token-Link And Submission Security
 
 ## Status
 Accepted
@@ -13,6 +13,7 @@ Security requirements:
 2. Token must not be stored in plain text.
 3. Link must be one-time and time-bounded.
 4. Submit race conditions must not allow double acceptance.
+5. Submitted probe details must not remain plaintext in D1 storage.
 
 ## Decision
 1. Token generation:
@@ -40,10 +41,14 @@ Security requirements:
    - maintain a repository-level cryptographic inventory in `docs/security/crypto-inventory.json`.
    - validate inventory coverage with `npm run crypto:run` before release-oriented changes.
    - keep key lifecycle, fail-secure behavior, and crypto-agility rules in `docs/security/crypto-policy.md`.
-7. Logging:
+7. Submission storage:
+   - encrypt submitted crop, vitality, moisture, GPS, and image-key data before writing to D1.
+   - keep non-sensitive upload metadata (`image_mime`, `image_bytes`, `image_uploaded_at`) in plaintext for validation and delivery.
+   - preserve legacy plaintext rows for backward-compatible reads while new submissions write only encrypted payloads.
+8. Logging:
    - never log raw tokens.
    - log only probe ID and non-sensitive state (`accepted`, `expired`, `already_used`, `invalid`).
-8. Orphan object handling:
+9. Orphan object handling:
    - if R2 upload succeeds but submit write loses race/fails, run best-effort delete and log result.
 
 ## Consequences
@@ -52,11 +57,13 @@ Positive:
 2. Strong resistance to token guessing.
 3. One-time semantics robust against concurrent submits.
 4. Crypto ownership and rotation evidence are reviewable from repository artifacts instead of ad hoc memory.
+5. Newly submitted probe details are no longer stored as plaintext business data in D1.
 
 Trade-offs:
 1. Token cannot be recovered from DB; admin must regenerate only in later milestone if needed.
 2. HMAC key-ring management becomes required operational setup.
 3. Rotation requires retaining legacy secrets until outstanding token lifetimes have elapsed.
+4. Admin read paths now depend on successful decryption and key availability.
 
 ## Alternatives Considered
 1. Plain token stored in DB:

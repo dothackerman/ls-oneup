@@ -12,6 +12,7 @@ export const probes = sqliteTable(
     createdAt: text("created_at").notNull(),
     expireBy: text("expire_by").notNull(),
     submittedAt: text("submitted_at"),
+    submissionCiphertext: text("submission_ciphertext"),
 
     cropName: text("crop_name"),
     cropOverriddenAt: text("crop_overridden_at"),

@@ -58,19 +58,20 @@ Before milestone sign-off:
 2. Access policies for `/admin` and `/api/admin/*` are prepared.
 3. Full local quality loop is green.
 4. M1 E2E suite is green.
-5. Production token HMAC secret(s) are configured with `wrangler secret put`, not committed to the repo.
+5. Production token HMAC and submission-encryption secrets are configured with `wrangler secret put`, not committed to the repo.
 
 ### Manual Release Steps (Proposal)
 1. Confirm release commit on `main`.
 2. Verify environment/secrets/bindings in Cloudflare config.
-3. Apply D1 migrations for target environment.
-4. Deploy Worker/static assets manually using `wrangler`.
-5. Run post-deploy smoke checks:
+3. Configure runtime crypto secrets with `wrangler secret put`.
+4. Apply D1 migrations for target environment.
+5. Deploy Worker/static assets manually using `wrangler`.
+6. Run post-deploy smoke checks:
    - admin route protected by Access
    - farmer token link flow works
    - submission persists and admin can view image
    - status derivation is correct
-6. Record release note in docs/changelog.
+7. Record release note in docs/changelog.
 
 ### Post-Release Checks
 1. Verify logs for submit/validation errors.

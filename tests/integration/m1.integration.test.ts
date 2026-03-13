@@ -173,6 +173,53 @@ describe("M1 integration", () => {
     );
   });
 
+  it("INT-DATA-003 stores submitted probe payload encrypted at rest", async () => {
+    const { tokenUrl, probeId } = await createProbeOrder({ order_number: "ORD-ENCRYPTED" });
+    const token = tokenFromUrl(tokenUrl);
+
+    const submit = await SELF.fetch(`https://example.test/api/probe/${token}/submit`, {
+      method: "POST",
+      body: buildValidForm(),
+    });
+    expect(submit.status).toBe(201);
+
+    const row = await env.DB.prepare(
+      `SELECT crop_name,
+              plant_vitality,
+              soil_moisture,
+              gps_lat,
+              gps_lon,
+              image_key,
+              submission_ciphertext,
+              image_mime,
+              image_bytes
+         FROM probes
+        WHERE id = ?1`,
+    )
+      .bind(probeId)
+      .first<{
+        crop_name: string | null;
+        plant_vitality: string | null;
+        soil_moisture: string | null;
+        gps_lat: number | null;
+        gps_lon: number | null;
+        image_key: string | null;
+        submission_ciphertext: string | null;
+        image_mime: string | null;
+        image_bytes: number | null;
+      }>();
+
+    expect(row?.crop_name ?? null).toBeNull();
+    expect(row?.plant_vitality ?? null).toBeNull();
+    expect(row?.soil_moisture ?? null).toBeNull();
+    expect(row?.gps_lat ?? null).toBeNull();
+    expect(row?.gps_lon ?? null).toBeNull();
+    expect(row?.image_key ?? null).toBeNull();
+    expect(row?.submission_ciphertext?.includes('"ciphertext"')).toBe(true);
+    expect(row?.image_mime).toBe("image/jpeg");
+    expect((row?.image_bytes ?? 0) > 0).toBe(true);
+  });
+
   it("INT-SUBMIT-003 first-submit-wins with race and cleanup", async () => {
     const { tokenUrl } = await createProbeOrder({ order_number: "ORD-RACE" });
     const token = tokenFromUrl(tokenUrl);

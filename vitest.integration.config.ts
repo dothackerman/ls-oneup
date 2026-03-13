@@ -22,6 +22,12 @@ export default defineWorkersProject(async () => {
                   secret: "test-token-secret-0123456789abcdefghijklmnopqrstuvwxyz",
                 },
               }),
+              SUBMISSION_DATA_KEYS_JSON: JSON.stringify({
+                current: {
+                  id: "submit-current",
+                  secret: "MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY",
+                },
+              }),
               APP_BASE_URL: "https://example.test",
               DEV_BYPASS_ACCESS: "true",
               TEST_MIGRATIONS: migrations,

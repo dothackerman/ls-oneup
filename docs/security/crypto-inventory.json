@@ -46,6 +46,40 @@
       "agility_plan": "If platform guidance changes, keep token length at or above 32 random bytes and update the generator in one place."
     },
     {
+      "id": "probe-submission-encryption",
+      "purpose": "Encrypt submitted crop, vitality, moisture, GPS, and image-key data before persisting it to D1.",
+      "scope": "runtime",
+      "algorithm": "AES-256-GCM",
+      "key_source": "SUBMISSION_DATA_KEYS_JSON current+legacy key ring in Cloudflare Secrets or local .dev.vars",
+      "rotation_policy": "Rotate by introducing a new current key, keep legacy decrypt-only keys until encrypted records are either rewrapped or naturally retired, then remove the legacy key.",
+      "code_references": [
+        "worker/submission-security.ts",
+        "worker/index.ts",
+        "worker/repository.ts",
+        "migrations/0003_m1_submission_ciphertext.sql",
+        "src/db/schema.ts"
+      ],
+      "discovery": [
+        {
+          "marker_id": "webcrypto-get-random-values",
+          "path": "worker/submission-security.ts"
+        },
+        {
+          "marker_id": "webcrypto-subtle-import-key",
+          "path": "worker/submission-security.ts"
+        },
+        {
+          "marker_id": "webcrypto-subtle-encrypt",
+          "path": "worker/submission-security.ts"
+        },
+        {
+          "marker_id": "webcrypto-subtle-decrypt",
+          "path": "worker/submission-security.ts"
+        }
+      ],
+      "agility_plan": "The versioned s1 envelope records the key id and algorithm so decryptors can support dual-read migration to future envelope versions without rewriting all rows in one release."
+    },
+    {
       "id": "test-fixture-rng",
       "purpose": "Generate synthetic image bytes and oversize payloads for integration coverage.",
       "scope": "test-only",
@@ -71,7 +105,7 @@
   ],
   "migration_plan": [
     "Keep version identifiers in stored token hashes so readers can distinguish future algorithms or key formats.",
-    "Treat any new runtime cryptographic primitive as inventory drift until it is documented here and validated by npm run crypto:inventory.",
+    "Treat any new runtime cryptographic primitive as inventory drift until it is documented here and validated by npm run crypto:run.",
     "Remove legacy token HMAC keys only after the longest issued token lifetime has elapsed."
   ]
 }
