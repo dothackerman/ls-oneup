@@ -35,6 +35,21 @@ const TEST_ENV = {
   }),
 };
 
+const ROTATED_SUBMISSION_ENV = {
+  SUBMISSION_DATA_KEYS_JSON: JSON.stringify({
+    current: {
+      id: "submit-next",
+      secret: "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXowMTIzNDU",
+    },
+    legacy: [
+      {
+        id: "submit-current",
+        secret: "MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY",
+      },
+    ],
+  }),
+};
+
 describe("worker/security", () => {
   it("fails closed when no token HMAC configuration is available", () => {
     expect(() => resolveTokenHmacKeyRing({})).toThrow(TokenSecurityConfigError);
@@ -84,6 +99,25 @@ describe("worker/security", () => {
     const decrypted = await decryptSubmissionPayload(ciphertext, TEST_ENV);
     expect(decrypted.crop_name).toBe("Kartoffeln");
     expect(decrypted.image_key).toBe("probe-1/image.jpg");
+  });
+
+  it("decrypts submission payloads after key rotation via legacy entries", async () => {
+    const ciphertext = await encryptSubmissionPayload(
+      {
+        crop_name: "Mais",
+        plant_vitality: "normal",
+        soil_moisture: "trocken",
+        gps_lat: 47.11,
+        gps_lon: 8.33,
+        gps_captured_at: "2026-03-13T12:00:00.000Z",
+        image_key: "probe-2/image.jpg",
+      },
+      TEST_ENV,
+    );
+
+    const decrypted = await decryptSubmissionPayload(ciphertext, ROTATED_SUBMISSION_ENV);
+    expect(decrypted.crop_name).toBe("Mais");
+    expect(decrypted.soil_moisture).toBe("trocken");
   });
 
   it("fails closed when submission data encryption is not configured", async () => {

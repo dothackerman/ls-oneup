@@ -35,8 +35,9 @@ The current runtime scope includes one-time probe-token protection, encrypted su
 
 ## Secure Failure
 1. Missing or malformed crypto configuration must fail closed.
-2. Client-facing responses must stay generic and must not expose raw tokens, key identifiers, or stack traces.
+2. Client-facing responses must stay generic and must not expose raw tokens, decrypted submission data, key identifiers, or stack traces.
 3. Operational logs may record the failure class and affected probe identifier, but never secret material.
+4. Submission-payload decryption failures must block admin reads instead of falling back to silent corruption or partial plaintext reconstruction.
 
 ## Constant-Time Handling
 1. Token-hash comparisons must not rely on short-circuit string equality.

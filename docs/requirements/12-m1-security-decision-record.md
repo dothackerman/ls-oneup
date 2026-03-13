@@ -35,8 +35,8 @@ Security requirements:
      - not expired
      - not yet submitted
 5. Rotation:
-   - model token HMAC keys as a current key plus optional legacy keys so secrets can rotate without immediately invalidating still-live links.
-   - remove legacy keys only after the longest issued link lifetime has elapsed.
+   - model token HMAC keys and submission encryption keys as current-plus-legacy key rings so secrets can rotate without immediately invalidating still-live links or encrypted payloads.
+   - remove legacy keys only after the longest issued link lifetime has elapsed or protected records have been re-encrypted.
 6. Inventory and policy:
    - maintain a repository-level cryptographic inventory in `docs/security/crypto-inventory.json`.
    - validate inventory coverage with `npm run crypto:run` before release-oriented changes.
@@ -61,8 +61,8 @@ Positive:
 
 Trade-offs:
 1. Token cannot be recovered from DB; admin must regenerate only in later milestone if needed.
-2. HMAC key-ring management becomes required operational setup.
-3. Rotation requires retaining legacy secrets until outstanding token lifetimes have elapsed.
+2. HMAC and submission-key ring management become required operational setup.
+3. Rotation requires retaining legacy secrets until outstanding token lifetimes have elapsed or protected records have been re-encrypted.
 4. Admin read paths now depend on successful decryption and key availability.
 
 ## Alternatives Considered

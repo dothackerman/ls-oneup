@@ -105,7 +105,9 @@
   ],
   "migration_plan": [
     "Keep version identifiers in stored token hashes so readers can distinguish future algorithms or key formats.",
+    "Move submitted probe payloads from legacy plaintext columns to `submission_ciphertext` and retire plaintext fallback only after historical rows are migrated or naturally expire.",
     "Treat any new runtime cryptographic primitive as inventory drift until it is documented here and validated by npm run crypto:run.",
-    "Remove legacy token HMAC keys only after the longest issued token lifetime has elapsed."
+    "Remove legacy token HMAC keys only after the longest issued token lifetime has elapsed.",
+    "Remove legacy submission encryption keys only after stored ciphertext has been re-encrypted or the protected records are no longer needed."
   ]
 }
