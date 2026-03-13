@@ -52,7 +52,6 @@ npm run asvs:run
 - `low`
 - `none` (for completed / not applicable)
 
-## Safety note
+## Responsibility note
 
-The associated Claude custom agent (`.claude/agents/asvs-vos-auditor.md`) enforces
-Opus 4.6 as a hard precondition before performing this audit.
+The associated auditor instructions (`.claude/agents/asvs-vos-auditor.md`) allow any available model. The repository owner is responsible for reviewing findings quality before relying on audit results.

@@ -8,7 +8,7 @@ Establish a repeatable security-audit workflow that:
 2. Tracks upstream version/hash check history locally.
 3. Maintains both machine-readable and human-readable checklist states.
 4. Supports full-repository validation with code references and reasoning.
-5. Enforces high-safety model selection for Claude-based audit execution.
+5. Documents owner responsibility for reviewing audit quality before relying on results.
 
 ## Scope
 
@@ -22,11 +22,11 @@ Out of scope:
 - Auto-remediation of all findings.
 - Production deployment gates based on ASVS status.
 
-## Safety contract
+## Responsibility contract
 
-The audit agent must enforce:
-- Required model: **Opus 4.6**.
-- If a different model is active, stop and request user to switch.
+The audit workflow must document that:
+- It may run with any available model.
+- The repository owner is responsible for reviewing findings quality before relying on audit output.
 
 ## Local artifacts
 

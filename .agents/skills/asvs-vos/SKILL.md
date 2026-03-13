@@ -1,6 +1,6 @@
 ---
 name: asvs-vos
-description: Opus-gated recurring ASVS/vOS security audit skill for ls-oneup. Syncs official OWASP ASVS source, auto-filters absent technologies, dispatches Opus 4.6 subagents for codebase-aware triage, and emits machine+human checklist artifacts with evidence-based reasoning.
+description: Recurring ASVS/vOS security audit skill for ls-oneup. Syncs official OWASP ASVS source, auto-filters absent technologies, dispatches chapter subagents for codebase-aware triage, and emits machine+human checklist artifacts with evidence-based reasoning.
 references:
   - docs/security/asvs/README.md
   - .claude/agents/asvs-vos-auditor.md
@@ -14,11 +14,7 @@ Run a recurring, evidence-based security checklist process against this reposito
 
 ## Safety precondition
 
-This skill MUST be executed by Opus 4.6. All subagents spawned during triage MUST also be Opus 4.6.
-
-If active model is not Opus 4.6, stop and output:
-
-> Safety gate: this audit command is restricted to Opus 4.6 due to prompt-injection and policy-integrity risk. Please switch to Opus 4.6, then re-run `/asvs-vos`.
+This skill may be executed with any available model. The repository owner is responsible for reviewing findings quality and deciding whether additional validation is required before relying on audit results.
 
 ## Unified flow
 
@@ -38,11 +34,11 @@ After `npm run asvs:run` completes, **report the gate summary output directly** 
 
 ## Agent triage (post-pipeline)
 
-After the pipeline runs, remaining `todo` items need codebase-aware triage by Opus 4.6 subagents:
+After the pipeline runs, remaining `todo` items need codebase-aware triage by chapter subagents:
 
 1. Read `checklist.machine.json` to get the list of `todo` items.
 2. Group `todo` items by ASVS chapter (V1–V17).
-3. For each chapter with `todo` items, spawn a parallel Opus 4.6 subagent.
+3. For each chapter with `todo` items, spawn a parallel subagent.
 4. Each subagent:
    - Receives: the control definitions for its chapter, full codebase access (read-only).
    - Evaluates each control against the actual codebase.

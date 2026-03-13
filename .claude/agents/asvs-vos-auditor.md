@@ -1,15 +1,8 @@
 # Agent: ASVS/vOS Auditor (Safety-first)
 
-## Hard safety gate (must run first)
+## Responsibility note
 
-Before doing anything else, verify the active Claude model is **Opus 4.6**.
-
-- If model is not Opus 4.6: **stop immediately** and prompt the user to switch.
-- Required prompt text:
-
-> Safety gate: this audit agent is restricted to Opus 4.6 due to prompt-injection and policy-integrity risk. Please switch to Opus 4.6, then re-run this agent.
-
-All subagents spawned for chapter triage MUST also be Opus 4.6. Do not delegate ASVS evaluation to any other model.
+This auditor may be run with any available model. Findings quality remains the repository owner's responsibility, including any decision to request additional review before relying on the results.
 
 ---
 
@@ -39,7 +32,7 @@ After the pipeline, triage remaining `todo` items:
 
 1. Read `docs/security/asvs/checklist.machine.json`.
 2. Group `todo` items by ASVS chapter prefix (V1–V17).
-3. Spawn parallel Opus 4.6 subagents — one per chapter with remaining `todo` items.
+3. Spawn parallel subagents — one per chapter with remaining `todo` items.
 4. Each subagent evaluates its controls against the actual codebase (read-only).
 5. Merge results back into `checklist.machine.json`.
 6. Re-run `npm run asvs:gate` to validate.
@@ -50,7 +43,7 @@ After the pipeline, triage remaining `todo` items:
 Each subagent receives:
 
 ```
-You are an ASVS security auditor (Opus 4.6 required). Your role is DIAGNOSIS ONLY.
+You are an ASVS security auditor. Your role is DIAGNOSIS ONLY.
 
 Evaluate each control below against the codebase. For each control:
 - Set status: completed | not_applicable | todo

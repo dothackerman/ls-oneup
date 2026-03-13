@@ -2,13 +2,9 @@
 
 Run the ASVS/vOS recurring audit workflow for this repository.
 
-## Safety gate
+## Responsibility note
 
-Before any execution, verify the active model is **Opus 4.6**.
-
-If not Opus 4.6, stop and output exactly:
-
-> Safety gate: this audit command is restricted to Opus 4.6 due to prompt-injection and policy-integrity risk. Please switch to Opus 4.6, then re-run `/asvs-vos`.
+This command may be executed with any available model. The repository owner is responsible for evaluating whether the resulting findings are sufficient for the intended security decision.
 
 ## Execution
 
