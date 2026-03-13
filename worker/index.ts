@@ -16,14 +16,20 @@ import {
 } from "../src/shared/validation";
 import {
   applySubmit,
-  findByTokenHash,
+  findByTokenHashes,
   getProbeImage,
   insertProbe,
   listProbes,
   orderExists,
   overrideCrop,
 } from "./repository";
-import { generateToken, tokenHash } from "./security";
+import {
+  TokenSecurityConfigError,
+  generateToken,
+  hashTokenForStorage,
+  matchStoredTokenHash,
+  tokenHashCandidates,
+} from "./security";
 import type { Env } from "./types";
 
 type WorkerEnv = Env & {
@@ -63,6 +69,16 @@ function normalizeStatusError(
     return jsonError(410, "TOKEN_EXPIRED", TOKEN_EXPIRED_MESSAGE);
   }
   return jsonError(409, "TOKEN_ALREADY_USED", TOKEN_USED_MESSAGE);
+}
+
+function handleTokenSecurityError(error: unknown): Response {
+  console.error("token_security_error", {
+    error:
+      error instanceof TokenSecurityConfigError || error instanceof Error
+        ? error.message
+        : "unknown",
+  });
+  return jsonError(503, "SECURITY_UNAVAILABLE", "Sicherheitsprüfung temporär nicht verfügbar.");
 }
 
 app.use("/api/admin/*", async (c, next) => {
@@ -110,7 +126,12 @@ app.post("/api/admin/probes", async (c) => {
   try {
     for (let probeNumber = 1; probeNumber <= probe_count; probeNumber += 1) {
       const token = generateToken();
-      const hashed = await tokenHash(token, c.env.TOKEN_PEPPER);
+      let hashed: string;
+      try {
+        hashed = await hashTokenForStorage(token, c.env);
+      } catch (error) {
+        return handleTokenSecurityError(error);
+      }
       const probeId = crypto.randomUUID();
 
       await insertProbe(c.env.DB, {
@@ -230,10 +251,20 @@ app.get("/api/admin/probes/:id/image", async (c) => {
 
 app.get("/api/probe/:token", async (c) => {
   const token = c.req.param("token");
-  const tokenHashed = await tokenHash(token, c.env.TOKEN_PEPPER);
-  const state = await findByTokenHash(c.env.DB, tokenHashed);
+  let tokenHashes: string[];
+  try {
+    tokenHashes = await tokenHashCandidates(token, c.env);
+  } catch (error) {
+    return handleTokenSecurityError(error);
+  }
+  const state = await findByTokenHashes(c.env.DB, tokenHashes);
 
   if (!state) {
+    return jsonError(404, "TOKEN_NOT_FOUND", "Link nicht gefunden.");
+  }
+
+  const matchedHash = matchStoredTokenHash(state.token_hash, tokenHashes);
+  if (!matchedHash) {
     return jsonError(404, "TOKEN_NOT_FOUND", "Link nicht gefunden.");
   }
 
@@ -257,10 +288,20 @@ app.get("/api/probe/:token", async (c) => {
 
 app.post("/api/probe/:token/submit", async (c) => {
   const token = c.req.param("token");
-  const hashed = await tokenHash(token, c.env.TOKEN_PEPPER);
-  const initialState = await findByTokenHash(c.env.DB, hashed);
+  let tokenHashes: string[];
+  try {
+    tokenHashes = await tokenHashCandidates(token, c.env);
+  } catch (error) {
+    return handleTokenSecurityError(error);
+  }
+  const initialState = await findByTokenHashes(c.env.DB, tokenHashes);
 
   if (!initialState) {
+    return jsonError(404, "TOKEN_NOT_FOUND", "Link nicht gefunden.");
+  }
+
+  const matchedHash = matchStoredTokenHash(initialState.token_hash, tokenHashes);
+  if (!matchedHash) {
     return jsonError(404, "TOKEN_NOT_FOUND", "Link nicht gefunden.");
   }
 
@@ -349,7 +390,7 @@ app.post("/api/probe/:token/submit", async (c) => {
   const submitNow = nowIso();
 
   const submitChanges = await applySubmit(c.env.DB, {
-    token_hash: hashed,
+    token_hash: matchedHash,
     now_iso: submitNow,
     crop_name: parsed.data.crop_name,
     plant_vitality: parsed.data.vitality as Vitality,
@@ -375,7 +416,7 @@ app.post("/api/probe/:token/submit", async (c) => {
       });
     }
 
-    const stateAfterRace = await findByTokenHash(c.env.DB, hashed);
+    const stateAfterRace = await findByTokenHashes(c.env.DB, [matchedHash]);
     if (!stateAfterRace) {
       return jsonError(404, "TOKEN_NOT_FOUND", "Link nicht gefunden.");
     }

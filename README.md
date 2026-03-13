@@ -23,6 +23,7 @@ Use this as the single instruction manual for local CLI usage:
 ### Local quality commands
 
 ```bash
+cp .dev.vars.example .dev.vars
 npm run db:reset:local
 npm run format
 npm run lint
@@ -76,10 +77,11 @@ npx wrangler login
 npm run ci:local
 ```
 
-3. Ensure production bindings/secrets are configured in [wrangler.jsonc](wrangler.jsonc).
+3. Ensure production bindings are configured in [wrangler.jsonc](wrangler.jsonc) and token secrets are configured with Wrangler secrets.
 4. Apply D1 migrations to the target environment.
 
 ```bash
+echo '<token-hmac-keys-json>' | npx wrangler secret put TOKEN_HMAC_KEYS_JSON
 npx wrangler d1 migrations apply ls-oneup-db --remote --config wrangler.jsonc
 ```
 

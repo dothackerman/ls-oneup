@@ -10,7 +10,6 @@
   "vars": {
     "APP_BASE_URL": "http://localhost:8787",
     "DEV_BYPASS_ACCESS": "true",
-    "TOKEN_PEPPER": "dev-only-token-pepper",
   },
   "d1_databases": [
     {

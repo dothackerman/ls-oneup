@@ -27,6 +27,7 @@ export type ProbeTokenState = {
   probe_number: number;
   expire_by: string;
   submitted_at: string | null;
+  token_hash: string;
 };
 
 export async function orderExists(
@@ -156,17 +157,26 @@ export async function listProbes(
   return items;
 }
 
-export async function findByTokenHash(
+function placeholders(startIndex: number, count: number): string {
+  return Array.from({ length: count }, (_, index) => `?${startIndex + index}`).join(", ");
+}
+
+export async function findByTokenHashes(
   db: D1Database,
-  tokenHash: string,
+  tokenHashes: string[],
 ): Promise<ProbeTokenState | null> {
+  if (tokenHashes.length === 0) {
+    return null;
+  }
+
   const row = await db
     .prepare(
-      `SELECT id, customer_name, order_number, probe_number, expire_by, submitted_at
+      `SELECT id, customer_name, order_number, probe_number, expire_by, submitted_at, token_hash
        FROM probes
-       WHERE token_hash = ?1`,
+       WHERE token_hash IN (${placeholders(1, tokenHashes.length)})
+       LIMIT 1`,
     )
-    .bind(tokenHash)
+    .bind(...tokenHashes)
     .first<ProbeTokenState>();
 
   return row ?? null;

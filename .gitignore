@@ -9,4 +9,5 @@ dist
 playwright-report
 test-results
 coverage
+.dev.vars
 .DS_Store

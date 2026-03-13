@@ -15,6 +15,7 @@ No deployment automation is executed from here.
 2. Package manager (`npm` by default unless project decides otherwise)
 3. Cloudflare `wrangler` CLI installed
 4. Git configured locally
+5. Local secrets file `.dev.vars` created from `.dev.vars.example`
 
 ### Target Script Contract
 The application scaffold must provide these scripts:
@@ -46,6 +47,7 @@ Before milestone sign-off:
 2. R2 interactions are testable in local/dev mode (or mocked where needed).
 3. No cloud deployment is required for local testing.
 4. Local Workers runtime testing is not constrained by Cloudflare free-tier deployment/build limits.
+5. Production secrets are not committed to `wrangler.jsonc`; local secrets are loaded from `.dev.vars`.
 
 ## Proposed First Release (Cloudflare) - Manual Only
 
@@ -54,6 +56,7 @@ Before milestone sign-off:
 2. Access policies for `/admin` and `/api/admin/*` are prepared.
 3. Full local quality loop is green.
 4. M1 E2E suite is green.
+5. Production token HMAC secret(s) are configured with `wrangler secret put`, not committed to the repo.
 
 ### Manual Release Steps (Proposal)
 1. Confirm release commit on `main`.

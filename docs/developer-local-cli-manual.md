@@ -28,7 +28,11 @@ cd ls-oneup
 ```bash
 npm install
 ```
-3. Apply local D1 migrations.
+3. Create local secrets from the example file.
+```bash
+cp .dev.vars.example .dev.vars
+```
+4. Apply local D1 migrations.
 ```bash
 npm run db:migrate:local
 ```
@@ -105,16 +109,20 @@ npx wrangler login
 ```bash
 npm run ci:local
 ```
-3. Apply remote D1 migrations:
+3. Configure production token secrets:
+```bash
+echo '<token-hmac-keys-json>' | npx wrangler secret put TOKEN_HMAC_KEYS_JSON
+```
+4. Apply remote D1 migrations:
 ```bash
 npx wrangler d1 migrations apply ls-oneup-db --remote --config wrangler.jsonc
 ```
-4. Deploy:
+5. Deploy:
 ```bash
 npm run build
 npx wrangler deploy --config wrangler.jsonc
 ```
-5. Smoke checks:
+6. Smoke checks:
 - Admin route protection works (`/admin`, `/api/admin/*`)
 - Farmer token open/submit works
 - Submission visible in admin

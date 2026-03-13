@@ -1,6 +1,7 @@
 import { env, SELF } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
 import { buildValidForm, createProbeOrder, tokenFromUrl } from "./helpers";
+import { hashTokenForStorage, legacyPlainTokenHash } from "../../worker/security";
 
 async function expectD1Failure(run: () => Promise<unknown>): Promise<void> {
   let failed = false;
@@ -142,6 +143,34 @@ describe("M1 integration", () => {
 
     const response = await SELF.fetch(`https://example.test/api/probe/${token}`);
     expect(response.status).toBe(410);
+  });
+
+  it("INT-LINK-003 accepts legacy token hashes during rotation window", async () => {
+    const { tokenUrl, probeId } = await createProbeOrder({ order_number: "ORD-LEGACY" });
+    const token = tokenFromUrl(tokenUrl);
+    const legacyHash = await legacyPlainTokenHash(
+      token,
+      "test-token-secret-0123456789abcdefghijklmnopqrstuvwxyz",
+    );
+
+    await env.DB.prepare("UPDATE probes SET token_hash = ?1 WHERE id = ?2")
+      .bind(legacyHash, probeId)
+      .run();
+
+    const openResponse = await SELF.fetch(`https://example.test/api/probe/${token}`);
+    expect(openResponse.status).toBe(200);
+
+    const submitResponse = await SELF.fetch(`https://example.test/api/probe/${token}/submit`, {
+      method: "POST",
+      body: buildValidForm(),
+    });
+    expect(submitResponse.status).toBe(201);
+  });
+
+  it("INT-LINK-004 rejects token hashing when no HMAC key configuration exists", async () => {
+    await expect(hashTokenForStorage("test-token", {})).rejects.toThrowError(
+      "Missing token HMAC key configuration.",
+    );
   });
 
   it("INT-SUBMIT-003 first-submit-wins with race and cleanup", async () => {

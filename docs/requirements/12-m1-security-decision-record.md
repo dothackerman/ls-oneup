@@ -22,18 +22,24 @@ Security requirements:
    - store only `token_hash` in D1.
    - do not store raw token after creation response is returned.
 3. Hashing:
-   - use HMAC-SHA-256 with server-side secret (`token_pepper`) to derive `token_hash`.
-   - keep secret in Cloudflare secret management, never in source code.
+   - use HMAC-SHA-256 with server-side secrets to derive `token_hash`.
+   - store `token_hash` in a versioned format that includes the active key identifier.
+   - accept legacy hash formats only for backward compatibility while pre-rotation links remain valid.
+   - keep production secrets in Cloudflare secret management and local development secrets in gitignored `.dev.vars`, never in committed source files.
 4. Validation:
-   - resolve incoming token by recomputing HMAC hash.
+   - resolve incoming token by recomputing HMAC hashes for the active and legacy key ring.
+   - compare candidate hashes without short-circuit string equality in application code.
    - enforce acceptance via one conditional write:
      - matching hash
      - not expired
      - not yet submitted
-5. Logging:
+5. Rotation:
+   - model token HMAC keys as a current key plus optional legacy keys so secrets can rotate without immediately invalidating still-live links.
+   - remove legacy keys only after the longest issued link lifetime has elapsed.
+6. Logging:
    - never log raw tokens.
    - log only probe ID and non-sensitive state (`accepted`, `expired`, `already_used`, `invalid`).
-6. Orphan object handling:
+7. Orphan object handling:
    - if R2 upload succeeds but submit write loses race/fails, run best-effort delete and log result.
 
 ## Consequences
@@ -44,7 +50,8 @@ Positive:
 
 Trade-offs:
 1. Token cannot be recovered from DB; admin must regenerate only in later milestone if needed.
-2. HMAC secret management becomes required operational setup.
+2. HMAC key-ring management becomes required operational setup.
+3. Rotation requires retaining legacy secrets until outstanding token lifetimes have elapsed.
 
 ## Alternatives Considered
 1. Plain token stored in DB:

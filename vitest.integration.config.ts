@@ -16,7 +16,12 @@ export default defineWorkersProject(async () => {
           },
           miniflare: {
             bindings: {
-              TOKEN_PEPPER: "test-pepper",
+              TOKEN_HMAC_KEYS_JSON: JSON.stringify({
+                current: {
+                  id: "test-current",
+                  secret: "test-token-secret-0123456789abcdefghijklmnopqrstuvwxyz",
+                },
+              }),
               APP_BASE_URL: "https://example.test",
               DEV_BYPASS_ACCESS: "true",
               TEST_MIGRATIONS: migrations,
