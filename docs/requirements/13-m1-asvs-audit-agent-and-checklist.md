@@ -65,5 +65,5 @@ Each requirement row must include:
 
 1. Running `npm run asvs:sync` refreshes upstream metadata and baseline checklist.
 2. Running `npm run asvs:audit` evaluates all checklist items and writes findings.
-3. Human report includes top-severity backlog and full checklist table.
+3. Human report prioritizes readability for human reviewers, including status summary, chapter summary, and the highest-severity open backlog.
 4. Agent instructions exist under `.claude/agents/asvs-vos-auditor.md`.

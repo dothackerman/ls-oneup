@@ -308,43 +308,106 @@ function renderDeltaMarkdown(delta) {
   return lines.join("\n");
 }
 
+function chapterLabel(row) {
+  const chapter = String(row.chapter ?? "").trim();
+  const withoutPrefix = chapter.replace(/^[A-Z]\d+\s+/, "");
+  const match = withoutPrefix.match(/^(.*?)(?:\s+V\d+\.\d+|\s*$)/);
+  return (match?.[1] ?? withoutPrefix).trim();
+}
+
+function summarizeChapters(checklist) {
+  const byChapter = new Map();
+
+  for (const row of checklist) {
+    const chapterId = row.requirement_id.split(".")[0];
+    if (!byChapter.has(chapterId)) {
+      byChapter.set(chapterId, {
+        chapter_id: chapterId,
+        label: chapterLabel(row),
+        completed: 0,
+        todo: 0,
+        not_applicable: 0,
+      });
+    }
+
+    const summary = byChapter.get(chapterId);
+    summary[row.status] += 1;
+  }
+
+  return [...byChapter.values()].sort((a, b) => a.chapter_id.localeCompare(b.chapter_id, undefined, { numeric: true }));
+}
+
 function renderHuman(metadata, checklist) {
   const critical = checklist.filter((x) => x.status === "todo" && x.severity === "critical");
   const high = checklist.filter((x) => x.status === "todo" && x.severity === "high");
+  const byStatus = checklist.reduce(
+    (acc, row) => {
+      acc[row.status] += 1;
+      return acc;
+    },
+    { completed: 0, todo: 0, not_applicable: 0 },
+  );
+  const chapterSummary = summarizeChapters(checklist);
+  const v11 = chapterSummary.find((row) => row.chapter_id === "V11");
+  const v11Open = checklist.find((row) => row.requirement_id === "V11.7.1");
+  const highBacklog = [...critical, ...high].slice(0, 25);
 
-  const head = [
+  const lines = [
     "# ASVS Checklist (Human View)",
+    "",
+    "This report is optimized for human review.",
+    "Structured per-control data remains in `checklist.machine.json` and `checklist.findings.jsonl`.",
+    "",
+    "## Snapshot",
     "",
     `- Generated at: ${new Date().toISOString()}`,
     `- Source commit: ${metadata.source_commit_sha ?? "unknown"}`,
     `- Source blob: ${metadata.source_blob_sha ?? "unknown"}`,
     `- Total requirements: ${checklist.length}`,
+    `- Completed: ${byStatus.completed}`,
+    `- TODO: ${byStatus.todo}`,
+    `- Not applicable: ${byStatus.not_applicable}`,
     `- TODO critical: ${critical.length}`,
     `- TODO high: ${high.length}`,
     "",
-    "## Top severity backlog",
+    "## Read This Before Interpreting The TODO Count",
+    "",
+    "- The checklist covers all 345 ASVS controls, not just the crypto work completed recently.",
+    "- A large TODO count means most ASVS chapters are still open or only lightly evidenced, not that the recent crypto changes failed.",
+    "- The strongest current chapter is `V11 Cryptography`; several other chapters are intentionally `not_applicable` because the repo does not implement those technologies or account systems.",
+    "",
+    "## Chapter Summary",
+    "",
+    "| Chapter | Area | Completed | TODO | Not applicable |",
+    "|---|---|---|---|---|",
+    ...chapterSummary.map(
+      (row) =>
+        `| ${row.chapter_id} | ${row.label} | ${row.completed} | ${row.todo} | ${row.not_applicable} |`,
+    ),
+    "",
+    "## Current Security Highlight",
+    "",
+    `- V11 Cryptography: ${v11?.completed ?? 0} completed, ${v11?.todo ?? 0} todo, ${v11?.not_applicable ?? 0} not applicable.`,
+    v11Open
+      ? `- Remaining open crypto control: ${v11Open.requirement_id} — ${v11Open.reasoning}`
+      : "- Remaining open crypto control: none.",
+    "",
+    "## Highest Severity Open Backlog",
+    "",
+    ...(highBacklog.length > 0
+      ? highBacklog.map((row) => `- ${row.requirement_id} [${row.severity}] — ${row.title}`)
+      : ["- No critical or high severity TODO items remain."]),
+    "",
+    "## Human Navigation",
+    "",
+    "- Security overview: `../README.md`",
+    "- Security decision record: `../../requirements/12-m1-security-decision-record.md`",
+    "- ASVS pipeline and maintenance notes: `README.md`",
+    "- Full structured checklist: `checklist.machine.json`",
     "",
   ];
 
-  const sevRows = [...critical, ...high]
-    .slice(0, 40)
-    .map((x) => `- ${x.requirement_id} [${x.severity}] — ${x.title}`);
-
-  const table = [
-    "",
-    "## Full checklist",
-    "",
-    "| Requirement | Chapter | Level | Status | Severity | Code references | Reasoning |",
-    "|---|---|---|---|---|---|---|",
-    ...checklist.map((row) => {
-      const refs = row.code_references?.length ? row.code_references.join("<br>") : "";
-      const reasoning = row.reasoning ? String(row.reasoning).replaceAll("|", "\\|") : "";
-      return `| ${row.requirement_id} | ${row.chapter} | ${row.level} | ${row.status} | ${row.severity} | ${refs} | ${reasoning} |`;
-    }),
-    "",
-  ];
-
-  return `${head.join("\n")}\n${sevRows.join("\n")}\n${table.join("\n")}`;
+  return lines.join("\n");
 }
 
 // ---------------------------------------------------------------------------

@@ -1,6 +1,7 @@
 # ASVS / vOS Security Checklist Pipeline
 
 This directory tracks OWASP ASVS source state and local codebase validation.
+This README is maintenance-oriented. Human readers should usually start with `../README.md` or `./checklist.human.md`.
 
 ## Recommended Entry Points
 

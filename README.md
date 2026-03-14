@@ -19,11 +19,7 @@ Use this as the single instruction manual for local CLI usage:
 - [M1 test traceability matrix](docs/requirements/11-m1-test-traceability-matrix.md)
 - [M1 security decision record](docs/requirements/12-m1-security-decision-record.md)
 - [Security documentation index](docs/security/README.md)
-- [ASVS / vOS checklist pipeline](docs/security/asvs/README.md)
-- [Human-readable ASVS checklist](docs/security/asvs/checklist.human.md)
-- [Machine-readable ASVS checklist](docs/security/asvs/checklist.machine.json)
 - [Local testing and first release runbook](docs/requirements/08-local-testing-and-first-release-runbook.md)
-- [Crypto inventory pipeline](docs/security/crypto/README.md)
 
 ### Local quality commands
 

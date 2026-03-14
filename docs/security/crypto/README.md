@@ -1,6 +1,7 @@
 # Crypto Inventory Pipeline
 
 This directory tracks the repository's cryptographic inventory, discovery output, and operating policy.
+This README is maintenance-oriented. Human readers should usually start with `../README.md` or `../crypto-policy.md`.
 
 ## Recommended Entry Points
 

@@ -47,4 +47,4 @@ This folder contains the living requirement and implementation-guidance document
 ## Related Navigation
 1. Security hub: `../security/README.md`
 2. Human-readable ASVS checklist: `../security/asvs/checklist.human.md`
-3. Machine-readable ASVS checklist: `../security/asvs/checklist.machine.json`
+3. ASVS maintenance artifacts: `../security/asvs/README.md`
