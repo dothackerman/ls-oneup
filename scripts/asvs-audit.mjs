@@ -72,7 +72,14 @@ const TECH_ABSENCE_RULES = [
   },
   {
     tech: "GraphQL",
-    deps: ["graphql", "apollo-server", "@apollo/server", "mercurius", "graphql-yoga", "type-graphql"],
+    deps: [
+      "graphql",
+      "apollo-server",
+      "@apollo/server",
+      "mercurius",
+      "graphql-yoga",
+      "type-graphql",
+    ],
     code: ["GraphQLSchema", "buildSchema", "graphql(", "gql`"],
     chapters: [],
     controlPattern: /graphql/i,
@@ -123,7 +130,8 @@ async function walk(dir) {
   for (const entry of entries) {
     const p = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      if (entry.name === "node_modules" || entry.name === ".git" || entry.name.startsWith(".")) continue;
+      if (entry.name === "node_modules" || entry.name === ".git" || entry.name.startsWith("."))
+        continue;
       out.push(...(await walk(p)));
       continue;
     }
@@ -334,7 +342,34 @@ function summarizeChapters(checklist) {
     summary[row.status] += 1;
   }
 
-  return [...byChapter.values()].sort((a, b) => a.chapter_id.localeCompare(b.chapter_id, undefined, { numeric: true }));
+  return [...byChapter.values()].sort((a, b) =>
+    a.chapter_id.localeCompare(b.chapter_id, undefined, { numeric: true }),
+  );
+}
+
+function summarizeLevels(checklist) {
+  const levels = new Map();
+
+  for (const row of checklist) {
+    const level = String(row.level ?? "unknown");
+    if (!levels.has(level)) {
+      levels.set(level, {
+        level,
+        completed: 0,
+        todo: 0,
+        not_applicable: 0,
+        total: 0,
+      });
+    }
+
+    const summary = levels.get(level);
+    summary[row.status] += 1;
+    summary.total += 1;
+  }
+
+  return [...levels.values()].sort((a, b) =>
+    a.level.localeCompare(b.level, undefined, { numeric: true }),
+  );
 }
 
 function renderHuman(metadata, checklist) {
@@ -348,6 +383,9 @@ function renderHuman(metadata, checklist) {
     { completed: 0, todo: 0, not_applicable: 0 },
   );
   const chapterSummary = summarizeChapters(checklist);
+  const levelSummary = summarizeLevels(checklist);
+  const l2 = levelSummary.find((row) => row.level === "2");
+  const l3 = levelSummary.find((row) => row.level === "3");
   const v11 = chapterSummary.find((row) => row.chapter_id === "V11");
   const v11Open = checklist.find((row) => row.requirement_id === "V11.7.1");
   const highBacklog = [...critical, ...high].slice(0, 25);
@@ -369,6 +407,19 @@ function renderHuman(metadata, checklist) {
     `- Not applicable: ${byStatus.not_applicable}`,
     `- TODO critical: ${critical.length}`,
     `- TODO high: ${high.length}`,
+    "",
+    "## Level Target View",
+    "",
+    "| Level | Completed | TODO | Not applicable | Total |",
+    "|---|---|---|---|---|",
+    ...levelSummary.map(
+      (row) =>
+        `| L${row.level} | ${row.completed} | ${row.todo} | ${row.not_applicable} | ${row.total} |`,
+    ),
+    "",
+    `- Current practical target: Level 2 first, with selective Level 3 carryovers where they are cheap, highly relevant, or already partially implemented.`,
+    `- Level 2 current state: ${l2?.completed ?? 0} completed, ${l2?.todo ?? 0} todo, ${l2?.not_applicable ?? 0} not applicable.`,
+    `- Level 3 current state: ${l3?.completed ?? 0} completed, ${l3?.todo ?? 0} todo, ${l3?.not_applicable ?? 0} not applicable.`,
     "",
     "## Read This Before Interpreting The TODO Count",
     "",
@@ -458,7 +509,10 @@ async function main() {
     const refs = findReferences(fileIndex, keywords);
 
     const status = item.status || "todo";
-    const severity = item.severity && item.severity !== "none" ? item.severity : severityFromLevel(item.level, status);
+    const severity =
+      item.severity && item.severity !== "none"
+        ? item.severity
+        : severityFromLevel(item.level, status);
 
     const reasoning =
       item.reasoning?.trim() ||
@@ -497,7 +551,9 @@ async function main() {
   await fs.writeFile(DELTA_JSON_PATH, `${JSON.stringify(delta, null, 2)}\n`, "utf8");
   await fs.writeFile(DELTA_MD_PATH, `${renderDeltaMarkdown(delta)}\n`, "utf8");
 
-  console.log(`ASVS audit complete: ${audited.length} controls evaluated, ${preFilterCount} auto-resolved as not_applicable.`);
+  console.log(
+    `ASVS audit complete: ${audited.length} controls evaluated, ${preFilterCount} auto-resolved as not_applicable.`,
+  );
 }
 
 main().catch((err) => {

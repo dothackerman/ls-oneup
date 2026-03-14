@@ -6,7 +6,8 @@ Use this folder as the human-facing entry point for repository security document
 
 1. [Security decision record](../requirements/12-m1-security-decision-record.md)
 2. [Human-readable ASVS checklist](./asvs/checklist.human.md)
-3. [Crypto policy](./crypto-policy.md)
+3. [ASVS Level 2 implementation plan](../plans/2026-03-14-asvs-level2-implementation-plan.md)
+4. [Crypto policy](./crypto-policy.md)
 
 ## Navigation Notes
 

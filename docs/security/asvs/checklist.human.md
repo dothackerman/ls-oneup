@@ -5,7 +5,7 @@ Structured per-control data remains in `checklist.machine.json` and `checklist.f
 
 ## Snapshot
 
-- Generated at: 2026-03-14T07:20:06.112Z
+- Generated at: 2026-03-14T07:51:35.944Z
 - Source commit: ae4ab5b261a72b63edd6a10b4e2d600ea6937e2b
 - Source blob: f7ae2926598c4648ff7614a6968e4c8fd89524bd
 - Total requirements: 345
@@ -15,6 +15,18 @@ Structured per-control data remains in `checklist.machine.json` and `checklist.f
 - TODO critical: 0
 - TODO high: 58
 
+## Level Target View
+
+| Level | Completed | TODO | Not applicable | Total |
+| ----- | --------- | ---- | -------------- | ----- |
+| L1    | 3         | 39   | 28             | 70    |
+| L2    | 8         | 101  | 74             | 183   |
+| L3    | 7         | 58   | 27             | 92    |
+
+- Current practical target: Level 2 first, with selective Level 3 carryovers where they are cheap, highly relevant, or already partially implemented.
+- Level 2 current state: 8 completed, 101 todo, 74 not applicable.
+- Level 3 current state: 7 completed, 58 todo, 27 not applicable.
+
 ## Read This Before Interpreting The TODO Count
 
 - The checklist covers all 345 ASVS controls, not just the crypto work completed recently.
@@ -23,25 +35,25 @@ Structured per-control data remains in `checklist.machine.json` and `checklist.f
 
 ## Chapter Summary
 
-| Chapter | Area | Completed | TODO | Not applicable |
-|---|---|---|---|---|
-| V1 | Encoding and Sanitization | 0 | 29 | 1 |
-| V2 | Validation and Business Logic | 0 | 13 | 0 |
-| V3 | Web Frontend Security | 0 | 31 | 0 |
-| V4 | API and Web Service | 0 | 14 | 2 |
-| V5 | File Handling | 0 | 13 | 0 |
-| V6 | Authentication | 0 | 0 | 47 |
-| V7 | Session Management | 0 | 0 | 19 |
-| V8 | Authorization | 0 | 13 | 0 |
-| V9 | Self-contained Tokens | 0 | 0 | 7 |
-| V10 | OAuth and OIDC | 0 | 0 | 36 |
-| V11 | Cryptography | 18 | 1 | 5 |
-| V12 | Secure Communication | 0 | 12 | 0 |
-| V13 | Configuration | 0 | 21 | 0 |
-| V14 | Data Protection | 0 | 13 | 0 |
-| V15 | Secure Coding and Architecture | 0 | 21 | 0 |
-| V16 | Security Logging and Error Handling | 0 | 17 | 0 |
-| V17 | WebRTC | 0 | 0 | 12 |
+| Chapter | Area                                | Completed | TODO | Not applicable |
+| ------- | ----------------------------------- | --------- | ---- | -------------- |
+| V1      | Encoding and Sanitization           | 0         | 29   | 1              |
+| V2      | Validation and Business Logic       | 0         | 13   | 0              |
+| V3      | Web Frontend Security               | 0         | 31   | 0              |
+| V4      | API and Web Service                 | 0         | 14   | 2              |
+| V5      | File Handling                       | 0         | 13   | 0              |
+| V6      | Authentication                      | 0         | 0    | 47             |
+| V7      | Session Management                  | 0         | 0    | 19             |
+| V8      | Authorization                       | 0         | 13   | 0              |
+| V9      | Self-contained Tokens               | 0         | 0    | 7              |
+| V10     | OAuth and OIDC                      | 0         | 0    | 36             |
+| V11     | Cryptography                        | 18        | 1    | 5              |
+| V12     | Secure Communication                | 0         | 12   | 0              |
+| V13     | Configuration                       | 0         | 21   | 0              |
+| V14     | Data Protection                     | 0         | 13   | 0              |
+| V15     | Secure Coding and Architecture      | 0         | 21   | 0              |
+| V16     | Security Logging and Error Handling | 0         | 17   | 0              |
+| V17     | WebRTC                              | 0         | 0    | 12             |
 
 ## Current Security Highlight
 
@@ -62,7 +74,7 @@ Structured per-control data remains in `checklist.machine.json` and `checklist.f
 - V3.4.8 [high] — Verify that all HTTP responses that initiate a document rendering (such as responses with Content-Type text/html), include the Cross‑Origin‑Opener‑Policy header field with the same-origin directive or the same-origin-allow-popups directive as required. This prevents attacks that abuse shared access to Window objects, such as tabnabbing and frame counting.
 - V3.5.6 [high] — Verify that JSONP functionality is not enabled anywhere across the application to avoid Cross-Site Script Inclusion (XSSI) attacks.
 - V3.5.7 [high] — Verify that data requiring authorization is not included in script resource responses, like JavaScript files, to prevent Cross-Site Script Inclusion (XSSI) attacks.
-- V3.5.8 [high] — Verify that authenticated resources (such as images, videos, scripts, and other documents) can be loaded or embedded on behalf of the user only when intended. This can be accomplished by strict validation of the Sec-Fetch-* HTTP request header fields to ensure that the request did not originate from an inappropriate cross-origin call, or by setting a restrictive Cross-Origin-Resource-Policy HTTP response header field to instruct the browser to block returned content.
+- V3.5.8 [high] — Verify that authenticated resources (such as images, videos, scripts, and other documents) can be loaded or embedded on behalf of the user only when intended. This can be accomplished by strict validation of the Sec-Fetch-\* HTTP request header fields to ensure that the request did not originate from an inappropriate cross-origin call, or by setting a restrictive Cross-Origin-Resource-Policy HTTP response header field to instruct the browser to block returned content.
 - V3.6.1 [high] — Verify that client-side assets, such as JavaScript libraries, CSS, or web fonts, are only hosted externally (e.g., on a Content Delivery Network) if the resource is static and versioned and Subresource Integrity (SRI) is used to validate the integrity of the asset. If this is not possible, there should be a documented security decision to justify this for each resource.
 - V3.7.3 [high] — Verify that the application shows a notification when the user is being redirected to a URL outside of the application's control, with an option to cancel the navigation.
 - V3.7.4 [high] — Verify that the application's top-level domain (e.g., site.tld) is added to the public preload list for HTTP Strict Transport Security (HSTS). This ensures that the use of TLS for the application is built directly into the main browsers, rather than relying only on the Strict-Transport-Security response header field.
@@ -80,6 +92,6 @@ Structured per-control data remains in `checklist.machine.json` and `checklist.f
 
 - Security overview: `../README.md`
 - Security decision record: `../../requirements/12-m1-security-decision-record.md`
+- Level 2 implementation plan: `../../plans/2026-03-14-asvs-level2-implementation-plan.md`
 - ASVS pipeline and maintenance notes: `README.md`
 - Full structured checklist: `checklist.machine.json`
-
