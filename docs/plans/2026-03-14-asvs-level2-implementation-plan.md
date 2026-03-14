@@ -6,9 +6,9 @@ Bring `ls-oneup` to an honest ASVS Level 2 posture first.
 
 This plan is agent-first:
 
-1. it groups the remaining Level 2 work into parallelizable lanes,
+1. it groups the remaining Level 2 work into parallelizable module-based workstreams,
 2. it keeps human-facing documentation separate from maintenance artifacts,
-3. it defines ownership boundaries to reduce merge friction,
+3. it defines file ownership boundaries to reduce merge friction,
 4. it preserves room for selective Level 3 carryovers only where they are cheap or already partly implemented.
 
 ## Current State
@@ -34,7 +34,7 @@ Formal target:
 1. Every Level 2 control should end in one of:
    - `completed`,
    - `not_applicable` with specific reasoning,
-   - or an explicitly accepted deferred exception approved by the operator.
+   - or `deferred_exception` with explicit operator approval and specific reasoning.
 
 Selective Level 3 carryover rule:
 
@@ -71,13 +71,17 @@ Open Level 2 controls:
 The project should not attack these controls one by one in checklist order.
 That would maximize context switching and minimize real progress.
 
-Use four implementation lanes plus one integration lane:
+The project should also not use ASVS chapters as implementation ownership.
+ASVS is the validation lens, not the repo topology.
 
-1. Lane A: Browser, transport, and configuration hardening.
-2. Lane B: Input, API, and file-handling hardening.
-3. Lane C: Data protection, logging, and error-handling hardening.
-4. Lane D: Authorization and business-logic hardening.
-5. Lane E: Integration, evidence refresh, and final Level 2 gate review.
+Use module-based workstreams:
+
+1. Workstream A: edge request and response surface.
+2. Workstream B: domain validation, authorization, and business rules.
+3. Workstream C: storage, cryptography, and submission protection.
+4. Workstream D: frontend/admin UI security surface.
+5. Workstream E: tests and requirement docs.
+6. Workstream F: ASVS artifact refresh and final gate review.
 
 ## Phase 0: Baseline And Triage
 
@@ -95,27 +99,28 @@ Outputs:
    - `candidate_not_applicable`.
 2. Mark dependencies between controls.
 3. Identify controls that are really duplicates under one implementation slice.
+4. Assign each control to a module-based workstream and a concrete slice owner.
 
 Deliverables:
 
-1. A maintained Level 2 workboard document or JSON artifact.
-2. Lane assignment for each open Level 2 control.
+1. A maintained Level 2 workboard JSON artifact.
+2. Workstream assignment for each open Level 2 control.
+3. File-ownership boundaries for each workstream.
+4. First-wave slice definitions with exact files, tests, and docs to touch.
 
-## Lane A: Browser, Transport, And Configuration
+Canonical artifact:
+
+1. `docs/security/asvs/campaigns/2026-03-level2.json`
+
+## Workstream A: Edge Request And Response Surface
 
 Owns:
 
-1. `worker/index.ts` for response headers and request policy changes.
-2. `wrangler.jsonc`
-3. `docs/requirements/08-local-testing-and-first-release-runbook.md`
-4. `docs/requirements/12-m1-security-decision-record.md` when header/transport/config decisions change
-5. transport/config-related tests
-
-Primary chapters:
-
-1. `V3`
-2. `V12`
-3. `V13`
+1. `worker/index.ts`
+2. `worker/security.ts`
+3. `wrangler.jsonc`
+4. request/response integration tests
+5. transport/config deployment notes in `docs/requirements/08-local-testing-and-first-release-runbook.md`
 
 Likely implementation slices:
 
@@ -131,129 +136,123 @@ Likely implementation slices:
 
 Main constraint:
 
-1. Some `V12` items depend on Cloudflare deployment configuration and may require documentation plus operator deployment actions, not just code.
+1. Some transport controls depend on Cloudflare deployment configuration and may require documentation plus operator deployment actions, not just code.
 
 Failure mode:
 
 1. Adding headers blindly can break the UI or produce fake compliance without deployment evidence.
 
-## Lane B: Input, API, And File Handling
+## Workstream B: Domain Validation, Authorization, And Business Rules
 
 Owns:
 
 1. `src/shared/validation.ts`
-2. `worker/index.ts` request validation and method handling
-3. `worker/repository.ts` only when API hardening requires repository-side constraints
-4. upload-related tests in `tests/integration/*` and `tests/e2e/*`
-5. file-handling docs and acceptance notes
-
-Primary chapters:
-
-1. `V1`
-2. `V4`
-3. `V5`
+2. `src/shared/domain.ts`
+3. request parsing, authorization, and business-rule branches in `worker/index.ts`
+4. rule-focused tests in `tests/integration/*` and `tests/e2e/*`
+5. API behavior notes in `docs/requirements/09-m1-api-contract.md`
 
 Likely implementation slices:
 
 1. Strengthen input normalization and validation boundaries.
 2. Restrict allowed HTTP methods and document unsupported method behavior.
-3. Harden upload handling beyond MIME and size:
+3. Define anti-automation and workflow guardrails where the product can honestly support them.
+4. Harden upload handling beyond MIME and size:
    - pixel flood limits,
    - archive/path-handling prohibitions if future compressed uploads appear,
    - safer media validation assumptions.
-4. Review request/response generation behavior for header and framing safety.
+5. Review request/response generation behavior for header and framing safety where it is implemented in application code.
+6. Make the server-side authorization model explicit and keep object-level access decisions out of frontend-owned work.
 
 Main constraint:
 
-1. Several V1/V4 items may require evidence and documented parsing policy, not only code tweaks.
+1. Several controls here need explicit rule documentation, not just validator code.
 
 Failure mode:
 
 1. Superficial validator additions may lower checklist counts without meaningfully reducing abuse risk.
 
-## Lane C: Data Protection, Logging, And Error Handling
+## Workstream C: Storage, Cryptography, And Submission Protection
 
 Owns:
 
-1. `worker/index.ts` error behavior and log events
+1. `worker/repository.ts`
 2. `worker/submission-security.ts`
-3. `docs/security/*`
-4. `docs/requirements/12-m1-security-decision-record.md`
-5. security unit/integration tests
-
-Primary chapters:
-
-1. `V14`
-2. `V16`
-3. selected `V15` controls related to defensive coding and secure failures
+3. crypto/storage behavior in `worker/index.ts`
+4. `docs/security/crypto*`
+5. storage/security unit and integration tests
 
 Likely implementation slices:
 
 1. Define and enforce retention/minimization rules for stored submission data and uploaded images.
-2. Improve audit/security event logging:
-   - what is logged,
-   - what is explicitly excluded,
-   - how failure classes are represented,
-   - what operator review is expected.
-3. Standardize error-handling behavior and evidence it with tests.
-4. Add defensive coding and failure-mode documentation where controls are presently under-evidenced.
+2. Keep submission confidentiality and crypto handling aligned with the decision record.
+3. Add storage-side safeguards and evidence them with tests.
+4. Hand off logging and generic error semantics to Workstream E unless they are inseparable from storage behavior.
 
 Main constraint:
 
-1. Logging controls are easy to over-claim; the repo needs both behavior and documentation.
+1. Storage and crypto changes can look complete before admin read paths and failure handling are fully evidenced.
 
 Failure mode:
 
-1. Producing more logs but still leaking sensitive context or lacking operator guidance.
+1. Closing data-protection controls in the database layer while leaving adjacent read paths and cleanup behavior under-specified.
 
-## Lane D: Authorization And Business Logic
+## Workstream D: Frontend And Admin UI Security Surface
 
 Owns:
 
-1. `worker/index.ts` authorization logic
-2. domain rules in `src/shared/*`
-3. authorization/business-flow tests
-4. supporting requirement docs for security and API behavior
-
-Primary chapters:
-
-1. `V2`
-2. `V8`
-3. selected `V15` controls tied to architecture and trust boundaries
+1. `src/App.tsx`
+2. `src/features/**`
+3. `src/styles.css`
+4. browser-facing e2e tests
+5. browser behavior notes when user-facing security expectations change
 
 Likely implementation slices:
 
-1. Make authorization model explicit:
-   - admin vs farmer permissions,
-   - object-level boundaries,
-   - trust in Cloudflare Access headers,
-   - expectations for internal vs end-user actions.
-2. Add abuse-resistance controls for sensitive workflows.
-3. Define and enforce business-logic constraints where Level 2 requires them.
+1. Remove insecure client assumptions and tighten browser-visible security behavior.
+2. Keep asset loading, redirects, and client-side storage behavior aligned with the intended header policy.
+3. Add UX evidence only when the control actually has a user-visible behavior.
 
 Main constraint:
 
-1. This lane likely needs operator decisions, not just implementation work.
+1. This workstream should not own server authorization or storage decisions even when ASVS puts them near browser controls.
 
 Failure mode:
 
-1. Writing generic docs about “authorization” without clarifying the actual trust model for this product.
+1. Treating browser-facing mitigations as if they can compensate for missing server-side controls.
 
-## Lane E: Integration And Evidence
+## Workstream E: Tests And Requirement Docs
+
+Owns:
+
+1. `tests/security.unit.test.ts`
+2. `tests/integration/*`
+3. `tests/e2e/*`
+4. `docs/requirements/08-local-testing-and-first-release-runbook.md`
+5. `docs/requirements/09-m1-api-contract.md`
+6. `docs/requirements/12-m1-security-decision-record.md`
+
+Tasks:
+
+1. Add or refine evidence for behavior changes made by Workstreams A-D.
+2. Keep requirement docs and ADRs aligned with implemented behavior.
+3. Own generic logging/error-handling verification and operator-facing guidance.
+4. Prepare clean evidence for the auditor refresh.
+
+## Workstream F: ASVS Artifact Refresh And Final Gate Review
 
 Owns:
 
 1. `docs/security/asvs/*`
-2. final evidence refreshes in requirement/security docs when behavior changes land
-3. cross-lane integration fixes
-4. final validation pass
+2. final integration-only checklist updates
+3. `npm run asvs:gate`
 
 Tasks:
 
-1. Merge completed lane work.
-2. Refresh the Level 2 interpretation in the human checklist.
-3. Re-audit Level 2 controls with evidence-based reasoning.
-4. Reject unsupported `completed` claims.
+1. Re-audit Level 2 controls with evidence-based reasoning after implementation slices land.
+2. Refresh the human checklist interpretation.
+3. Reject unsupported `completed` claims.
+4. Keep ASVS artifacts owned by the audit flow, not by implementation workers.
 
 Required final checks:
 
@@ -266,17 +265,14 @@ Required final checks:
 7. `npm run crypto:run`
 8. `npm run asvs:gate`
 
-## Parallelization Rules
+## File Ownership Rules
 
 1. Agents are not alone in the codebase; no reverting others' changes.
-2. Shared-file hotspots must be explicitly owned or sequenced.
-3. `worker/index.ts` is the biggest merge-risk file:
-   - Lane A owns response-header and transport sections.
-   - Lane B owns request validation and method behavior.
-   - Lane C owns error/logging behavior.
-   - Lane D owns authorization/business-logic sections.
-4. If two lanes need the same function or block, extract first, then divide ownership.
-5. Evidence artifacts in `docs/security/asvs/` belong to Lane E only.
+2. Shared-file hotspots must be explicitly owned or sequenced in the workboard before coding starts.
+3. `worker/index.ts` is a hotspot and should be split by route or helper extraction before concurrent editing.
+4. `docs/security/asvs/*` belongs to Workstream F only.
+5. Requirement docs belong to Workstream E unless a slice is docs-only.
+6. If two workstreams need the same function or block, extract a new module first and then reassign ownership to the new file.
 
 ## Suggested Multi-Agent Execution Order
 
@@ -284,29 +280,30 @@ Required final checks:
 
 Run in parallel:
 
-1. Lane A kickoff
-2. Lane B kickoff
-3. Lane C kickoff
+1. Workstream A kickoff
+2. Workstream B kickoff
+3. Workstream C kickoff
+4. Workstream E kickoff for test/doc scaffolding only
 
 Reason:
 
-1. These lanes have the most implementation surface and the least product-decision dependency.
+1. These workstreams have the most implementation surface and the least product-decision dependency.
 
 ### Wave 2
 
 Start after Wave 1 has clarified trust boundaries:
 
-1. Lane D authorization/business-logic
+1. Workstream D frontend/admin UI security surface
 
 Reason:
 
-1. Lane D is smaller in raw count but more dependent on explicit operator decisions.
+1. Browser-facing work depends on the server/header/security posture becoming concrete first.
 
 ### Wave 3
 
 After lanes stabilize:
 
-1. Lane E integration and evidence refresh
+1. Workstream F audit refresh and final gate review
 
 ## Commit Cadence
 
@@ -321,6 +318,7 @@ Minimum success:
 1. The repo has a tracked work program for all open Level 2 controls.
 2. The human checklist clearly reports Level 2 and Level 3 current state.
 3. Parallel implementation can proceed without constant merge collisions.
+4. ASVS artifacts remain an audit output, not an implementation scratchpad.
 
 Target success:
 
@@ -333,6 +331,7 @@ Target success:
 Start with Wave 1 and create the Level 2 execution dataset:
 
 1. enumerate the `101` open Level 2 controls,
-2. map each to Lane A/B/C/D,
-3. identify which controls are `docs-only`, `code-only`, or `mixed`,
-4. cut the first three parallel implementation slices from that map.
+2. map each to Workstream A/B/C/D/E,
+3. identify which controls are `docs-only`, `code-only`, `mixed`, or `deferred_exception` candidates,
+4. cut the first three parallel implementation slices from that map,
+5. keep Workstream F idle until implementation evidence exists to audit.

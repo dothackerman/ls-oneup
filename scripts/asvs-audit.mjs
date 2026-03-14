@@ -50,6 +50,9 @@ const STOPWORDS = new Set([
   "use",
 ]);
 
+const TERMINAL_STATUSES = new Set(["completed", "not_applicable"]);
+const REASONING_REQUIRED_STATUSES = new Set(["todo", "not_applicable", "deferred_exception"]);
+
 // ---------------------------------------------------------------------------
 // Tech-stack pre-filter: auto-resolve not_applicable for absent technologies.
 //
@@ -151,7 +154,7 @@ function extractKeywords(item) {
 }
 
 function severityFromLevel(level, status) {
-  if (status === "completed" || status === "not_applicable") return "none";
+  if (TERMINAL_STATUSES.has(status)) return "none";
   const n = Number(level);
   if (Number.isFinite(n) && n >= 4) return "critical";
   if (Number.isFinite(n) && n >= 3) return "high";
@@ -281,7 +284,7 @@ function buildDelta(previous, current) {
     }
 
     if ((prev.status || "todo") !== "todo" && row.status === "todo") newTodos += 1;
-    if ((prev.status || "todo") === "todo" && row.status === "completed") resolved += 1;
+    if ((prev.status || "todo") === "todo" && row.status !== "todo") resolved += 1;
     if (sevChanged) severityChanged += 1;
   }
 
@@ -335,11 +338,12 @@ function summarizeChapters(checklist) {
         completed: 0,
         todo: 0,
         not_applicable: 0,
+        deferred_exception: 0,
       });
     }
 
     const summary = byChapter.get(chapterId);
-    summary[row.status] += 1;
+    summary[row.status] = (summary[row.status] ?? 0) + 1;
   }
 
   return [...byChapter.values()].sort((a, b) =>
@@ -358,12 +362,13 @@ function summarizeLevels(checklist) {
         completed: 0,
         todo: 0,
         not_applicable: 0,
+        deferred_exception: 0,
         total: 0,
       });
     }
 
     const summary = levels.get(level);
-    summary[row.status] += 1;
+    summary[row.status] = (summary[row.status] ?? 0) + 1;
     summary.total += 1;
   }
 
@@ -373,14 +378,12 @@ function summarizeLevels(checklist) {
 }
 
 function renderHuman(metadata, checklist) {
-  const critical = checklist.filter((x) => x.status === "todo" && x.severity === "critical");
-  const high = checklist.filter((x) => x.status === "todo" && x.severity === "high");
   const byStatus = checklist.reduce(
     (acc, row) => {
-      acc[row.status] += 1;
+      acc[row.status] = (acc[row.status] ?? 0) + 1;
       return acc;
     },
-    { completed: 0, todo: 0, not_applicable: 0 },
+    { completed: 0, todo: 0, not_applicable: 0, deferred_exception: 0 },
   );
   const chapterSummary = summarizeChapters(checklist);
   const levelSummary = summarizeLevels(checklist);
@@ -388,7 +391,6 @@ function renderHuman(metadata, checklist) {
   const l3 = levelSummary.find((row) => row.level === "3");
   const v11 = chapterSummary.find((row) => row.chapter_id === "V11");
   const v11Open = checklist.find((row) => row.requirement_id === "V11.7.1");
-  const highBacklog = [...critical, ...high].slice(0, 25);
 
   const lines = [
     "# ASVS Checklist (Human View)",
@@ -405,35 +407,35 @@ function renderHuman(metadata, checklist) {
     `- Completed: ${byStatus.completed}`,
     `- TODO: ${byStatus.todo}`,
     `- Not applicable: ${byStatus.not_applicable}`,
-    `- TODO critical: ${critical.length}`,
-    `- TODO high: ${high.length}`,
+    `- Accepted deferred exceptions: ${byStatus.deferred_exception}`,
     "",
     "## Level Target View",
     "",
-    "| Level | Completed | TODO | Not applicable | Total |",
-    "|---|---|---|---|---|",
+    "| Level | Completed | TODO | Not applicable | Deferred exception | Total |",
+    "|---|---|---|---|---|---|",
     ...levelSummary.map(
       (row) =>
-        `| L${row.level} | ${row.completed} | ${row.todo} | ${row.not_applicable} | ${row.total} |`,
+        `| L${row.level} | ${row.completed} | ${row.todo} | ${row.not_applicable} | ${row.deferred_exception} | ${row.total} |`,
     ),
     "",
     `- Current practical target: Level 2 first, with selective Level 3 carryovers where they are cheap, highly relevant, or already partially implemented.`,
-    `- Level 2 current state: ${l2?.completed ?? 0} completed, ${l2?.todo ?? 0} todo, ${l2?.not_applicable ?? 0} not applicable.`,
-    `- Level 3 current state: ${l3?.completed ?? 0} completed, ${l3?.todo ?? 0} todo, ${l3?.not_applicable ?? 0} not applicable.`,
+    `- Level 2 current state: ${l2?.completed ?? 0} completed, ${l2?.todo ?? 0} todo, ${l2?.not_applicable ?? 0} not applicable, ${l2?.deferred_exception ?? 0} deferred exception.`,
+    `- Level 3 current state: ${l3?.completed ?? 0} completed, ${l3?.todo ?? 0} todo, ${l3?.not_applicable ?? 0} not applicable, ${l3?.deferred_exception ?? 0} deferred exception.`,
     "",
     "## Read This Before Interpreting The TODO Count",
     "",
     "- The checklist covers all 345 ASVS controls, not just the crypto work completed recently.",
-    "- A large TODO count means most ASVS chapters are still open or only lightly evidenced, not that the recent crypto changes failed.",
+    "- A large TODO count means most ASVS chapters are still open or only lightly evidenced, not that recent security work failed.",
+    "- Deferred exceptions are explicit operator-approved risk accepts, not soft completions.",
     "- The strongest current chapter is `V11 Cryptography`; several other chapters are intentionally `not_applicable` because the repo does not implement those technologies or account systems.",
     "",
     "## Chapter Summary",
     "",
-    "| Chapter | Area | Completed | TODO | Not applicable |",
-    "|---|---|---|---|---|",
+    "| Chapter | Area | Completed | TODO | Not applicable | Deferred exception |",
+    "|---|---|---|---|---|---|",
     ...chapterSummary.map(
       (row) =>
-        `| ${row.chapter_id} | ${row.label} | ${row.completed} | ${row.todo} | ${row.not_applicable} |`,
+        `| ${row.chapter_id} | ${row.label} | ${row.completed} | ${row.todo} | ${row.not_applicable} | ${row.deferred_exception} |`,
     ),
     "",
     "## Current Security Highlight",
@@ -443,16 +445,11 @@ function renderHuman(metadata, checklist) {
       ? `- Remaining open crypto control: ${v11Open.requirement_id} — ${v11Open.reasoning}`
       : "- Remaining open crypto control: none.",
     "",
-    "## Highest Severity Open Backlog",
-    "",
-    ...(highBacklog.length > 0
-      ? highBacklog.map((row) => `- ${row.requirement_id} [${row.severity}] — ${row.title}`)
-      : ["- No critical or high severity TODO items remain."]),
-    "",
     "## Human Navigation",
     "",
     "- Security overview: `../README.md`",
     "- Security decision record: `../../requirements/12-m1-security-decision-record.md`",
+    "- Level 2 implementation plan: `../../plans/2026-03-14-asvs-level2-implementation-plan.md`",
     "- ASVS pipeline and maintenance notes: `README.md`",
     "- Full structured checklist: `checklist.machine.json`",
     "",
@@ -518,7 +515,9 @@ async function main() {
       item.reasoning?.trim() ||
       (refs.length
         ? "Keyword-level evidence found in codebase; manual validation required for control completeness."
-        : "No direct keyword evidence found; likely TODO or requires manual applicability review.");
+        : REASONING_REQUIRED_STATUSES.has(status)
+          ? "No direct keyword evidence found; likely TODO, deferred exception candidate, or requires manual applicability review."
+          : "");
 
     const row = {
       ...item,

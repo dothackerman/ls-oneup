@@ -1,0 +1,21 @@
+{
+  "planner_requires_repo_config": true,
+  "implementer_requires_repo_config": true,
+  "max_parallel_audit_agents": 8,
+  "max_parallel_implementation_agents": 4,
+  "hotspot_rules": [
+    "docs/security/asvs/** is audit-only and cannot be edited by implementer slices.",
+    "worker/index.ts must be decomposed or explicitly sequenced before concurrent implementation writes.",
+    "docs/requirements/12-m1-security-decision-record.md is shared documentation and should be updated by a single docs/evidence slice when multiple workstreams depend on it."
+  ],
+  "slice_requirements": [
+    "Each slice must declare owned_files, supporting_files, forbidden_files, and done_when.",
+    "Each slice must name required tests and required docs before implementation starts.",
+    "Each slice must identify whether a planner or operator decision is required before execution."
+  ],
+  "audit_handoff_requirements": [
+    "Implementer slices must report changed files, tests run, docs updated, and controls claimed ready for re-audit.",
+    "Planner-owned campaign files may be updated during execution, but ASVS checklist artifacts remain audit-only.",
+    "Deferred exceptions require explicit operator approval before the auditor may set checklist status to deferred_exception."
+  ]
+}

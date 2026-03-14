@@ -5,6 +5,7 @@ import path from "node:path";
 const ASVS_DIR = path.resolve("docs/security/asvs");
 const MACHINE_PATH = path.join(ASVS_DIR, "checklist.machine.json");
 const SOURCE_STATE_PATH = path.join(ASVS_DIR, "source-state.json");
+const REASONING_REQUIRED_STATUSES = new Set(["todo", "not_applicable", "deferred_exception"]);
 
 function fail(msg) {
   console.error(`ASVS gate failed: ${msg}`);
@@ -22,9 +23,11 @@ async function main() {
   if (unknownIds > 0) fail(`${unknownIds} checklist rows have unknown requirement_id`);
 
   const missingReasoning = checklist.filter(
-    (x) => ["todo", "not_applicable"].includes(x.status) && !String(x.reasoning || "").trim(),
+    (x) => REASONING_REQUIRED_STATUSES.has(x.status) && !String(x.reasoning || "").trim(),
   ).length;
-  if (missingReasoning > 0) fail(`${missingReasoning} rows missing reasoning for todo/not_applicable`);
+  if (missingReasoning > 0) {
+    fail(`${missingReasoning} rows missing reasoning for todo/not_applicable/deferred_exception`);
+  }
 
   // Read source state for summary
   let sourceState = {};

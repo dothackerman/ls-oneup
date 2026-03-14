@@ -13,7 +13,7 @@ Establish a repeatable security-audit workflow that:
 ## Scope
 
 In scope:
-- Claude custom agent prompt contract for ASVS/vOS auditing.
+- Reusable ASVS skill contract plus repo-local adapter files.
 - Source sync process from OWASP/ASVS.
 - Local tracking files and update process.
 - Repository-wide checklist evaluation and findings output.
@@ -21,6 +21,7 @@ In scope:
 Out of scope:
 - Auto-remediation of all findings.
 - Production deployment gates based on ASVS status.
+- Implementation-lane ownership for code changes. That belongs to the Level 2 execution workboard and implementation plan, not the auditor contract.
 
 ## Responsibility contract
 
@@ -44,6 +45,7 @@ Primary reader entry points:
 - `docs/security/README.md`
 - `docs/security/asvs/README.md`
 - `docs/security/asvs/checklist.human.md`
+- `docs/security/asvs/repo-config.json`
 
 ## Commands
 
@@ -56,14 +58,20 @@ Primary reader entry points:
 
 Each requirement row must include:
 - `requirement_id`
-- `status` (`completed|todo|not_applicable`)
+- `status` (`completed|todo|not_applicable|deferred_exception`)
 - `severity` (`critical|high|medium|low|none`)
 - `reasoning`
 - `code_references` (array of `file:line`)
+
+Status semantics:
+- `completed` — implemented and evidenced in code references
+- `todo` — not yet implemented or still missing enough evidence
+- `not_applicable` — out of scope for this codebase, with specific reasoning
+- `deferred_exception` — operator-accepted exception for a control that remains open; this is not equivalent to completion and must retain explicit reasoning
 
 ## Acceptance criteria
 
 1. Running `npm run asvs:sync` refreshes upstream metadata and baseline checklist.
 2. Running `npm run asvs:audit` evaluates all checklist items and writes findings.
-3. Human report prioritizes readability for human reviewers, including status summary, chapter summary, and the highest-severity open backlog.
-4. Agent instructions exist under `.claude/agents/asvs-vos-auditor.md`.
+3. Human report prioritizes readability for human reviewers, including status summary, level summary, and chapter summary.
+4. Repo adapter files exist under `docs/security/asvs/` so global `asvs-auditor`, `asvs-planner`, and `asvs-implementer` skills can operate without repo-local skill logic.

@@ -1,0 +1,177 @@
+{
+  "campaign_id": "2026-03-level2",
+  "target_level": "2",
+  "status": "planned",
+  "source_checklist": "docs/security/asvs/checklist.machine.json",
+  "summary": "Initial Level 2 remediation campaign for ls-oneup using module-based workstreams and audit-only ASVS artifacts.",
+  "workstreams": [
+    {
+      "id": "A",
+      "surface": "edge_request_response_surface",
+      "goal": "Harden edge headers, transport expectations, and deployment-visible request/response policy."
+    },
+    {
+      "id": "B",
+      "surface": "domain_validation_authorization_business_rules",
+      "goal": "Tighten validation, authorization, and business-rule enforcement."
+    },
+    {
+      "id": "C",
+      "surface": "storage_crypto_submission_protection",
+      "goal": "Close storage-side data protection and submission security gaps."
+    },
+    {
+      "id": "D",
+      "surface": "frontend_admin_ui_security_surface",
+      "goal": "Align browser-visible behavior with the server-side security posture once the edge is stabilized."
+    },
+    {
+      "id": "E",
+      "surface": "tests_and_requirement_docs",
+      "goal": "Keep tests and requirement docs aligned with implementation slices."
+    }
+  ],
+  "control_mapping_rules": [
+    {
+      "workstream": "A",
+      "matches": ["V3.1.*", "V3.4.*", "V3.5.*", "V3.7.*", "V12.*", "V13.1.*", "V13.2.*"],
+      "rationale": "These controls mainly land at the worker edge, response headers, and deployment/runtime transport expectations."
+    },
+    {
+      "workstream": "B",
+      "matches": ["V1.*", "V2.*", "V4.*", "V5.1.*", "V5.2.*", "V8.*"],
+      "rationale": "These controls primarily change validation, request semantics, upload acceptance rules, and server-side authorization or business logic."
+    },
+    {
+      "workstream": "C",
+      "matches": ["V14.*", "V15.3.*"],
+      "rationale": "These controls primarily touch storage, submission confidentiality, minimization, and defensive handling close to persistence and crypto."
+    },
+    {
+      "workstream": "D",
+      "matches": ["V3.3.*", "V3.6.*", "V5.4.*"],
+      "rationale": "These controls have a browser-facing implementation surface and should only be claimed when there is actual UI or asset behavior to change."
+    },
+    {
+      "workstream": "E",
+      "matches": ["V13.3.*", "V13.4.*", "V15.1.*", "V15.2.*", "V16.*"],
+      "rationale": "These controls are mostly evidence, operator guidance, dependency posture, logging, and verification work spanning tests plus requirement docs."
+    }
+  ],
+  "first_wave_slices": [
+    {
+      "slice_id": "A1-header-policy",
+      "goal": "Establish edge header policy and transport documentation expectations.",
+      "controls_covered": ["V3.1.1", "V3.4.*", "V3.7.4", "V3.7.5", "V12.*", "V13.1.*", "V13.2.*"],
+      "owned_files": ["worker/index.ts", "worker/security.ts", "wrangler.jsonc"],
+      "supporting_files": [
+        "tests/integration/m1.integration.test.ts",
+        "docs/requirements/08-local-testing-and-first-release-runbook.md"
+      ],
+      "forbidden_files": ["docs/security/asvs/**"],
+      "depends_on": [],
+      "parallel_with": ["B1-validation-boundaries", "E1-evidence-scaffolding"],
+      "tests_required": ["npm run test:integration"],
+      "docs_required": ["docs/requirements/08-local-testing-and-first-release-runbook.md"],
+      "done_when": [
+        "Edge header behavior is implemented or explicitly documented where deployment-only.",
+        "Integration coverage exists for changed route or header behavior.",
+        "Planner or operator decisions are recorded for deployment-only controls."
+      ],
+      "handoff_to_auditor": [
+        "List changed headers and affected routes.",
+        "Identify transport controls ready for re-audit."
+      ]
+    },
+    {
+      "slice_id": "B1-validation-boundaries",
+      "goal": "Tighten request validation, authorization, and business-rule boundaries.",
+      "controls_covered": ["V1.*", "V2.1.*", "V2.2.*", "V2.4.2", "V4.1.4", "V4.2.*", "V5.1.*", "V5.2.*", "V8.*"],
+      "owned_files": ["src/shared/validation.ts", "src/shared/domain.ts"],
+      "supporting_files": [
+        "worker/index.ts",
+        "tests/integration/m1.integration.test.ts",
+        "tests/e2e/m1.spec.ts",
+        "docs/requirements/09-m1-api-contract.md"
+      ],
+      "forbidden_files": ["docs/security/asvs/**", "worker/submission-security.ts"],
+      "depends_on": [],
+      "parallel_with": ["A1-header-policy", "C1-storage-protection", "E1-evidence-scaffolding"],
+      "tests_required": ["npm run test:integration", "npm run test:e2e"],
+      "docs_required": ["docs/requirements/09-m1-api-contract.md"],
+      "done_when": [
+        "Validation and authorization rules are explicit at server boundaries.",
+        "Affected request semantics are reflected in contract docs and tests.",
+        "Residual operator decisions are called out rather than guessed."
+      ],
+      "handoff_to_auditor": [
+        "List changed validation rules and authorization decisions.",
+        "Identify controls ready for re-audit and controls still blocked on policy."
+      ]
+    },
+    {
+      "slice_id": "C1-storage-protection",
+      "goal": "Close storage-side data protection gaps and align submission protections with the ADR.",
+      "controls_covered": ["V14.*", "V15.3.*", "V16.4.*", "V16.5.*"],
+      "owned_files": ["worker/repository.ts", "worker/submission-security.ts"],
+      "supporting_files": [
+        "worker/index.ts",
+        "tests/security.unit.test.ts",
+        "tests/integration/m1.integration.test.ts",
+        "docs/security/crypto-policy.md",
+        "docs/requirements/12-m1-security-decision-record.md"
+      ],
+      "forbidden_files": ["docs/security/asvs/**", "src/features/**"],
+      "depends_on": [],
+      "parallel_with": ["B1-validation-boundaries", "E1-evidence-scaffolding"],
+      "tests_required": ["npm run test:unit", "npm run test:integration", "npm run crypto:run"],
+      "docs_required": ["docs/security/crypto-policy.md", "docs/requirements/12-m1-security-decision-record.md"],
+      "done_when": [
+        "Storage-side protections and failure behavior are implemented and evidenced.",
+        "Crypto and retention docs reflect actual implementation state.",
+        "Unit/integration coverage exists for changed persistence or crypto paths."
+      ],
+      "handoff_to_auditor": [
+        "List changed persistence and crypto behaviors.",
+        "Identify data-protection controls ready for re-audit."
+      ]
+    },
+    {
+      "slice_id": "E1-evidence-scaffolding",
+      "goal": "Prepare tests and requirement docs to support Wave 1 implementation slices.",
+      "controls_covered": ["V13.3.*", "V13.4.*", "V15.1.*", "V15.2.*", "V16.*"],
+      "owned_files": [
+        "tests/security.unit.test.ts",
+        "tests/integration/**",
+        "tests/e2e/**",
+        "docs/requirements/08-local-testing-and-first-release-runbook.md",
+        "docs/requirements/09-m1-api-contract.md",
+        "docs/requirements/12-m1-security-decision-record.md"
+      ],
+      "supporting_files": [],
+      "forbidden_files": ["docs/security/asvs/**"],
+      "depends_on": [],
+      "parallel_with": ["A1-header-policy", "B1-validation-boundaries", "C1-storage-protection"],
+      "tests_required": ["npm run lint", "npm run typecheck"],
+      "docs_required": [
+        "docs/requirements/08-local-testing-and-first-release-runbook.md",
+        "docs/requirements/09-m1-api-contract.md",
+        "docs/requirements/12-m1-security-decision-record.md"
+      ],
+      "done_when": [
+        "Wave 1 slices have matching test and docs scaffolding.",
+        "Shared requirement docs are updated in one coordinated place rather than ad hoc by every slice."
+      ],
+      "handoff_to_auditor": [
+        "List which docs and tests now provide audit evidence.",
+        "Identify controls that remain blocked on implementation rather than documentation."
+      ]
+    }
+  ],
+  "sequencing_rules": [
+    "ASVS checklist artifacts remain audit-only and are not edited during implementation.",
+    "If multiple slices need worker/index.ts, extract helpers first or sequence writes explicitly.",
+    "Frontend/browser-facing workstream D starts only after Wave 1 stabilizes the server-side posture.",
+    "Re-audit starts only after implementation slices hand back evidence."
+  ]
+}

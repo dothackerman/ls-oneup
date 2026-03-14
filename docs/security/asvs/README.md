@@ -3,6 +3,17 @@
 This directory tracks OWASP ASVS source state and local codebase validation.
 This README is maintenance-oriented. Human readers should usually start with `../README.md` or `./checklist.human.md`.
 
+Global reusable skills:
+- `asvs-auditor`
+- `asvs-planner`
+- `asvs-implementer`
+
+Repo-local adapter files in this repository:
+- `repo-config.json`
+- `surface-map.json`
+- `execution-policy.json`
+- `campaigns/*.json`
+
 ## Recommended Entry Points
 
 1. [Security documentation index](../README.md)
@@ -10,6 +21,10 @@ This README is maintenance-oriented. Human readers should usually start with `..
 3. [Machine-readable checklist](./checklist.machine.json)
 4. [Checklist delta summary](./checklist.delta.md)
 5. [ASVS audit contract](../../requirements/13-m1-asvs-audit-agent-and-checklist.md)
+6. [Repo adapter config](./repo-config.json)
+7. [Surface map](./surface-map.json)
+8. [Execution policy](./execution-policy.json)
+9. [Active campaigns](./campaigns/2026-03-level2.json)
 
 ## Files
 
@@ -52,6 +67,7 @@ npm run asvs:run
 - `completed` — implemented and evidenced in code references
 - `todo` — not yet implemented or missing evidence
 - `not_applicable` — out of scope for this codebase (must include reasoning)
+- `deferred_exception` — operator-accepted exception for an open control (must include reasoning and is not a completion)
 
 ## Severity semantics for unmet controls
 
@@ -63,4 +79,4 @@ npm run asvs:run
 
 ## Responsibility note
 
-The associated auditor instructions (`.claude/agents/asvs-vos-auditor.md`) allow any available model. The repository owner is responsible for reviewing findings quality before relying on audit results.
+The global `asvs-auditor` skill may run with any available model. The repository owner is responsible for reviewing findings quality before relying on audit results.

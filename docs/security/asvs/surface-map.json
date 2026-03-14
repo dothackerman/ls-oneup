@@ -1,0 +1,65 @@
+{
+  "surfaces": [
+    {
+      "id": "edge_request_response_surface",
+      "purpose": "Request entry, route gating, response headers, and deployment-facing browser or transport policy.",
+      "owned_paths": ["worker/index.ts", "worker/security.ts", "wrangler.jsonc"],
+      "supporting_paths": [
+        "tests/integration/m1.integration.test.ts",
+        "docs/requirements/08-local-testing-and-first-release-runbook.md"
+      ],
+      "hotspot_paths": ["worker/index.ts"],
+      "likely_control_families": ["V3.1.*", "V3.4.*", "V3.5.*", "V3.7.*", "V12.*", "V13.1.*", "V13.2.*"]
+    },
+    {
+      "id": "domain_validation_authorization_business_rules",
+      "purpose": "Server-side validation, method handling, authorization decisions, and business-rule enforcement.",
+      "owned_paths": ["src/shared/validation.ts", "src/shared/domain.ts"],
+      "supporting_paths": [
+        "worker/index.ts",
+        "tests/integration/m1.integration.test.ts",
+        "tests/e2e/m1.spec.ts",
+        "docs/requirements/09-m1-api-contract.md"
+      ],
+      "hotspot_paths": ["worker/index.ts"],
+      "likely_control_families": ["V1.*", "V2.*", "V4.*", "V5.1.*", "V5.2.*", "V8.*"]
+    },
+    {
+      "id": "storage_crypto_submission_protection",
+      "purpose": "Submission persistence, cryptographic handling, data minimization, and storage-side failure behavior.",
+      "owned_paths": ["worker/repository.ts", "worker/submission-security.ts"],
+      "supporting_paths": [
+        "worker/index.ts",
+        "tests/security.unit.test.ts",
+        "tests/integration/m1.integration.test.ts",
+        "docs/security/crypto-policy.md",
+        "docs/requirements/12-m1-security-decision-record.md"
+      ],
+      "hotspot_paths": ["worker/index.ts", "docs/requirements/12-m1-security-decision-record.md"],
+      "likely_control_families": ["V14.*", "V15.3.*", "V16.4.*", "V16.5.*"]
+    },
+    {
+      "id": "frontend_admin_ui_security_surface",
+      "purpose": "Browser-visible security behavior, client-side assumptions, asset loading, and admin/farmer UI flows.",
+      "owned_paths": ["src/App.tsx", "src/features/**", "src/styles.css"],
+      "supporting_paths": ["tests/e2e/m1.spec.ts"],
+      "hotspot_paths": ["src/App.tsx"],
+      "likely_control_families": ["V3.3.*", "V3.6.*", "V5.4.*"]
+    },
+    {
+      "id": "tests_and_requirement_docs",
+      "purpose": "Cross-surface evidence, requirement alignment, ADR updates, and generic logging/error-handling verification.",
+      "owned_paths": [
+        "tests/security.unit.test.ts",
+        "tests/integration/**",
+        "tests/e2e/**",
+        "docs/requirements/08-local-testing-and-first-release-runbook.md",
+        "docs/requirements/09-m1-api-contract.md",
+        "docs/requirements/12-m1-security-decision-record.md"
+      ],
+      "supporting_paths": [],
+      "hotspot_paths": ["docs/requirements/12-m1-security-decision-record.md"],
+      "likely_control_families": ["V13.3.*", "V13.4.*", "V15.1.*", "V15.2.*", "V16.*"]
+    }
+  ]
+}
