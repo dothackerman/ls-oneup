@@ -36,7 +36,14 @@ The audit workflow must document that:
 - `checklist.machine.json`
 - `checklist.human.md`
 - `checklist.findings.jsonl`
+- `checklist.delta.json`
+- `checklist.delta.md`
 - `README.md`
+
+Primary reader entry points:
+- `docs/security/README.md`
+- `docs/security/asvs/README.md`
+- `docs/security/asvs/checklist.human.md`
 
 ## Commands
 

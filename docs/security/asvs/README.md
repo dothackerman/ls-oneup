@@ -2,6 +2,14 @@
 
 This directory tracks OWASP ASVS source state and local codebase validation.
 
+## Recommended Entry Points
+
+1. [Security documentation index](../README.md)
+2. [Human-readable checklist](./checklist.human.md)
+3. [Machine-readable checklist](./checklist.machine.json)
+4. [Checklist delta summary](./checklist.delta.md)
+5. [ASVS audit contract](../../requirements/13-m1-asvs-audit-agent-and-checklist.md)
+
 ## Files
 
 - `source-state.json` — latest upstream source metadata (commit + blob hash + checked time)

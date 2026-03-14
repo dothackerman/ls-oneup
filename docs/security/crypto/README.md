@@ -2,6 +2,12 @@
 
 This directory tracks the repository's cryptographic inventory, discovery output, and operating policy.
 
+## Recommended Entry Points
+
+1. [Security documentation index](../README.md)
+2. [Security decision record](../../requirements/12-m1-security-decision-record.md)
+3. [ASVS / vOS checklist pipeline](../asvs/README.md)
+
 ## Files
 
 - `../crypto-inventory.json` - maintained inventory of active cryptographic primitives, key sources, rotation rules, and migration plans.

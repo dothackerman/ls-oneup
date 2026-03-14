@@ -31,6 +31,7 @@ This folder contains the living requirement and implementation-guidance document
    - ADR-style security decision for one-time token links
 13. `13-m1-asvs-audit-agent-and-checklist.md`
    - ASVS/vOS audit agent contract, source sync, and checklist workflow
+   - generated checklist artifacts live under `../security/asvs/`
 14. `14-frontend-styling-policy.md`
    - frontend styling rules for shadcn base components, Tailwind composition, and runtime-style exceptions
 15. `15-ux-governance.md`
@@ -42,3 +43,8 @@ This folder contains the living requirement and implementation-guidance document
 1. Keep docs aligned with code and architecture decisions.
 2. Keep milestones shippable and explicitly testable.
 3. Treat open questions as backlog items, not hidden assumptions.
+
+## Related Navigation
+1. Security hub: `../security/README.md`
+2. Human-readable ASVS checklist: `../security/asvs/checklist.human.md`
+3. Machine-readable ASVS checklist: `../security/asvs/checklist.machine.json`
