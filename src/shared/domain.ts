@@ -17,9 +17,14 @@ export const STATUS_VALUES = ["offen", "eingereicht", "abgelaufen"] as const;
 export type Vitality = (typeof VITALITY_VALUES)[number];
 export type SoilMoisture = (typeof SOIL_MOISTURE_VALUES)[number];
 export type ProbeStatus = (typeof STATUS_VALUES)[number];
+export type AllowedImageMime = (typeof ALLOWED_IMAGE_MIME)[number];
 
 export const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
 export const ALLOWED_IMAGE_MIME = ["image/jpeg", "image/png"] as const;
+
+export function isAllowedImageMime(value: string): value is AllowedImageMime {
+  return ALLOWED_IMAGE_MIME.includes(value as AllowedImageMime);
+}
 
 export function deriveStatus(
   submittedAt: string | null,

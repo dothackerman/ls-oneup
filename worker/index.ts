@@ -1,11 +1,10 @@
 import { Hono } from "hono";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
-import { ALLOWED_IMAGE_MIME, MAX_IMAGE_BYTES, type ProbeStatus } from "../src/shared/domain";
+import type { ProbeStatus } from "../src/shared/domain";
 import { jsonError } from "../src/shared/errors";
 import {
   createProbesSchema,
   cropOverrideSchema,
-  farmerSubmitFieldsSchema,
   listProbesQuerySchema,
 } from "../src/shared/validation";
 import {
@@ -20,20 +19,22 @@ import {
   overrideCrop,
 } from "./repository";
 import {
-  TokenSecurityConfigError,
   generateToken,
+  handleCryptoSecurityError,
   hashTokenForStorage,
   matchStoredTokenHash,
+  normalizeTokenStateError,
   tokenHashCandidates,
 } from "./security";
 import {
   ENCRYPTED_IMAGE_OBJECT_CONTENT_TYPE,
-  SubmissionSecurityConfigError,
   decryptSubmissionImageBytes,
   decryptSubmissionPayload,
   encryptSubmissionImageBytes,
   encryptSubmissionPayload,
 } from "./submission-security";
+import { applySensitiveResponseHeaders } from "./http-response-policy";
+import { ensureSubmitTokenState, parseSubmitRequest } from "./request-guards";
 import type { Env } from "./types";
 
 type WorkerEnv = Env & {
@@ -41,14 +42,6 @@ type WorkerEnv = Env & {
 };
 
 const app = new Hono<{ Bindings: WorkerEnv }>();
-
-const TOKEN_USED_MESSAGE = "Link wurde bereits verwendet.";
-const TOKEN_EXPIRED_MESSAGE = "Link ist abgelaufen.";
-
-const SENSITIVE_CACHE_CONTROL = "no-store";
-const NO_CACHE_PRAGMA = "no-cache";
-const EXPIRES_IMMEDIATELY = "0";
-const ACCESS_IDENTITY_VARY = "Cf-Access-Authenticated-User-Email";
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -65,62 +58,6 @@ function inferBaseUrl(reqUrl: string, configured?: string): string {
     return configured;
   }
   return new URL(reqUrl).origin;
-}
-
-function normalizeStatusError(
-  tokenState: { submitted_at: string | null; expire_by: string },
-  now: string,
-): Response {
-  if (tokenState.submitted_at) {
-    return jsonError(409, "TOKEN_ALREADY_USED", TOKEN_USED_MESSAGE);
-  }
-  if (tokenState.expire_by <= now) {
-    return jsonError(410, "TOKEN_EXPIRED", TOKEN_EXPIRED_MESSAGE);
-  }
-  return jsonError(409, "TOKEN_ALREADY_USED", TOKEN_USED_MESSAGE);
-}
-
-function handleCryptoSecurityError(scope: "token" | "submission", error: unknown): Response {
-  console.error("crypto_security_error", {
-    scope,
-    error:
-      error instanceof TokenSecurityConfigError ||
-      error instanceof SubmissionSecurityConfigError ||
-      error instanceof Error
-        ? error.message
-        : "unknown",
-  });
-  return jsonError(503, "SECURITY_UNAVAILABLE", "Sicherheitsprüfung temporär nicht verfügbar.");
-}
-
-function appendVary(headers: Headers, value: string): void {
-  const current = headers.get("vary");
-  if (!current) {
-    headers.set("vary", value);
-    return;
-  }
-
-  const values = current
-    .split(",")
-    .map((entry) => entry.trim())
-    .filter((entry) => entry.length > 0);
-  if (!values.includes(value)) {
-    values.push(value);
-  }
-  headers.set("vary", values.join(", "));
-}
-
-function applySensitiveResponseHeaders(
-  headers: Headers,
-  options: { varyByAccessIdentity?: boolean } = {},
-): void {
-  headers.set("cache-control", SENSITIVE_CACHE_CONTROL);
-  headers.set("pragma", NO_CACHE_PRAGMA);
-  headers.set("expires", EXPIRES_IMMEDIATELY);
-
-  if (options.varyByAccessIdentity) {
-    appendVary(headers, ACCESS_IDENTITY_VARY);
-  }
 }
 
 async function resolveSubmissionView(
@@ -443,11 +380,11 @@ app.get("/api/probe/:token", async (c) => {
   const now = nowIso();
 
   if (state.submitted_at) {
-    return jsonError(409, "TOKEN_ALREADY_USED", TOKEN_USED_MESSAGE);
+    return normalizeTokenStateError(state, now);
   }
 
   if (state.expire_by <= now) {
-    return jsonError(410, "TOKEN_EXPIRED", TOKEN_EXPIRED_MESSAGE);
+    return normalizeTokenStateError(state, now);
   }
 
   return c.json({
@@ -479,68 +416,17 @@ app.post("/api/probe/:token/submit", async (c) => {
 
   const startNow = nowIso();
 
-  if (initialState.submitted_at) {
-    return jsonError(409, "TOKEN_ALREADY_USED", TOKEN_USED_MESSAGE);
+  const tokenStateError = ensureSubmitTokenState(initialState, startNow);
+  if (tokenStateError) {
+    return tokenStateError;
   }
 
-  if (initialState.expire_by <= startNow) {
-    return jsonError(410, "TOKEN_EXPIRED", TOKEN_EXPIRED_MESSAGE);
+  const guardedRequest = await parseSubmitRequest(c.req.raw);
+  if (guardedRequest instanceof Response) {
+    return guardedRequest;
   }
 
-  const formData = await c.req.formData().catch(() => null);
-  if (!formData) {
-    return jsonError(400, "VALIDATION_ERROR", "Ungültige Formular-Daten.");
-  }
-
-  const imageEntries = formData
-    .getAll("image")
-    .filter((value): value is File => value instanceof File);
-
-  if (imageEntries.length !== 1) {
-    return jsonError(400, "IMAGE_REQUIRED", "Genau ein Bild ist erforderlich.");
-  }
-
-  const image = imageEntries[0];
-
-  if (!ALLOWED_IMAGE_MIME.includes(image.type as (typeof ALLOWED_IMAGE_MIME)[number])) {
-    return jsonError(415, "INVALID_IMAGE_MIME", "Nur JPEG oder PNG sind erlaubt.");
-  }
-
-  if (image.size > MAX_IMAGE_BYTES) {
-    return jsonError(413, "IMAGE_TOO_LARGE", "Bild ist grösser als 2 MB.");
-  }
-
-  const parsed = farmerSubmitFieldsSchema.safeParse({
-    crop_name: formData.get("crop_name"),
-    vitality: formData.get("vitality"),
-    soil_moisture: formData.get("soil_moisture"),
-    gps_lat: formData.get("gps_lat"),
-    gps_lon: formData.get("gps_lon"),
-    gps_captured_at: formData.get("gps_captured_at"),
-  });
-
-  if (!parsed.success) {
-    const invalidFields = new Set(parsed.error.issues.map((issue) => String(issue.path[0] ?? "")));
-
-    if (invalidFields.has("crop_name")) {
-      return jsonError(400, "VALIDATION_ERROR", "Kulturname ist obligatorisch.");
-    }
-    if (invalidFields.has("vitality")) {
-      return jsonError(400, "VALIDATION_ERROR", "Pflanzenvitalität ist obligatorisch.");
-    }
-    if (invalidFields.has("soil_moisture")) {
-      return jsonError(400, "VALIDATION_ERROR", "Bodennässe ist obligatorisch.");
-    }
-    if (
-      invalidFields.has("gps_lat") ||
-      invalidFields.has("gps_lon") ||
-      invalidFields.has("gps_captured_at")
-    ) {
-      return jsonError(400, "VALIDATION_ERROR", "GPS-Daten fehlen oder sind ungültig.");
-    }
-
-    return jsonError(400, "VALIDATION_ERROR", "Pflichtfelder fehlen oder sind ungültig.");
-  }
+  const { fields, image } = guardedRequest;
 
   const extension = image.type === "image/png" ? "png" : "jpg";
   const imageKey = `${initialState.id}/${crypto.randomUUID()}.${extension}`;
@@ -549,12 +435,12 @@ app.post("/api/probe/:token/submit", async (c) => {
   try {
     submissionCiphertext = await encryptSubmissionPayload(
       {
-        crop_name: parsed.data.crop_name,
-        plant_vitality: parsed.data.vitality,
-        soil_moisture: parsed.data.soil_moisture,
-        gps_lat: parsed.data.gps_lat,
-        gps_lon: parsed.data.gps_lon,
-        gps_captured_at: parsed.data.gps_captured_at,
+        crop_name: fields.crop_name,
+        plant_vitality: fields.vitality,
+        soil_moisture: fields.soil_moisture,
+        gps_lat: fields.gps_lat,
+        gps_lon: fields.gps_lon,
+        gps_captured_at: fields.gps_captured_at,
         image_key: imageKey,
       },
       c.env,
@@ -611,7 +497,7 @@ app.post("/api/probe/:token/submit", async (c) => {
     if (!stateAfterRace) {
       return jsonError(404, "TOKEN_NOT_FOUND", "Link nicht gefunden.");
     }
-    return normalizeStatusError(stateAfterRace, submitNow);
+    return normalizeTokenStateError(stateAfterRace, submitNow);
   }
 
   console.info("submit_accepted", { probe_id: initialState.id, state: "accepted" });

@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z, type ZodError } from "zod";
 import { SOIL_MOISTURE_VALUES, VITALITY_VALUES } from "./domain";
 
 export const createProbesSchema = z.object({
@@ -25,3 +25,28 @@ export const farmerSubmitFieldsSchema = z.object({
   gps_lon: z.coerce.number().gte(-180).lte(180),
   gps_captured_at: z.string().datetime({ offset: true }),
 });
+
+export type FarmerSubmitFields = z.infer<typeof farmerSubmitFieldsSchema>;
+
+export function farmerSubmitValidationMessage(error: ZodError<FarmerSubmitFields>): string {
+  const invalidFields = new Set(error.issues.map((issue) => String(issue.path[0] ?? "")));
+
+  if (invalidFields.has("crop_name")) {
+    return "Kulturname ist obligatorisch.";
+  }
+  if (invalidFields.has("vitality")) {
+    return "Pflanzenvitalität ist obligatorisch.";
+  }
+  if (invalidFields.has("soil_moisture")) {
+    return "Bodennässe ist obligatorisch.";
+  }
+  if (
+    invalidFields.has("gps_lat") ||
+    invalidFields.has("gps_lon") ||
+    invalidFields.has("gps_captured_at")
+  ) {
+    return "GPS-Daten fehlen oder sind ungültig.";
+  }
+
+  return "Pflichtfelder fehlen oder sind ungültig.";
+}

@@ -1,3 +1,5 @@
+import { jsonError } from "../src/shared/errors";
+
 type TokenHmacKey = {
   id: string;
   secret: string;
@@ -11,6 +13,8 @@ type TokenHmacKeyRing = {
 const LEGACY_DEFAULT_KEY_ID = "legacy-default";
 const TOKEN_HASH_VERSION = "h1";
 const encoder = new TextEncoder();
+const TOKEN_USED_MESSAGE = "Link wurde bereits verwendet.";
+const TOKEN_EXPIRED_MESSAGE = "Link ist abgelaufen.";
 
 export class TokenSecurityConfigError extends Error {
   constructor(message: string) {
@@ -237,4 +241,28 @@ export function matchStoredTokenHash(storedHash: string, candidates: string[]): 
   }
 
   return matched;
+}
+
+export function normalizeTokenStateError(
+  tokenState: { submitted_at: string | null; expire_by: string },
+  nowIso: string,
+): Response {
+  if (tokenState.submitted_at) {
+    return jsonError(409, "TOKEN_ALREADY_USED", TOKEN_USED_MESSAGE);
+  }
+
+  if (tokenState.expire_by <= nowIso) {
+    return jsonError(410, "TOKEN_EXPIRED", TOKEN_EXPIRED_MESSAGE);
+  }
+
+  return jsonError(409, "TOKEN_ALREADY_USED", TOKEN_USED_MESSAGE);
+}
+
+export function handleCryptoSecurityError(scope: "token" | "submission", error: unknown): Response {
+  console.error("crypto_security_error", {
+    scope,
+    error: error instanceof Error ? error.message : "unknown",
+  });
+
+  return jsonError(503, "SECURITY_UNAVAILABLE", "Sicherheitsprüfung temporär nicht verfügbar.");
 }
