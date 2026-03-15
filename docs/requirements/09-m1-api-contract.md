@@ -15,6 +15,11 @@ Define the exact HTTP contract for Milestone 1.
 ```
 4. Admin endpoints are protected by Cloudflare Access.
 5. Public token endpoints require possession of valid link token.
+6. Dynamic admin and token JSON or image responses must return anti-caching headers:
+   - `cache-control: no-store`
+   - `pragma: no-cache`
+   - `expires: 0`
+   - admin responses also include `vary: Cf-Access-Authenticated-User-Email`
 
 ## Domain Types
 1. `vitality`: `normal | schwach_langsam | krankheit_oder_anderes_problem`
@@ -72,6 +77,12 @@ Success `201`:
 }
 ```
 
+Response headers:
+1. `cache-control: no-store`
+2. `pragma: no-cache`
+3. `expires: 0`
+4. `vary: Cf-Access-Authenticated-User-Email`
+
 Errors:
 1. `400` validation failure.
 2. `409` duplicate `(customer_name, order_number, probe_number)` conflict.
@@ -110,6 +121,12 @@ Success `200`:
 }
 ```
 
+Response headers:
+1. `cache-control: no-store`
+2. `pragma: no-cache`
+3. `expires: 0`
+4. `vary: Cf-Access-Authenticated-User-Email`
+
 ### `PATCH /api/admin/probes/:id/crop-override`
 Set admin crop override.
 
@@ -132,6 +149,12 @@ Success `200`:
 }
 ```
 
+Response headers:
+1. `cache-control: no-store`
+2. `pragma: no-cache`
+3. `expires: 0`
+4. `vary: Cf-Access-Authenticated-User-Email`
+
 Errors:
 1. `404` probe not found.
 2. `400` validation failure.
@@ -146,7 +169,10 @@ Success:
 Response headers:
 1. `content-type` from R2 metadata; if missing, fallback to D1 `image_mime`.
 2. `content-disposition: inline`.
-3. `cache-control: private, max-age=60`.
+3. `cache-control: no-store`.
+4. `pragma: no-cache`.
+5. `expires: 0`.
+6. `vary: Cf-Access-Authenticated-User-Email`.
 
 Errors:
 1. `404` image reference missing in D1.
@@ -164,6 +190,11 @@ Success `200`:
   "probe_number": 1
 }
 ```
+
+Response headers:
+1. `cache-control: no-store`
+2. `pragma: no-cache`
+3. `expires: 0`
 
 Blocked states:
 1. `410` expired token:
@@ -205,6 +236,11 @@ Success `201`:
   "status": "eingereicht"
 }
 ```
+
+Response headers:
+1. `cache-control: no-store`
+2. `pragma: no-cache`
+3. `expires: 0`
 
 Errors:
 1. `400` invalid payload / missing fields.

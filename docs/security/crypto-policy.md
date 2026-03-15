@@ -38,6 +38,7 @@ The current runtime scope includes one-time probe-token protection, encrypted su
 2. Client-facing responses must stay generic and must not expose raw tokens, decrypted submission data, key identifiers, or stack traces.
 3. Operational logs may record the failure class and affected probe identifier, but never secret material.
 4. Submission-payload or encrypted-image decryption failures must block admin reads instead of falling back to silent corruption or partial plaintext reconstruction.
+5. Responses that expose token-bound state, decrypted submission data, or admin-served encrypted-object reads must send anti-caching headers (`cache-control: no-store`, `pragma: no-cache`, `expires: 0`) instead of relying on browser defaults.
 
 ## Constant-Time Handling
 1. Token-hash comparisons must not rely on short-circuit string equality.

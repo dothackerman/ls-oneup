@@ -1,16 +1,8 @@
 {
-  "generated_at": "2026-03-13T19:01:16.313Z",
-  "changed_count": 1,
+  "generated_at": "2026-03-15T09:55:46.198Z",
+  "changed_count": 0,
   "new_todos": 0,
-  "resolved_todos": 1,
-  "severity_changed": 1,
-  "changes": [
-    {
-      "requirement_id": "V11.7.2",
-      "from_status": "todo",
-      "to_status": "completed",
-      "from_severity": "high",
-      "to_severity": "none"
-    }
-  ]
+  "resolved_todos": 0,
+  "severity_changed": 0,
+  "changes": []
 }

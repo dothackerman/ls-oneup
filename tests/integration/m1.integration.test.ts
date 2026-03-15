@@ -27,6 +27,10 @@ describe("M1 integration", () => {
     });
 
     expect(response.status).toBe(201);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(response.headers.get("pragma")).toBe("no-cache");
+    expect(response.headers.get("expires")).toBe("0");
+    expect(response.headers.get("vary")).toContain("Cf-Access-Authenticated-User-Email");
     const payload = (await response.json()) as {
       items: Array<{
         probe_number: number;
@@ -160,6 +164,9 @@ describe("M1 integration", () => {
 
     const openResponse = await SELF.fetch(`https://example.test/api/probe/${token}`);
     expect(openResponse.status).toBe(200);
+    expect(openResponse.headers.get("cache-control")).toBe("no-store");
+    expect(openResponse.headers.get("pragma")).toBe("no-cache");
+    expect(openResponse.headers.get("expires")).toBe("0");
 
     const submitResponse = await SELF.fetch(`https://example.test/api/probe/${token}/submit`, {
       method: "POST",
@@ -335,6 +342,10 @@ describe("M1 integration", () => {
 
     const list = await SELF.fetch("https://example.test/api/admin/probes?order_number=ORD-STATUS");
     expect(list.status).toBe(200);
+    expect(list.headers.get("cache-control")).toBe("no-store");
+    expect(list.headers.get("pragma")).toBe("no-cache");
+    expect(list.headers.get("expires")).toBe("0");
+    expect(list.headers.get("vary")).toContain("Cf-Access-Authenticated-User-Email");
     const listPayload = (await list.json()) as { items: AdminProbeList[] };
     expect(listPayload.items[0].status).toBe("eingereicht");
     expect(listPayload.items[0].crop_name).toBe("Kartoffeln");
@@ -347,6 +358,10 @@ describe("M1 integration", () => {
 
     const imageRes = await SELF.fetch(`https://example.test/api/admin/probes/${probeId}/image`);
     expect(imageRes.status).toBe(200);
+    expect(imageRes.headers.get("cache-control")).toBe("no-store");
+    expect(imageRes.headers.get("pragma")).toBe("no-cache");
+    expect(imageRes.headers.get("expires")).toBe("0");
+    expect(imageRes.headers.get("vary")).toContain("Cf-Access-Authenticated-User-Email");
     expect(imageRes.headers.get("content-type")).toContain("image/");
     expect(imageRes.headers.get("content-disposition")).toContain("inline");
     await imageRes.arrayBuffer();

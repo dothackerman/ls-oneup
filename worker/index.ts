@@ -45,6 +45,11 @@ const app = new Hono<{ Bindings: WorkerEnv }>();
 const TOKEN_USED_MESSAGE = "Link wurde bereits verwendet.";
 const TOKEN_EXPIRED_MESSAGE = "Link ist abgelaufen.";
 
+const SENSITIVE_CACHE_CONTROL = "no-store";
+const NO_CACHE_PRAGMA = "no-cache";
+const EXPIRES_IMMEDIATELY = "0";
+const ACCESS_IDENTITY_VARY = "Cf-Access-Authenticated-User-Email";
+
 function nowIso(): string {
   return new Date().toISOString();
 }
@@ -86,6 +91,36 @@ function handleCryptoSecurityError(scope: "token" | "submission", error: unknown
         : "unknown",
   });
   return jsonError(503, "SECURITY_UNAVAILABLE", "Sicherheitsprüfung temporär nicht verfügbar.");
+}
+
+function appendVary(headers: Headers, value: string): void {
+  const current = headers.get("vary");
+  if (!current) {
+    headers.set("vary", value);
+    return;
+  }
+
+  const values = current
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter((entry) => entry.length > 0);
+  if (!values.includes(value)) {
+    values.push(value);
+  }
+  headers.set("vary", values.join(", "));
+}
+
+function applySensitiveResponseHeaders(
+  headers: Headers,
+  options: { varyByAccessIdentity?: boolean } = {},
+): void {
+  headers.set("cache-control", SENSITIVE_CACHE_CONTROL);
+  headers.set("pragma", NO_CACHE_PRAGMA);
+  headers.set("expires", EXPIRES_IMMEDIATELY);
+
+  if (options.varyByAccessIdentity) {
+    appendVary(headers, ACCESS_IDENTITY_VARY);
+  }
 }
 
 async function resolveSubmissionView(
@@ -136,16 +171,28 @@ async function resolveSubmissionView(
 app.use("/api/admin/*", async (c, next) => {
   if (c.env.DEV_BYPASS_ACCESS === "true") {
     await next();
+    applySensitiveResponseHeaders(c.res.headers, { varyByAccessIdentity: true });
     return;
   }
 
   const user = c.req.header("Cf-Access-Authenticated-User-Email");
   if (!user) {
     c.status(401 as ContentfulStatusCode);
-    return c.json({ error_code: "ACCESS_REQUIRED", message: "Admin-Zugriff erforderlich." });
+    const response = c.json({
+      error_code: "ACCESS_REQUIRED",
+      message: "Admin-Zugriff erforderlich.",
+    });
+    applySensitiveResponseHeaders(response.headers, { varyByAccessIdentity: true });
+    return response;
   }
 
   await next();
+  applySensitiveResponseHeaders(c.res.headers, { varyByAccessIdentity: true });
+});
+
+app.use("/api/probe/*", async (c, next) => {
+  await next();
+  applySensitiveResponseHeaders(c.res.headers);
 });
 
 app.get("/api/health", (c) => c.json({ ok: true }));
@@ -353,9 +400,9 @@ app.get("/api/admin/probes/:id/image", async (c) => {
   obj.writeHttpMetadata(storedHeaders);
 
   const headers = new Headers();
-  headers.set("cache-control", "private, max-age=60");
   headers.set("content-type", imageRef.image_mime ?? "image/jpeg");
   headers.set("content-disposition", "inline");
+  applySensitiveResponseHeaders(headers, { varyByAccessIdentity: true });
 
   if (storedHeaders.get("content-type") === ENCRYPTED_IMAGE_OBJECT_CONTENT_TYPE) {
     let decryptedImageBytes: Uint8Array;

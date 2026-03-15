@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-13T18:58:35.630Z",
+  "generated_at": "2026-03-15T10:02:19.681Z",
   "inventory_path": "docs/security/crypto-inventory.json",
   "scanned_paths": [
     "src",
@@ -71,7 +71,7 @@
       "marker_id": "webcrypto-get-random-values",
       "primitive": "Web Crypto CSPRNG",
       "path": "tests/integration/m1.integration.test.ts",
-      "line": 102,
+      "line": 106,
       "snippet": "crypto.getRandomValues(b.subarray(0, 65536));"
     }
   ],
