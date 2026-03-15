@@ -1,7 +1,7 @@
 {
   "campaign_id": "2026-03-level2",
-  "version": 2,
-  "status": "wave_1_ready",
+  "version": 3,
+  "status": "wave_1_in_progress",
   "purpose": "Agent-legible execution workboard for reaching an honest ASVS Level 2 posture through file-owned implementation slices.",
   "human_plan": "docs/plans/2026-03-15-asvs-level2-multi-agent-execution-plan.md",
   "strategy_plan": "docs/plans/2026-03-14-asvs-level2-implementation-plan.md",
@@ -88,6 +88,64 @@
       "controls_ready_for_reaudit": [],
       "residual_risks": [
         "Submit request behavior is extracted but policy tightening still depends on B2-method-and-upload-policy."
+      ]
+    },
+    {
+      "slice_id": "A2-header-and-transport-policy",
+      "status": "completed",
+      "goal": "Implement a coherent browser and transport header policy and document deployment-only controls honestly.",
+      "changed_files": [
+        "worker/http-response-policy.ts",
+        "worker/index.ts",
+        "wrangler.jsonc",
+        "tests/integration/m1.integration.test.ts",
+        "docs/requirements/08-local-testing-and-first-release-runbook.md"
+      ],
+      "tests_run": [
+        "npm run lint",
+        "npm run typecheck",
+        "npm run test:integration"
+      ],
+      "docs_updated": [
+        "docs/requirements/08-local-testing-and-first-release-runbook.md"
+      ],
+      "controls_ready_for_reaudit": [
+        "V3.4.3",
+        "V3.4.4",
+        "V3.4.5",
+        "V3.4.6"
+      ],
+      "residual_risks": [
+        "Transport controls such as HTTPS redirects, TLS posture, and HSTS remain deployment-managed edge settings rather than Worker-enforced behavior.",
+        "Browser-visible flow alignment still depends on F1-frontend-security-alignment."
+      ]
+    },
+    {
+      "slice_id": "D2-logging-and-dependency-posture",
+      "status": "completed",
+      "goal": "Create one authoritative docs/evidence lane for logging, risky components, and operational security posture.",
+      "changed_files": [
+        "docs/requirements/08-local-testing-and-first-release-runbook.md",
+        "docs/requirements/09-m1-api-contract.md",
+        "docs/requirements/12-m1-security-decision-record.md",
+        "docs/security/dependency-risk-register.md",
+        "docs/security/logging-and-error-handling.md"
+      ],
+      "tests_run": [
+        "npm run lint",
+        "npm run typecheck"
+      ],
+      "docs_updated": [
+        "docs/requirements/08-local-testing-and-first-release-runbook.md",
+        "docs/requirements/09-m1-api-contract.md",
+        "docs/requirements/12-m1-security-decision-record.md",
+        "docs/security/dependency-risk-register.md",
+        "docs/security/logging-and-error-handling.md"
+      ],
+      "controls_ready_for_reaudit": [],
+      "residual_risks": [
+        "The evidence lane is centralized, but future runtime slices can still create doc drift if they change behavior without updating these docs.",
+        "Operational alerting and centralized log shipping remain deployment concerns outside this repository."
       ]
     }
   ],
@@ -182,7 +240,7 @@
     },
     {
       "slice_id": "A2-header-and-transport-policy",
-      "status": "ready",
+      "status": "completed",
       "wave": 1,
       "goal": "Implement a coherent browser and transport header policy and document deployment-only controls honestly.",
       "owned_files": [
@@ -342,7 +400,7 @@
     },
     {
       "slice_id": "D2-logging-and-dependency-posture",
-      "status": "ready",
+      "status": "completed",
       "wave": 1,
       "goal": "Create one authoritative docs/evidence lane for logging, risky components, and operational security posture.",
       "owned_files": [

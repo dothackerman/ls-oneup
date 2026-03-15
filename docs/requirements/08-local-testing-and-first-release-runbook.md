@@ -39,6 +39,7 @@ Optional but recommended:
 4. `npm run crypto:run`
 5. `npm run test:integration`
 6. If green: commit and push
+7. If the change affects security-relevant behavior, review `../security/logging-and-error-handling.md` and `../security/dependency-risk-register.md` in the same slice.
 
 Before milestone sign-off:
 1. Run complete E2E suite (`npm run test:e2e`) covering M1 business logic.
@@ -60,23 +61,34 @@ Before milestone sign-off:
 4. M1 E2E suite is green.
 5. Production token HMAC and submission-encryption secrets are configured with `wrangler secret put`, not committed to the repo.
 
+### Deployment-Only Browser And Transport Controls
+1. The Worker enforces response-level browser headers for sensitive API and app-shell routes, but transport guarantees still live at the Cloudflare edge, not in local HTTP dev.
+2. HTTPS redirect policy, TLS mode, certificate lifecycle, and HSTS (`Strict-Transport-Security`) must be configured on the deployed zone or edge service. They are not implied by `wrangler.jsonc`.
+3. HSTS should only be enabled on the deployed HTTPS hostname after confirming the admin and farmer flows are stable over TLS; local `http://localhost` development intentionally does not emulate HSTS.
+4. If Cloudflare Access or upstream proxy policy ever strips security headers, release verification must treat that as a deployment failure rather than assuming the Worker alone provides complete browser posture.
+
 ### Manual Release Steps (Proposal)
 1. Confirm release commit on `main`.
 2. Verify environment/secrets/bindings in Cloudflare config.
 3. Configure runtime crypto secrets with `wrangler secret put`.
-4. Apply D1 migrations for target environment.
-5. Deploy Worker/static assets manually using `wrangler`.
-6. Run post-deploy smoke checks:
+4. Confirm edge transport settings for the production hostname:
+   - HTTPS redirect enabled
+   - TLS mode appropriate for the origin path
+   - HSTS configured at the zone or edge layer if the hostname is ready for it
+5. Apply D1 migrations for target environment.
+6. Deploy Worker/static assets manually using `wrangler`.
+7. Run post-deploy smoke checks:
    - admin route protected by Access
    - farmer token link flow works
    - submission persists and admin can view image
    - status derivation is correct
-7. Record release note in docs/changelog.
+8. Record release note in docs/changelog.
 
 ### Post-Release Checks
-1. Verify logs for submit/validation errors.
+1. Verify logs for submit/validation errors using `../security/logging-and-error-handling.md` as the field and event contract.
 2. Verify no obvious orphan object accumulation.
 3. Confirm error UX paths (used link, expired link, GPS denied, invalid image).
+4. Review the current dependency and platform risk notes in `../security/dependency-risk-register.md` against the deployed topology.
 
 ## Out of Scope in This Phase
 1. Agent-triggered deployment.

@@ -258,4 +258,6 @@ Errors:
 
 ## Notes
 1. Token security details are defined in `12-m1-security-decision-record.md`.
-2. Schema field mapping is defined in `10-m1-data-model-and-migrations.md`.
+2. Logging and generic error-handling expectations are centralized in `../security/logging-and-error-handling.md`.
+3. Platform and dependency risk posture is centralized in `../security/dependency-risk-register.md`.
+4. Schema field mapping is defined in `10-m1-data-model-and-migrations.md`.

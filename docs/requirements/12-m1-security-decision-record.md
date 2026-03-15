@@ -55,6 +55,9 @@ Security requirements:
    - admin API responses and admin-served probe images must return anti-caching headers (`cache-control: no-store`, `pragma: no-cache`, `expires: 0`).
    - token-bound probe API responses must also return anti-caching headers so probe state and submission outcomes are not stored by browsers or intermediaries.
    - admin responses should vary on `Cf-Access-Authenticated-User-Email` so access-scoped content is not reused across identities if caching is reintroduced upstream.
+11. Operational evidence:
+   - keep logging/error-handling rules in `docs/security/logging-and-error-handling.md`.
+   - keep risky component and dangerous-functionality notes in `docs/security/dependency-risk-register.md`.
 
 ## Consequences
 Positive:
@@ -65,6 +68,7 @@ Positive:
 5. Newly submitted probe details are no longer stored as plaintext business data in D1.
 6. Newly uploaded probe images are no longer stored as plaintext object bodies in R2.
 7. Sensitive response handling now depends on explicit anti-caching headers rather than assuming browsers or intermediaries will behave safely by default.
+8. Logging and risky-component evidence now lives in dedicated docs instead of being scattered across runbooks and plan notes.
 
 Trade-offs:
 1. Token cannot be recovered from DB; admin must regenerate only in later milestone if needed.
@@ -72,6 +76,7 @@ Trade-offs:
 3. Rotation requires retaining legacy secrets until outstanding token lifetimes have elapsed or protected records have been re-encrypted.
 4. Admin read paths now depend on successful payload and image decryption plus key availability.
 5. Anti-caching headers reduce browser convenience features such as response reuse and make debugging via intermediary caches less pleasant, which is the correct kind of inconvenience here.
+6. Operational posture is more reviewable, but it also creates doc drift risk if future slices change runtime behavior without updating the dedicated evidence docs.
 
 ## Alternatives Considered
 1. Plain token stored in DB:

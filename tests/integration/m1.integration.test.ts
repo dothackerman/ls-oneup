@@ -15,6 +15,39 @@ async function expectD1Failure(run: () => Promise<unknown>): Promise<void> {
 }
 
 describe("M1 integration", () => {
+  it("INT-EDGE-001 serves admin shell with browser security headers", async () => {
+    const response = await SELF.fetch("https://example.test/admin");
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(response.headers.get("pragma")).toBe("no-cache");
+    expect(response.headers.get("expires")).toBe("0");
+    expect(response.headers.get("vary")).toContain("Cf-Access-Authenticated-User-Email");
+    expect(response.headers.get("content-security-policy")).toContain("default-src 'self'");
+    expect(response.headers.get("content-security-policy")).toContain("frame-ancestors 'none'");
+    expect(response.headers.get("x-content-type-options")).toBe("nosniff");
+    expect(response.headers.get("referrer-policy")).toBe("no-referrer");
+    expect(response.headers.get("x-frame-options")).toBe("DENY");
+    expect(response.headers.get("cross-origin-opener-policy")).toBe("same-origin");
+  });
+
+  it("INT-EDGE-002 serves token shell with browser security headers", async () => {
+    const { tokenUrl } = await createProbeOrder({ order_number: "ORD-SHELL" });
+    const token = tokenFromUrl(tokenUrl);
+
+    const response = await SELF.fetch(`https://example.test/p/${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(response.headers.get("pragma")).toBe("no-cache");
+    expect(response.headers.get("expires")).toBe("0");
+    expect(response.headers.get("content-security-policy")).toContain("default-src 'self'");
+    expect(response.headers.get("permissions-policy")).toContain("geolocation=(self)");
+    expect(response.headers.get("x-content-type-options")).toBe("nosniff");
+    expect(response.headers.get("referrer-policy")).toBe("no-referrer");
+    expect(response.headers.get("x-frame-options")).toBe("DENY");
+  });
+
   it("INT-ADMIN-001 creates probes and links in one flow", async () => {
     const response = await SELF.fetch("https://example.test/api/admin/probes", {
       method: "POST",

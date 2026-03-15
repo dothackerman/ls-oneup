@@ -33,7 +33,12 @@ import {
   encryptSubmissionImageBytes,
   encryptSubmissionPayload,
 } from "./submission-security";
-import { applySensitiveResponseHeaders } from "./http-response-policy";
+import {
+  applyAppShellHeaders,
+  applySensitiveResponseHeaders,
+  isAppShellRoute,
+  withAppShellResponseHeaders,
+} from "./http-response-policy";
 import { ensureSubmitTokenState, parseSubmitRequest } from "./request-guards";
 import type { Env } from "./types";
 
@@ -517,13 +522,25 @@ app.all("*", async (c) => {
     return jsonError(404, "NOT_FOUND", "Ressource nicht gefunden.");
   }
 
+  const appShellOptions = {
+    varyByAccessIdentity: c.req.path === "/admin" || c.req.path.startsWith("/admin/"),
+  };
+
   if (c.env.ASSETS) {
-    return c.env.ASSETS.fetch(c.req.raw);
+    const assetResponse = await c.env.ASSETS.fetch(c.req.raw);
+    if (isAppShellRoute(c.req.path)) {
+      return withAppShellResponseHeaders(assetResponse, appShellOptions);
+    }
+    return assetResponse;
   }
 
-  return c.html(
+  const response = c.html(
     `<!doctype html><html lang="de-CH"><body><div id="root"></div><script type="module" src="/src/main.tsx"></script></body></html>`,
   );
+  if (isAppShellRoute(c.req.path)) {
+    applyAppShellHeaders(response.headers, appShellOptions);
+  }
+  return response;
 });
 
 export default app;
