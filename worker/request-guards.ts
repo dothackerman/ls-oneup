@@ -1,4 +1,9 @@
-import { isAllowedImageMime, MAX_IMAGE_BYTES, type AllowedImageMime } from "../src/shared/domain";
+import {
+  hasAllowedImageSignature,
+  isAllowedImageMime,
+  MAX_IMAGE_BYTES,
+  type AllowedImageMime,
+} from "../src/shared/domain";
 import { jsonError } from "../src/shared/errors";
 import {
   farmerSubmitFieldsSchema,
@@ -9,9 +14,20 @@ import type { ProbeTokenState } from "./repository";
 
 const TOKEN_USED_MESSAGE = "Link wurde bereits verwendet.";
 const TOKEN_EXPIRED_MESSAGE = "Link ist abgelaufen.";
+const METHOD_NOT_ALLOWED_MESSAGE = "HTTP-Methode nicht erlaubt.";
+
+const KNOWN_API_ROUTE_METHODS = [
+  { pattern: /^\/api\/health$/, allowed: ["GET"] },
+  { pattern: /^\/api\/admin\/probes$/, allowed: ["GET", "POST"] },
+  { pattern: /^\/api\/admin\/probes\/[^/]+\/crop-override$/, allowed: ["PATCH"] },
+  { pattern: /^\/api\/admin\/probes\/[^/]+\/image$/, allowed: ["GET"] },
+  { pattern: /^\/api\/probe\/[^/]+$/, allowed: ["GET"] },
+  { pattern: /^\/api\/probe\/[^/]+\/submit$/, allowed: ["POST"] },
+] as const;
 
 export type SubmitRequestPayload = {
   image: File & { type: AllowedImageMime };
+  imageBytes: Uint8Array;
   fields: FarmerSubmitFields;
 };
 
@@ -30,7 +46,9 @@ export function ensureSubmitTokenState(
   return null;
 }
 
-function extractSingleImage(formData: FormData): Response | (File & { type: AllowedImageMime }) {
+async function extractSingleImage(
+  formData: FormData,
+): Promise<Response | { image: File & { type: AllowedImageMime }; imageBytes: Uint8Array }> {
   const imageEntries = formData
     .getAll("image")
     .filter((value): value is File => value instanceof File);
@@ -48,7 +66,29 @@ function extractSingleImage(formData: FormData): Response | (File & { type: Allo
     return jsonError(413, "IMAGE_TOO_LARGE", "Bild ist grösser als 2 MB.");
   }
 
-  return image as File & { type: AllowedImageMime };
+  const typedImage = image as File & { type: AllowedImageMime };
+  const imageBytes = new Uint8Array(await typedImage.arrayBuffer());
+
+  if (!hasAllowedImageSignature(imageBytes, typedImage.type)) {
+    imageBytes.fill(0);
+    return jsonError(415, "INVALID_IMAGE_CONTENT", "Bildinhalt passt nicht zum Dateityp.");
+  }
+
+  return {
+    image: typedImage,
+    imageBytes,
+  };
+}
+
+export function enforceKnownApiMethod(method: string, path: string): Response | null {
+  const route = KNOWN_API_ROUTE_METHODS.find(({ pattern }) => pattern.test(path));
+  if (!route || (route.allowed as readonly string[]).includes(method)) {
+    return null;
+  }
+
+  const response = jsonError(405, "METHOD_NOT_ALLOWED", METHOD_NOT_ALLOWED_MESSAGE);
+  response.headers.set("allow", route.allowed.join(", "));
+  return response;
 }
 
 export async function parseSubmitRequest(
@@ -59,9 +99,9 @@ export async function parseSubmitRequest(
     return jsonError(400, "VALIDATION_ERROR", "Ungültige Formular-Daten.");
   }
 
-  const image = extractSingleImage(formData);
-  if (image instanceof Response) {
-    return image;
+  const imageResult = await extractSingleImage(formData);
+  if (imageResult instanceof Response) {
+    return imageResult;
   }
 
   const parsed = farmerSubmitFieldsSchema.safeParse({
@@ -78,7 +118,8 @@ export async function parseSubmitRequest(
   }
 
   return {
-    image,
+    image: imageResult.image,
+    imageBytes: imageResult.imageBytes,
     fields: parsed.data,
   };
 }

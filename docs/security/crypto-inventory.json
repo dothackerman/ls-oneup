@@ -119,14 +119,9 @@
       "key_source": "none",
       "rotation_policy": "Not applicable.",
       "code_references": [
-        "tests/integration/helpers.ts",
         "tests/integration/m1.integration.test.ts"
       ],
       "discovery": [
-        {
-          "marker_id": "webcrypto-get-random-values",
-          "path": "tests/integration/helpers.ts"
-        },
         {
           "marker_id": "webcrypto-get-random-values",
           "path": "tests/integration/m1.integration.test.ts"

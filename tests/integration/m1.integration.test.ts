@@ -153,6 +153,82 @@ describe("M1 integration", () => {
     expect(sizeRes.status).toBe(413);
   });
 
+  it("INT-UPLOAD-002 rejects spoofed image content", async () => {
+    const { tokenUrl } = await createProbeOrder({ order_number: "ORD-UPLOAD-SPOOF" });
+    const token = tokenFromUrl(tokenUrl);
+
+    const spoofedForm = buildValidForm();
+    spoofedForm.delete("image");
+    spoofedForm.append(
+      "image",
+      new File(
+        [Uint8Array.from([110, 111, 116, 45, 97, 110, 45, 105, 109, 97, 103, 101])],
+        "fake.jpg",
+        {
+          type: "image/jpeg",
+        },
+      ),
+    );
+
+    const response = await SELF.fetch(`https://example.test/api/probe/${token}/submit`, {
+      method: "POST",
+      body: spoofedForm,
+    });
+
+    expect(response.status).toBe(415);
+    expect((await response.json()) as { error_code: string }).toMatchObject({
+      error_code: "INVALID_IMAGE_CONTENT",
+    });
+  });
+
+  it("INT-UPLOAD-003 rejects embedded image metadata", async () => {
+    const { tokenUrl } = await createProbeOrder({ order_number: "ORD-UPLOAD-METADATA" });
+    const token = tokenFromUrl(tokenUrl);
+
+    const metadataForm = buildValidForm();
+    metadataForm.delete("image");
+    metadataForm.append(
+      "image",
+      new File(
+        [
+          Uint8Array.from([
+            0xff, 0xd8, 0xff, 0xe1, 0x00, 0x10, 0x45, 0x78, 0x69, 0x66, 0x00, 0x00, 0x41, 0x42,
+            0x43, 0x44, 0x45, 0x46, 0xff, 0xd9,
+          ]),
+        ],
+        "metadata.jpg",
+        {
+          type: "image/jpeg",
+        },
+      ),
+    );
+
+    const response = await SELF.fetch(`https://example.test/api/probe/${token}/submit`, {
+      method: "POST",
+      body: metadataForm,
+    });
+
+    expect(response.status).toBe(415);
+    expect((await response.json()) as { error_code: string }).toMatchObject({
+      error_code: "IMAGE_METADATA_NOT_ALLOWED",
+    });
+  });
+
+  it("INT-METHOD-001 returns 405 for unsupported methods on known routes", async () => {
+    const { tokenUrl, probeId } = await createProbeOrder({ order_number: "ORD-METHOD" });
+    const token = tokenFromUrl(tokenUrl);
+
+    const submitGet = await SELF.fetch(`https://example.test/api/probe/${token}/submit`);
+    expect(submitGet.status).toBe(405);
+    expect(submitGet.headers.get("allow")).toBe("POST");
+
+    const imagePost = await SELF.fetch(`https://example.test/api/admin/probes/${probeId}/image`, {
+      method: "POST",
+    });
+    expect(imagePost.status).toBe(405);
+    expect(imagePost.headers.get("allow")).toBe("GET");
+  });
+
   it("INT-SUBMIT-002 used link cannot submit again", async () => {
     const { tokenUrl } = await createProbeOrder({ order_number: "ORD-USED" });
     const token = tokenFromUrl(tokenUrl);
@@ -285,6 +361,15 @@ describe("M1 integration", () => {
     const metadata = new Headers();
     obj?.writeHttpMetadata(metadata);
     expect(metadata.get("content-type")).toBe("application/vnd.ls-oneup.encrypted-image+json");
+    expect(
+      (obj as { customMetadata?: Record<string, string> } | null)?.customMetadata,
+    ).toMatchObject({
+      retention_class: "submitted_probe_artifact",
+      image_metadata_policy: "reject_embedded_metadata",
+    });
+    expect(
+      (obj as { customMetadata?: Record<string, string> } | null)?.customMetadata?.["delete_after"],
+    ).toBeTruthy();
 
     const storedEnvelope = await obj?.text();
     expect(storedEnvelope?.includes('"version":"b1"')).toBe(true);

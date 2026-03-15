@@ -1,5 +1,6 @@
 import type { ProbeStatus, SoilMoisture, Vitality } from "../src/shared/domain";
 import { deriveStatus } from "../src/shared/domain";
+import { submissionRetentionCutoff } from "./data-retention";
 
 export type ProbeListItem = {
   probe_id: string;
@@ -184,6 +185,24 @@ export async function findByTokenHashes(
     .first<ProbeTokenState>();
 
   return row ?? null;
+}
+
+export async function listRetentionExpiredProbeIds(
+  db: D1Database,
+  nowIso: string,
+): Promise<string[]> {
+  const rows = await db
+    .prepare(
+      `SELECT id
+         FROM probes
+        WHERE submitted_at IS NOT NULL
+          AND submitted_at <= ?1
+        ORDER BY submitted_at ASC`,
+    )
+    .bind(submissionRetentionCutoff(nowIso))
+    .all<{ id: string }>();
+
+  return (rows.results ?? []).map((row) => row.id);
 }
 
 export async function applySubmit(

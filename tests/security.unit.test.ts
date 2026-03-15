@@ -15,6 +15,12 @@ import {
   encryptSubmissionImageBytes,
   encryptSubmissionPayload,
 } from "../worker/submission-security";
+import {
+  buildSubmissionArtifactRetention,
+  hasRejectedImageMetadata,
+  SUBMISSION_ARTIFACT_RETENTION_CLASS,
+  SUBMISSION_ARTIFACT_RETENTION_DAYS,
+} from "../worker/data-retention";
 
 const TEST_ENV = {
   TOKEN_HMAC_KEYS_JSON: JSON.stringify({
@@ -51,6 +57,17 @@ const ROTATED_SUBMISSION_ENV = {
     ],
   }),
 };
+
+const JPEG_WITH_EXIF = Uint8Array.from([
+  0xff, 0xd8, 0xff, 0xe1, 0x00, 0x10, 0x45, 0x78, 0x69, 0x66, 0x00, 0x00, 0x41, 0x42, 0x43, 0x44,
+  0x45, 0x46, 0xff, 0xd9,
+]);
+
+const PNG_WITH_TEXT = Uint8Array.from([
+  137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 1, 0, 0, 0, 1, 8, 6, 0, 0,
+  0, 31, 21, 196, 137, 0, 0, 0, 10, 116, 69, 88, 116, 99, 111, 109, 109, 101, 110, 116, 0, 0, 0, 0,
+  0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130,
+]);
 
 describe("worker/security", () => {
   it("fails closed when no token HMAC configuration is available", () => {
@@ -158,5 +175,35 @@ describe("worker/security", () => {
         {},
       ),
     ).rejects.toThrow(SubmissionSecurityConfigError);
+  });
+
+  it("derives a stable submission-artifact retention policy", () => {
+    const policy = buildSubmissionArtifactRetention("2026-03-15T12:00:00.000Z");
+
+    expect(policy.customMetadata.retention_class).toBe(SUBMISSION_ARTIFACT_RETENTION_CLASS);
+    expect(policy.customMetadata.image_metadata_policy).toBe("reject_embedded_metadata");
+    expect(policy.customMetadata.delete_after).toBe(policy.deleteAfter);
+
+    const start = new Date("2026-03-15T12:00:00.000Z");
+    const end = new Date(policy.deleteAfter);
+    const diffDays = Math.round((end.getTime() - start.getTime()) / (24 * 60 * 60 * 1000));
+    expect(diffDays).toBe(SUBMISSION_ARTIFACT_RETENTION_DAYS);
+  });
+
+  it("rejects embedded metadata markers in JPEG and PNG uploads", () => {
+    expect(hasRejectedImageMetadata(JPEG_WITH_EXIF, "image/jpeg")).toBe(true);
+    expect(hasRejectedImageMetadata(PNG_WITH_TEXT, "image/png")).toBe(true);
+    expect(
+      hasRejectedImageMetadata(
+        Uint8Array.from([255, 216, 255, 224, 0, 16, 74, 70, 73, 70]),
+        "image/jpeg",
+      ),
+    ).toBe(false);
+    expect(
+      hasRejectedImageMetadata(
+        Uint8Array.from([137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 0]),
+        "image/png",
+      ),
+    ).toBe(false);
   });
 });

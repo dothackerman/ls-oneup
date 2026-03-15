@@ -40,6 +40,13 @@ The current runtime scope includes one-time probe-token protection, encrypted su
 4. Submission-payload or encrypted-image decryption failures must block admin reads instead of falling back to silent corruption or partial plaintext reconstruction.
 5. Responses that expose token-bound state, decrypted submission data, or admin-served encrypted-object reads must send anti-caching headers (`cache-control: no-store`, `pragma: no-cache`, `expires: 0`) instead of relying on browser defaults.
 
+## Retention And Image Metadata
+1. Accepted submission artifacts are classified as `submitted_probe_artifact` and use a 365-day retention boundary derived from `submitted_at`.
+2. The Worker writes encrypted R2 objects with explicit retention metadata (`retention_class`, `delete_after`, `image_metadata_policy`) so operational cleanup does not rely on oral history.
+3. The repository currently computes the D1 retention boundary from `submitted_at` plus the shared retention policy rather than storing a separate per-row deadline column.
+4. User-submitted images that contain embedded metadata markers (for example JPEG APP1/APP13 or PNG textual/exif chunks) are rejected before encryption and storage.
+5. Plaintext metadata persisted in D1 remains intentionally minimal: `image_mime`, `image_bytes`, and `image_uploaded_at` only.
+
 ## Constant-Time Handling
 1. Token-hash comparisons must not rely on short-circuit string equality.
 2. Any future secret comparison logic must use the same non-short-circuit approach or an equivalent constant-time primitive.

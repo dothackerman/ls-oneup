@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-15T10:02:19.681Z",
+  "generated_at": "2026-03-15T11:16:10.148Z",
   "inventory_path": "docs/security/crypto-inventory.json",
   "scanned_paths": [
     "src",
@@ -15,63 +15,56 @@
       "marker_id": "webcrypto-subtle-import-key",
       "primitive": "Web Crypto importKey",
       "path": "worker/security.ts",
-      "line": 129,
+      "line": 133,
       "snippet": "return await crypto.subtle.importKey("
     },
     {
       "marker_id": "webcrypto-subtle-sign",
       "primitive": "Web Crypto sign",
       "path": "worker/security.ts",
-      "line": 146,
+      "line": 150,
       "snippet": "const signature = await crypto.subtle.sign(\"HMAC\", key, tokenBuffer);"
     },
     {
       "marker_id": "webcrypto-get-random-values",
       "primitive": "Web Crypto CSPRNG",
       "path": "worker/security.ts",
-      "line": 165,
+      "line": 169,
       "snippet": "crypto.getRandomValues(bytes);"
     },
     {
       "marker_id": "webcrypto-subtle-import-key",
       "primitive": "Web Crypto importKey",
       "path": "worker/submission-security.ts",
-      "line": 158,
+      "line": 170,
       "snippet": "return await crypto.subtle.importKey(\"raw\", toArrayBuffer(keyBytes), \"AES-GCM\", false, usages);"
     },
     {
       "marker_id": "webcrypto-get-random-values",
       "primitive": "Web Crypto CSPRNG",
       "path": "worker/submission-security.ts",
-      "line": 253,
+      "line": 343,
       "snippet": "crypto.getRandomValues(iv);"
     },
     {
       "marker_id": "webcrypto-subtle-encrypt",
       "primitive": "Web Crypto encrypt",
       "path": "worker/submission-security.ts",
-      "line": 256,
+      "line": 346,
       "snippet": "const ciphertext = await crypto.subtle.encrypt("
     },
     {
       "marker_id": "webcrypto-subtle-decrypt",
       "primitive": "Web Crypto decrypt",
       "path": "worker/submission-security.ts",
-      "line": 303,
+      "line": 393,
       "snippet": "const plaintext = await crypto.subtle.decrypt("
     },
     {
       "marker_id": "webcrypto-get-random-values",
       "primitive": "Web Crypto CSPRNG",
-      "path": "tests/integration/helpers.ts",
-      "line": 49,
-      "snippet": "crypto.getRandomValues(bytes);"
-    },
-    {
-      "marker_id": "webcrypto-get-random-values",
-      "primitive": "Web Crypto CSPRNG",
       "path": "tests/integration/m1.integration.test.ts",
-      "line": 106,
+      "line": 139,
       "snippet": "crypto.getRandomValues(b.subarray(0, 65536));"
     }
   ],

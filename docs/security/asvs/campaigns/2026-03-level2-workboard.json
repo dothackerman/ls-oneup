@@ -1,7 +1,7 @@
 {
   "campaign_id": "2026-03-level2",
-  "version": 3,
-  "status": "wave_1_in_progress",
+  "version": 5,
+  "status": "wave_2_ready",
   "purpose": "Agent-legible execution workboard for reaching an honest ASVS Level 2 posture through file-owned implementation slices.",
   "human_plan": "docs/plans/2026-03-15-asvs-level2-multi-agent-execution-plan.md",
   "strategy_plan": "docs/plans/2026-03-14-asvs-level2-implementation-plan.md",
@@ -102,6 +102,7 @@
         "docs/requirements/08-local-testing-and-first-release-runbook.md"
       ],
       "tests_run": [
+        "npm run format",
         "npm run lint",
         "npm run typecheck",
         "npm run test:integration"
@@ -110,14 +111,14 @@
         "docs/requirements/08-local-testing-and-first-release-runbook.md"
       ],
       "controls_ready_for_reaudit": [
-        "V3.4.3",
-        "V3.4.4",
-        "V3.4.5",
-        "V3.4.6"
+        "V3.1.1",
+        "V3.4.1",
+        "V3.7.4",
+        "V14.3.2"
       ],
       "residual_risks": [
-        "Transport controls such as HTTPS redirects, TLS posture, and HSTS remain deployment-managed edge settings rather than Worker-enforced behavior.",
-        "Browser-visible flow alignment still depends on F1-frontend-security-alignment."
+        "HSTS, HTTPS redirect, and broader TLS posture are still deployment-bound Cloudflare edge controls; this slice documents them honestly but cannot enforce them from local Worker code.",
+        "The app-shell CSP is intentionally same-origin-only; any future external origin usage will require an explicit policy update rather than silent drift."
       ]
     },
     {
@@ -132,6 +133,7 @@
         "docs/security/logging-and-error-handling.md"
       ],
       "tests_run": [
+        "npm run format",
         "npm run lint",
         "npm run typecheck"
       ],
@@ -142,10 +144,85 @@
         "docs/security/dependency-risk-register.md",
         "docs/security/logging-and-error-handling.md"
       ],
-      "controls_ready_for_reaudit": [],
+      "controls_ready_for_reaudit": [
+        "V14.1.2",
+        "V14.2.4",
+        "V16.2.1",
+        "V16.2.2",
+        "V16.3.1"
+      ],
       "residual_risks": [
-        "The evidence lane is centralized, but future runtime slices can still create doc drift if they change behavior without updating these docs.",
-        "Operational alerting and centralized log shipping remain deployment concerns outside this repository."
+        "Operational posture is now centralized in docs, but deployment-side logging, retention, and alert routing still depend on Cloudflare configuration outside this repository.",
+        "The evidence lane will drift if future slices change security-relevant behavior without updating the dedicated docs in the same change."
+      ]
+    },
+    {
+      "slice_id": "B2-method-and-upload-policy",
+      "status": "completed",
+      "goal": "Add explicit method policy and deeper upload validation without widening ownership.",
+      "changed_files": [
+        "src/shared/domain.ts",
+        "worker/request-guards.ts",
+        "worker/index.ts",
+        "tests/integration/helpers.ts",
+        "tests/integration/m1.integration.test.ts",
+        "tests/e2e/m1.spec.ts",
+        "docs/requirements/09-m1-api-contract.md"
+      ],
+      "tests_run": [
+        "npm run format",
+        "npm run typecheck",
+        "npm run test:unit",
+        "npm run test:integration",
+        "npm run test:e2e"
+      ],
+      "docs_updated": [
+        "docs/requirements/09-m1-api-contract.md"
+      ],
+      "controls_ready_for_reaudit": [
+        "V3.5.3",
+        "V4.1.4",
+        "V5.2.2"
+      ],
+      "residual_risks": [
+        "Upload hardening now validates declared MIME against file signatures, but full image decoding and pixel-shape analysis are still outside the current Worker-only implementation.",
+        "Method policy is explicit for known routes, but future endpoints must update the route allowlist in the same change or they will drift back toward implicit behavior."
+      ]
+    },
+    {
+      "slice_id": "C2-retention-and-image-metadata",
+      "status": "completed",
+      "goal": "Define and implement storage-side retention and image-metadata handling with clear tests and docs.",
+      "changed_files": [
+        "worker/data-retention.ts",
+        "worker/repository.ts",
+        "worker/submission-security.ts",
+        "worker/index.ts",
+        "tests/security.unit.test.ts",
+        "tests/integration/m1.integration.test.ts",
+        "docs/security/crypto-policy.md",
+        "docs/security/crypto-inventory.json",
+        "docs/security/crypto-discovery.json"
+      ],
+      "tests_run": [
+        "npm run format",
+        "npm run typecheck",
+        "npm run test:unit",
+        "npm run test:integration",
+        "npm run crypto:run"
+      ],
+      "docs_updated": [
+        "docs/security/crypto-policy.md",
+        "docs/security/crypto-inventory.json",
+        "docs/security/crypto-discovery.json"
+      ],
+      "controls_ready_for_reaudit": [
+        "V14.2.7",
+        "V14.2.8"
+      ],
+      "residual_risks": [
+        "Retention boundaries are now explicit in code and R2 object metadata, but automatic deletion still depends on a future operational cleanup path using the recorded deadlines.",
+        "Image metadata rejection covers common JPEG and PNG metadata markers; if the accepted file surface expands, the policy helper must expand with it."
       ]
     }
   ],
@@ -292,7 +369,7 @@
     },
     {
       "slice_id": "B2-method-and-upload-policy",
-      "status": "ready",
+      "status": "completed",
       "wave": 1,
       "goal": "Add explicit method policy and deeper upload validation without widening ownership.",
       "owned_files": [
@@ -347,7 +424,7 @@
     },
     {
       "slice_id": "C2-retention-and-image-metadata",
-      "status": "ready",
+      "status": "completed",
       "wave": 1,
       "goal": "Define and implement storage-side retention and image-metadata handling with clear tests and docs.",
       "owned_files": [
@@ -458,7 +535,7 @@
     },
     {
       "slice_id": "F1-frontend-security-alignment",
-      "status": "blocked",
+      "status": "ready",
       "wave": 2,
       "goal": "Align browser-visible behavior with the implemented edge and upload policy.",
       "owned_files": [

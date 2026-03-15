@@ -344,6 +344,29 @@ test("E2E-FARM-005 rejects invalid MIME and oversized uploads", async ({ request
     },
   });
   expect(oversizedStatus).toBe(413);
+
+  const { token: spoofedToken } = await createProbeOrder(request, {
+    orderPrefix: "E2E-FARM-005-SPOOF",
+  });
+
+  const spoofedStatus = await submitProbe(request, spoofedToken, {
+    image: {
+      name: "fake.jpg",
+      mimeType: "image/jpeg",
+      buffer: Buffer.from("not-an-image"),
+    },
+  });
+  expect(spoofedStatus).toBe(415);
+});
+
+test("E2E-FARM-008 returns 405 on unsupported submit methods", async ({ request }) => {
+  const { token } = await createProbeOrder(request, {
+    orderPrefix: "E2E-FARM-007",
+  });
+
+  const response = await request.get(`/api/probe/${token}/submit`);
+  expect(response.status()).toBe(405);
+  expect(response.headers().allow).toBe("POST");
 });
 
 test("E2E-ADMIN-004 allows viewing uploaded image from admin table", async ({ page, request }) => {

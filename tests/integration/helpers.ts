@@ -45,8 +45,7 @@ export function buildValidForm(): FormData {
   form.set("gps_lon", "8.5417");
   form.set("gps_captured_at", new Date().toISOString());
 
-  const bytes = new Uint8Array(1024);
-  crypto.getRandomValues(bytes);
+  const bytes = Uint8Array.from([255, 216, 255, 224, 0, 16, 74, 70, 73, 70]);
   form.append("image", new File([bytes], "probe.jpg", { type: "image/jpeg" }));
 
   return form;

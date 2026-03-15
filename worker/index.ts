@@ -39,7 +39,17 @@ import {
   isAppShellRoute,
   withAppShellResponseHeaders,
 } from "./http-response-policy";
-import { ensureSubmitTokenState, parseSubmitRequest } from "./request-guards";
+import {
+  enforceKnownApiMethod,
+  ensureSubmitTokenState,
+  parseSubmitRequest,
+} from "./request-guards";
+import {
+  buildSubmissionArtifactRetention,
+  hasRejectedImageMetadata,
+  IMAGE_METADATA_REJECTED_CODE,
+  IMAGE_METADATA_REJECTED_MESSAGE,
+} from "./data-retention";
 import type { Env } from "./types";
 
 type WorkerEnv = Env & {
@@ -431,11 +441,16 @@ app.post("/api/probe/:token/submit", async (c) => {
     return guardedRequest;
   }
 
-  const { fields, image } = guardedRequest;
+  const { fields, image, imageBytes } = guardedRequest;
+  if (hasRejectedImageMetadata(imageBytes, image.type)) {
+    imageBytes.fill(0);
+    return jsonError(415, IMAGE_METADATA_REJECTED_CODE, IMAGE_METADATA_REJECTED_MESSAGE);
+  }
 
   const extension = image.type === "image/png" ? "png" : "jpg";
   const imageKey = `${initialState.id}/${crypto.randomUUID()}.${extension}`;
-  const imageBytes = new Uint8Array(await image.arrayBuffer());
+  const submitNow = nowIso();
+  const retentionPolicy = buildSubmissionArtifactRetention(submitNow);
   let submissionCiphertext: string;
   try {
     submissionCiphertext = await encryptSubmissionPayload(
@@ -451,6 +466,7 @@ app.post("/api/probe/:token/submit", async (c) => {
       c.env,
     );
   } catch (error) {
+    imageBytes.fill(0);
     return handleCryptoSecurityError("submission", error);
   }
 
@@ -458,6 +474,7 @@ app.post("/api/probe/:token/submit", async (c) => {
   try {
     encryptedImageObject = await encryptSubmissionImageBytes(imageBytes, c.env);
   } catch (error) {
+    imageBytes.fill(0);
     return handleCryptoSecurityError("submission", error);
   }
 
@@ -466,16 +483,17 @@ app.post("/api/probe/:token/submit", async (c) => {
       httpMetadata: {
         contentType: ENCRYPTED_IMAGE_OBJECT_CONTENT_TYPE,
       },
+      customMetadata: retentionPolicy.customMetadata,
     });
   } catch (error) {
+    imageBytes.fill(0);
     console.error("r2_upload_failed", {
       probe_id: initialState.id,
       error: error instanceof Error ? error.message : "unknown",
     });
     return jsonError(503, "STORAGE_WRITE_FAILED", "Bildspeicherung fehlgeschlagen.");
   }
-
-  const submitNow = nowIso();
+  imageBytes.fill(0);
 
   const submitChanges = await applySubmit(c.env.DB, {
     token_hash: matchedHash,
@@ -519,6 +537,10 @@ app.post("/api/probe/:token/submit", async (c) => {
 
 app.all("*", async (c) => {
   if (c.req.path.startsWith("/api/")) {
+    const methodPolicyError = enforceKnownApiMethod(c.req.method, c.req.path);
+    if (methodPolicyError) {
+      return methodPolicyError;
+    }
     return jsonError(404, "NOT_FOUND", "Ressource nicht gefunden.");
   }
 

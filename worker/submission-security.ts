@@ -1,6 +1,7 @@
 import {
   SOIL_MOISTURE_VALUES,
   VITALITY_VALUES,
+  type AllowedImageMime,
   type SoilMoisture,
   type Vitality,
 } from "../src/shared/domain";
@@ -42,10 +43,21 @@ export class SubmissionSecurityConfigError extends Error {
   }
 }
 
+export class SubmissionImagePolicyError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "SubmissionImagePolicyError";
+  }
+}
+
 export const ENCRYPTED_IMAGE_OBJECT_CONTENT_TYPE = "application/vnd.ls-oneup.encrypted-image+json";
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
+const JPEG_SOI = 0xffd8;
+const JPEG_SOS = 0xffda;
+const JPEG_EOI = 0xffd9;
+const PNG_TEXT_CHUNKS = new Set(["tEXt", "iTXt", "zTXt", "eXIf"]);
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -233,6 +245,84 @@ function parseEnvelope(
     iv,
     ciphertext,
   };
+}
+
+function readUint16(bytes: Uint8Array, offset: number): number {
+  return (bytes[offset] << 8) | bytes[offset + 1];
+}
+
+function jpegContainsEmbeddedMetadata(bytes: Uint8Array): boolean {
+  if (bytes.byteLength < 4 || readUint16(bytes, 0) !== JPEG_SOI) {
+    return false;
+  }
+
+  let offset = 2;
+  while (offset + 3 < bytes.byteLength) {
+    if (bytes[offset] !== 0xff) {
+      offset += 1;
+      continue;
+    }
+
+    const marker = readUint16(bytes, offset);
+    if (marker === JPEG_SOS || marker === JPEG_EOI) {
+      return false;
+    }
+
+    if (marker === 0xffe1 || marker === 0xffe2 || marker === 0xffed || marker === 0xfffe) {
+      return true;
+    }
+
+    if (offset + 4 > bytes.byteLength) {
+      return false;
+    }
+
+    const segmentLength = readUint16(bytes, offset + 2);
+    if (segmentLength < 2) {
+      return false;
+    }
+
+    offset += 2 + segmentLength;
+  }
+
+  return false;
+}
+
+function pngContainsEmbeddedMetadata(bytes: Uint8Array): boolean {
+  if (bytes.byteLength < 8) {
+    return false;
+  }
+
+  let offset = 8;
+  while (offset + 8 <= bytes.byteLength) {
+    const chunkLength =
+      (bytes[offset] << 24) |
+      (bytes[offset + 1] << 16) |
+      (bytes[offset + 2] << 8) |
+      bytes[offset + 3];
+    const chunkType = decoder.decode(bytes.slice(offset + 4, offset + 8));
+    if (PNG_TEXT_CHUNKS.has(chunkType)) {
+      return true;
+    }
+
+    offset += 12 + chunkLength;
+  }
+
+  return false;
+}
+
+export function assertSubmissionImageStoragePolicy(
+  bytes: Uint8Array,
+  mime: AllowedImageMime,
+): void {
+  const hasMetadata =
+    mime === "image/jpeg"
+      ? jpegContainsEmbeddedMetadata(bytes)
+      : pngContainsEmbeddedMetadata(bytes);
+  if (hasMetadata) {
+    throw new SubmissionImagePolicyError(
+      "Images with embedded EXIF, text, or comment metadata must be rejected before storage.",
+    );
+  }
 }
 
 async function encryptSubmissionBytes(

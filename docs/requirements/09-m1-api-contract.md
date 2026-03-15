@@ -20,6 +20,7 @@ Define the exact HTTP contract for Milestone 1.
    - `pragma: no-cache`
    - `expires: 0`
    - admin responses also include `vary: Cf-Access-Authenticated-User-Email`
+7. Known API routes return `405 METHOD_NOT_ALLOWED` with an `Allow` header when the path exists but the HTTP method is unsupported.
 
 ## Domain Types
 1. `vitality`: `normal | schwach_langsam | krankheit_oder_anderes_problem`
@@ -227,6 +228,8 @@ Required fields:
 5. `gps_lon` (number)
 6. `gps_captured_at` (ISO timestamp)
 7. `image` (single file, `image/jpeg` or `image/png`, max 2 MB)
+8. Uploaded image bytes must match the declared JPEG or PNG file signature; MIME labels alone are insufficient.
+9. Uploads with embedded image metadata (for example JPEG EXIF/XMP/IPTC markers or PNG textual/exif chunks) are rejected instead of being stored verbatim.
 
 Success `201`:
 ```json
@@ -244,12 +247,13 @@ Response headers:
 
 Errors:
 1. `400` invalid payload / missing fields.
-2. `415` invalid MIME type.
+2. `415` invalid MIME type, file signature mismatch, or embedded image metadata.
 3. `413` file too large.
 4. `410` token expired.
 5. `409` token already used (first-submit-wins).
 6. `404` token not found.
 7. `503` storage write failure.
+8. `405` unsupported HTTP method on a known route, with `Allow` header.
 
 ## Status Derivation Rules
 1. `eingereicht`: `submitted_at IS NOT NULL`
