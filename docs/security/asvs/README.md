@@ -4,9 +4,8 @@ This directory tracks OWASP ASVS source state and local codebase validation.
 This README is maintenance-oriented. Human readers should usually start with `../README.md` or `./checklist.human.md`.
 
 Global reusable skills:
-- `asvs-auditor`
-- `asvs-planner`
-- `asvs-implementer`
+- `asvs-review`
+- `asvs-remediate`
 
 Repo-local adapter files in this repository:
 - `repo-config.json`
@@ -79,4 +78,4 @@ npm run asvs:run
 
 ## Responsibility note
 
-The global `asvs-auditor` skill may run with any available model. The repository owner is responsible for reviewing findings quality before relying on audit results.
+The global `asvs-review` skill may run with any available model. The repository owner is responsible for reviewing findings quality before relying on audit results.

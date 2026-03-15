@@ -74,4 +74,4 @@ Status semantics:
 1. Running `npm run asvs:sync` refreshes upstream metadata and baseline checklist.
 2. Running `npm run asvs:audit` evaluates all checklist items and writes findings.
 3. Human report prioritizes readability for human reviewers, including status summary, level summary, and chapter summary.
-4. Repo adapter files exist under `docs/security/asvs/` so global `asvs-auditor`, `asvs-planner`, and `asvs-implementer` skills can operate without repo-local skill logic.
+4. Repo adapter files exist under `docs/security/asvs/` so global `asvs-review` and `asvs-remediate` skills can operate without repo-local skill logic.
