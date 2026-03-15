@@ -5,7 +5,7 @@ Structured per-control data remains in `checklist.machine.json` and `checklist.f
 
 ## Snapshot
 
-- Generated at: 2026-03-15T09:55:46.197Z
+- Generated at: 2026-03-15T10:08:49.317Z
 - Source commit: ae4ab5b261a72b63edd6a10b4e2d600ea6937e2b
 - Source blob: f7ae2926598c4648ff7614a6968e4c8fd89524bd
 - Total requirements: 345

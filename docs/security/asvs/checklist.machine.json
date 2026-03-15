@@ -6,7 +6,7 @@
     "source_commit_sha": "ae4ab5b261a72b63edd6a10b4e2d600ea6937e2b",
     "source_blob_sha": "f7ae2926598c4648ff7614a6968e4c8fd89524bd",
     "source_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json",
-    "last_audited_at": "2026-03-15T09:55:46.188Z",
+    "last_audited_at": "2026-03-15T10:08:49.306Z",
     "audited_item_count": 345,
     "pre_filtered_count": 17
   },
@@ -33,7 +33,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.875Z"
+      "last_audited_at": "2026-03-15T10:08:48.983Z"
     },
     {
       "requirement_id": "V1.1.2",
@@ -57,7 +57,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.879Z"
+      "last_audited_at": "2026-03-15T10:08:48.987Z"
     },
     {
       "requirement_id": "V1.2.1",
@@ -81,7 +81,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.879Z"
+      "last_audited_at": "2026-03-15T10:08:48.988Z"
     },
     {
       "requirement_id": "V1.2.2",
@@ -105,7 +105,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.881Z"
+      "last_audited_at": "2026-03-15T10:08:48.991Z"
     },
     {
       "requirement_id": "V1.2.3",
@@ -129,7 +129,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.884Z"
+      "last_audited_at": "2026-03-15T10:08:48.993Z"
     },
     {
       "requirement_id": "V1.2.4",
@@ -153,7 +153,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.885Z"
+      "last_audited_at": "2026-03-15T10:08:48.995Z"
     },
     {
       "requirement_id": "V1.2.5",
@@ -170,14 +170,14 @@
         "worker/submission-security.ts:99",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54",
-        "tests/integration/m1.integration.test.ts:60"
+        "tests/integration/m1.integration.test.ts:58",
+        "tests/integration/m1.integration.test.ts:64"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.887Z"
+      "last_audited_at": "2026-03-15T10:08:48.997Z"
     },
     {
       "requirement_id": "V1.2.6",
@@ -192,7 +192,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.887Z"
+      "last_audited_at": "2026-03-15T10:08:48.997Z"
     },
     {
       "requirement_id": "V1.2.7",
@@ -209,14 +209,14 @@
         "worker/submission-security.ts:99",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54",
-        "tests/integration/m1.integration.test.ts:60"
+        "tests/integration/m1.integration.test.ts:58",
+        "tests/integration/m1.integration.test.ts:64"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.889Z"
+      "last_audited_at": "2026-03-15T10:08:48.999Z"
     },
     {
       "requirement_id": "V1.2.8",
@@ -227,9 +227,9 @@
       "severity": "medium",
       "reasoning": "Keyword-level evidence found in codebase; manual validation required for control completeness.",
       "code_references": [
-        "worker/index.ts:58",
-        "worker/index.ts:59",
-        "worker/index.ts:60",
+        "worker/index.ts:63",
+        "worker/index.ts:64",
+        "worker/index.ts:65",
         "worker/security.ts:82",
         "worker/security.ts:83",
         "worker/security.ts:86",
@@ -240,7 +240,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.890Z"
+      "last_audited_at": "2026-03-15T10:08:49.000Z"
     },
     {
       "requirement_id": "V1.2.9",
@@ -257,14 +257,14 @@
         "worker/submission-security.ts:99",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54",
-        "tests/integration/m1.integration.test.ts:60"
+        "tests/integration/m1.integration.test.ts:58",
+        "tests/integration/m1.integration.test.ts:64"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.892Z"
+      "last_audited_at": "2026-03-15T10:08:49.002Z"
     },
     {
       "requirement_id": "V1.2.10",
@@ -281,14 +281,14 @@
         "worker/submission-security.ts:99",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54",
-        "tests/integration/m1.integration.test.ts:60"
+        "tests/integration/m1.integration.test.ts:58",
+        "tests/integration/m1.integration.test.ts:64"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.894Z"
+      "last_audited_at": "2026-03-15T10:08:49.003Z"
     },
     {
       "requirement_id": "V1.3.1",
@@ -312,7 +312,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.894Z"
+      "last_audited_at": "2026-03-15T10:08:49.004Z"
     },
     {
       "requirement_id": "V1.3.2",
@@ -329,14 +329,14 @@
         "worker/submission-security.ts:99",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54",
-        "tests/integration/m1.integration.test.ts:60"
+        "tests/integration/m1.integration.test.ts:58",
+        "tests/integration/m1.integration.test.ts:64"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.896Z"
+      "last_audited_at": "2026-03-15T10:08:49.006Z"
     },
     {
       "requirement_id": "V1.3.3",
@@ -360,7 +360,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.898Z"
+      "last_audited_at": "2026-03-15T10:08:49.007Z"
     },
     {
       "requirement_id": "V1.3.4",
@@ -384,7 +384,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.899Z"
+      "last_audited_at": "2026-03-15T10:08:49.009Z"
     },
     {
       "requirement_id": "V1.3.5",
@@ -401,14 +401,14 @@
         "worker/submission-security.ts:99",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54",
-        "tests/integration/m1.integration.test.ts:60"
+        "tests/integration/m1.integration.test.ts:58",
+        "tests/integration/m1.integration.test.ts:64"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.901Z"
+      "last_audited_at": "2026-03-15T10:08:49.011Z"
     },
     {
       "requirement_id": "V1.3.6",
@@ -432,7 +432,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.903Z"
+      "last_audited_at": "2026-03-15T10:08:49.012Z"
     },
     {
       "requirement_id": "V1.3.7",
@@ -449,14 +449,14 @@
         "worker/submission-security.ts:99",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54",
-        "tests/integration/m1.integration.test.ts:60"
+        "tests/integration/m1.integration.test.ts:58",
+        "tests/integration/m1.integration.test.ts:64"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.904Z"
+      "last_audited_at": "2026-03-15T10:08:49.014Z"
     },
     {
       "requirement_id": "V1.3.8",
@@ -480,7 +480,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.905Z"
+      "last_audited_at": "2026-03-15T10:08:49.015Z"
     },
     {
       "requirement_id": "V1.3.9",
@@ -504,7 +504,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.905Z"
+      "last_audited_at": "2026-03-15T10:08:49.015Z"
     },
     {
       "requirement_id": "V1.3.10",
@@ -528,7 +528,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.905Z"
+      "last_audited_at": "2026-03-15T10:08:49.015Z"
     },
     {
       "requirement_id": "V1.3.11",
@@ -552,7 +552,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.906Z"
+      "last_audited_at": "2026-03-15T10:08:49.015Z"
     },
     {
       "requirement_id": "V1.3.12",
@@ -576,7 +576,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.907Z"
+      "last_audited_at": "2026-03-15T10:08:49.017Z"
     },
     {
       "requirement_id": "V1.4.1",
@@ -600,7 +600,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.908Z"
+      "last_audited_at": "2026-03-15T10:08:49.018Z"
     },
     {
       "requirement_id": "V1.4.2",
@@ -624,7 +624,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.908Z"
+      "last_audited_at": "2026-03-15T10:08:49.018Z"
     },
     {
       "requirement_id": "V1.4.3",
@@ -648,7 +648,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.908Z"
+      "last_audited_at": "2026-03-15T10:08:49.018Z"
     },
     {
       "requirement_id": "V1.5.1",
@@ -665,14 +665,14 @@
         "worker/submission-security.ts:99",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54",
-        "tests/integration/m1.integration.test.ts:60"
+        "tests/integration/m1.integration.test.ts:58",
+        "tests/integration/m1.integration.test.ts:64"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.910Z"
+      "last_audited_at": "2026-03-15T10:08:49.019Z"
     },
     {
       "requirement_id": "V1.5.2",
@@ -696,7 +696,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.910Z"
+      "last_audited_at": "2026-03-15T10:08:49.020Z"
     },
     {
       "requirement_id": "V1.5.3",
@@ -713,14 +713,14 @@
         "worker/submission-security.ts:99",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54",
-        "tests/integration/m1.integration.test.ts:60"
+        "tests/integration/m1.integration.test.ts:58",
+        "tests/integration/m1.integration.test.ts:64"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.912Z"
+      "last_audited_at": "2026-03-15T10:08:49.022Z"
     },
     {
       "requirement_id": "V2.1.1",
@@ -744,7 +744,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.912Z"
+      "last_audited_at": "2026-03-15T10:08:49.022Z"
     },
     {
       "requirement_id": "V2.1.2",
@@ -759,16 +759,16 @@
         "src/App.tsx:522",
         "src/App.tsx:638",
         "worker/index.ts:10",
-        "worker/index.ts:157",
-        "worker/index.ts:224",
-        "worker/index.ts:267",
-        "worker/index.ts:445"
+        "worker/index.ts:204",
+        "worker/index.ts:271",
+        "worker/index.ts:314",
+        "worker/index.ts:492"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.913Z"
+      "last_audited_at": "2026-03-15T10:08:49.023Z"
     },
     {
       "requirement_id": "V2.1.3",
@@ -780,19 +780,19 @@
       "reasoning": "Keyword-level evidence found in codebase; manual validation required for control completeness.",
       "code_references": [
         "worker/index.ts:10",
-        "worker/index.ts:157",
-        "worker/index.ts:224",
-        "worker/index.ts:267",
-        "worker/index.ts:445",
-        "worker/index.ts:479",
-        "worker/index.ts:482",
-        "worker/index.ts:485"
+        "worker/index.ts:204",
+        "worker/index.ts:271",
+        "worker/index.ts:314",
+        "worker/index.ts:492",
+        "worker/index.ts:526",
+        "worker/index.ts:529",
+        "worker/index.ts:532"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.914Z"
+      "last_audited_at": "2026-03-15T10:08:49.024Z"
     },
     {
       "requirement_id": "V2.2.1",
@@ -816,7 +816,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.915Z"
+      "last_audited_at": "2026-03-15T10:08:49.025Z"
     },
     {
       "requirement_id": "V2.2.2",
@@ -840,7 +840,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.915Z"
+      "last_audited_at": "2026-03-15T10:08:49.025Z"
     },
     {
       "requirement_id": "V2.2.3",
@@ -864,7 +864,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.915Z"
+      "last_audited_at": "2026-03-15T10:08:49.025Z"
     },
     {
       "requirement_id": "V2.3.1",
@@ -882,13 +882,13 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78"
+        "worker/index.ts:83"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.916Z"
+      "last_audited_at": "2026-03-15T10:08:49.026Z"
     },
     {
       "requirement_id": "V2.3.2",
@@ -906,13 +906,13 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78"
+        "worker/index.ts:83"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.917Z"
+      "last_audited_at": "2026-03-15T10:08:49.027Z"
     },
     {
       "requirement_id": "V2.3.3",
@@ -928,15 +928,15 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79",
-        "worker/index.ts:82"
+        "worker/index.ts:83",
+        "worker/index.ts:84",
+        "worker/index.ts:87"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.918Z"
+      "last_audited_at": "2026-03-15T10:08:49.028Z"
     },
     {
       "requirement_id": "V2.3.4",
@@ -952,15 +952,15 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79",
-        "worker/index.ts:82"
+        "worker/index.ts:83",
+        "worker/index.ts:84",
+        "worker/index.ts:87"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.919Z"
+      "last_audited_at": "2026-03-15T10:08:49.029Z"
     },
     {
       "requirement_id": "V2.3.5",
@@ -984,7 +984,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.919Z"
+      "last_audited_at": "2026-03-15T10:08:49.029Z"
     },
     {
       "requirement_id": "V2.4.1",
@@ -1008,7 +1008,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.920Z"
+      "last_audited_at": "2026-03-15T10:08:49.030Z"
     },
     {
       "requirement_id": "V2.4.2",
@@ -1022,17 +1022,17 @@
         "src/features/farmer/form/farmer-submission-form.tsx:79",
         "src/features/farmer/form/farmer-submission-form.tsx:154",
         "worker/index.ts:10",
-        "worker/index.ts:145",
-        "worker/index.ts:157",
-        "worker/index.ts:224",
-        "worker/index.ts:267",
-        "worker/index.ts:445"
+        "worker/index.ts:182",
+        "worker/index.ts:204",
+        "worker/index.ts:271",
+        "worker/index.ts:314",
+        "worker/index.ts:492"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.921Z"
+      "last_audited_at": "2026-03-15T10:08:49.031Z"
     },
     {
       "requirement_id": "V3.1.1",
@@ -1056,7 +1056,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.922Z"
+      "last_audited_at": "2026-03-15T10:08:49.032Z"
     },
     {
       "requirement_id": "V3.2.1",
@@ -1080,7 +1080,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.922Z"
+      "last_audited_at": "2026-03-15T10:08:49.032Z"
     },
     {
       "requirement_id": "V3.2.2",
@@ -1104,7 +1104,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.922Z"
+      "last_audited_at": "2026-03-15T10:08:49.032Z"
     },
     {
       "requirement_id": "V3.2.3",
@@ -1128,7 +1128,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.923Z"
+      "last_audited_at": "2026-03-15T10:08:49.033Z"
     },
     {
       "requirement_id": "V3.3.1",
@@ -1145,14 +1145,14 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79"
+        "worker/index.ts:83",
+        "worker/index.ts:84"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.924Z"
+      "last_audited_at": "2026-03-15T10:08:49.034Z"
     },
     {
       "requirement_id": "V3.3.2",
@@ -1176,7 +1176,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.924Z"
+      "last_audited_at": "2026-03-15T10:08:49.034Z"
     },
     {
       "requirement_id": "V3.3.3",
@@ -1191,16 +1191,16 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79",
-        "worker/index.ts:82",
-        "worker/index.ts:83"
+        "worker/index.ts:83",
+        "worker/index.ts:84",
+        "worker/index.ts:87",
+        "worker/index.ts:88"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.925Z"
+      "last_audited_at": "2026-03-15T10:08:49.035Z"
     },
     {
       "requirement_id": "V3.3.4",
@@ -1224,7 +1224,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.925Z"
+      "last_audited_at": "2026-03-15T10:08:49.035Z"
     },
     {
       "requirement_id": "V3.3.5",
@@ -1248,7 +1248,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.925Z"
+      "last_audited_at": "2026-03-15T10:08:49.035Z"
     },
     {
       "requirement_id": "V3.4.1",
@@ -1272,7 +1272,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.926Z"
+      "last_audited_at": "2026-03-15T10:08:49.036Z"
     },
     {
       "requirement_id": "V3.4.2",
@@ -1296,7 +1296,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.927Z"
+      "last_audited_at": "2026-03-15T10:08:49.037Z"
     },
     {
       "requirement_id": "V3.4.3",
@@ -1320,7 +1320,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.928Z"
+      "last_audited_at": "2026-03-15T10:08:49.038Z"
     },
     {
       "requirement_id": "V3.4.4",
@@ -1344,7 +1344,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.929Z"
+      "last_audited_at": "2026-03-15T10:08:49.039Z"
     },
     {
       "requirement_id": "V3.4.5",
@@ -1368,7 +1368,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.929Z"
+      "last_audited_at": "2026-03-15T10:08:49.040Z"
     },
     {
       "requirement_id": "V3.4.6",
@@ -1392,7 +1392,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.930Z"
+      "last_audited_at": "2026-03-15T10:08:49.040Z"
     },
     {
       "requirement_id": "V3.4.7",
@@ -1416,7 +1416,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.931Z"
+      "last_audited_at": "2026-03-15T10:08:49.041Z"
     },
     {
       "requirement_id": "V3.4.8",
@@ -1433,14 +1433,14 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79"
+        "worker/index.ts:83",
+        "worker/index.ts:84"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.932Z"
+      "last_audited_at": "2026-03-15T10:08:49.042Z"
     },
     {
       "requirement_id": "V3.5.1",
@@ -1464,7 +1464,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.933Z"
+      "last_audited_at": "2026-03-15T10:08:49.043Z"
     },
     {
       "requirement_id": "V3.5.2",
@@ -1488,7 +1488,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.934Z"
+      "last_audited_at": "2026-03-15T10:08:49.044Z"
     },
     {
       "requirement_id": "V3.5.3",
@@ -1506,13 +1506,13 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:62"
+        "worker/index.ts:48"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.935Z"
+      "last_audited_at": "2026-03-15T10:08:49.045Z"
     },
     {
       "requirement_id": "V3.5.4",
@@ -1530,13 +1530,13 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:62"
+        "worker/index.ts:67"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.936Z"
+      "last_audited_at": "2026-03-15T10:08:49.046Z"
     },
     {
       "requirement_id": "V3.5.5",
@@ -1554,13 +1554,13 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:62"
+        "worker/index.ts:67"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.937Z"
+      "last_audited_at": "2026-03-15T10:08:49.047Z"
     },
     {
       "requirement_id": "V3.5.6",
@@ -1578,13 +1578,13 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:62"
+        "worker/index.ts:67"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.937Z"
+      "last_audited_at": "2026-03-15T10:08:49.048Z"
     },
     {
       "requirement_id": "V3.5.7",
@@ -1602,13 +1602,13 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:62"
+        "worker/index.ts:67"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.938Z"
+      "last_audited_at": "2026-03-15T10:08:49.049Z"
     },
     {
       "requirement_id": "V3.5.8",
@@ -1626,13 +1626,13 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:62"
+        "worker/index.ts:51"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.939Z"
+      "last_audited_at": "2026-03-15T10:08:49.050Z"
     },
     {
       "requirement_id": "V3.6.1",
@@ -1656,7 +1656,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.940Z"
+      "last_audited_at": "2026-03-15T10:08:49.051Z"
     },
     {
       "requirement_id": "V3.7.1",
@@ -1680,7 +1680,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.941Z"
+      "last_audited_at": "2026-03-15T10:08:49.052Z"
     },
     {
       "requirement_id": "V3.7.2",
@@ -1697,14 +1697,14 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79"
+        "worker/index.ts:83",
+        "worker/index.ts:84"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.942Z"
+      "last_audited_at": "2026-03-15T10:08:49.053Z"
     },
     {
       "requirement_id": "V3.7.3",
@@ -1728,7 +1728,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.943Z"
+      "last_audited_at": "2026-03-15T10:08:49.054Z"
     },
     {
       "requirement_id": "V3.7.4",
@@ -1745,14 +1745,14 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79"
+        "worker/index.ts:83",
+        "worker/index.ts:84"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.944Z"
+      "last_audited_at": "2026-03-15T10:08:49.055Z"
     },
     {
       "requirement_id": "V3.7.5",
@@ -1769,14 +1769,14 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79"
+        "worker/index.ts:83",
+        "worker/index.ts:84"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.945Z"
+      "last_audited_at": "2026-03-15T10:08:49.056Z"
     },
     {
       "requirement_id": "V4.1.1",
@@ -1800,7 +1800,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.945Z"
+      "last_audited_at": "2026-03-15T10:08:49.056Z"
     },
     {
       "requirement_id": "V4.1.2",
@@ -1815,16 +1815,16 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79",
-        "worker/index.ts:82",
-        "worker/index.ts:83"
+        "worker/index.ts:83",
+        "worker/index.ts:84",
+        "worker/index.ts:87",
+        "worker/index.ts:88"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.946Z"
+      "last_audited_at": "2026-03-15T10:08:49.057Z"
     },
     {
       "requirement_id": "V4.1.3",
@@ -1848,7 +1848,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.947Z"
+      "last_audited_at": "2026-03-15T10:08:49.057Z"
     },
     {
       "requirement_id": "V4.1.4",
@@ -1865,14 +1865,14 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79"
+        "worker/index.ts:83",
+        "worker/index.ts:84"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.947Z"
+      "last_audited_at": "2026-03-15T10:08:49.058Z"
     },
     {
       "requirement_id": "V4.1.5",
@@ -1896,7 +1896,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.948Z"
+      "last_audited_at": "2026-03-15T10:08:49.058Z"
     },
     {
       "requirement_id": "V4.2.1",
@@ -1920,7 +1920,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.948Z"
+      "last_audited_at": "2026-03-15T10:08:49.058Z"
     },
     {
       "requirement_id": "V4.2.2",
@@ -1944,7 +1944,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.948Z"
+      "last_audited_at": "2026-03-15T10:08:49.059Z"
     },
     {
       "requirement_id": "V4.2.3",
@@ -1968,7 +1968,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.948Z"
+      "last_audited_at": "2026-03-15T10:08:49.059Z"
     },
     {
       "requirement_id": "V4.2.4",
@@ -1992,7 +1992,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.948Z"
+      "last_audited_at": "2026-03-15T10:08:49.059Z"
     },
     {
       "requirement_id": "V4.2.5",
@@ -2016,7 +2016,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.949Z"
+      "last_audited_at": "2026-03-15T10:08:49.059Z"
     },
     {
       "requirement_id": "V4.3.1",
@@ -2031,7 +2031,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.949Z"
+      "last_audited_at": "2026-03-15T10:08:49.059Z"
     },
     {
       "requirement_id": "V4.3.2",
@@ -2046,7 +2046,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.949Z"
+      "last_audited_at": "2026-03-15T10:08:49.060Z"
     },
     {
       "requirement_id": "V4.4.1",
@@ -2070,7 +2070,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.950Z"
+      "last_audited_at": "2026-03-15T10:08:49.061Z"
     },
     {
       "requirement_id": "V4.4.2",
@@ -2094,7 +2094,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.951Z"
+      "last_audited_at": "2026-03-15T10:08:49.061Z"
     },
     {
       "requirement_id": "V4.4.3",
@@ -2111,14 +2111,14 @@
         "tests/e2e/m1.spec.ts:85",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54",
-        "tests/integration/m1.integration.test.ts:60"
+        "tests/integration/m1.integration.test.ts:58",
+        "tests/integration/m1.integration.test.ts:64"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.952Z"
+      "last_audited_at": "2026-03-15T10:08:49.062Z"
     },
     {
       "requirement_id": "V4.4.4",
@@ -2130,10 +2130,10 @@
       "reasoning": "Keyword-level evidence found in codebase; manual validation required for control completeness.",
       "code_references": [
         "worker/index.ts:23",
-        "worker/index.ts:66",
-        "worker/index.ts:69",
-        "worker/index.ts:72",
-        "worker/index.ts:82",
+        "worker/index.ts:71",
+        "worker/index.ts:74",
+        "worker/index.ts:77",
+        "worker/index.ts:87",
         "worker/repository.ts:24",
         "worker/repository.ts:171",
         "worker/repository.ts:184"
@@ -2142,7 +2142,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.953Z"
+      "last_audited_at": "2026-03-15T10:08:49.063Z"
     },
     {
       "requirement_id": "V5.1.1",
@@ -2166,7 +2166,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.955Z"
+      "last_audited_at": "2026-03-15T10:08:49.065Z"
     },
     {
       "requirement_id": "V5.2.1",
@@ -2190,7 +2190,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.955Z"
+      "last_audited_at": "2026-03-15T10:08:49.065Z"
     },
     {
       "requirement_id": "V5.2.2",
@@ -2214,7 +2214,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.955Z"
+      "last_audited_at": "2026-03-15T10:08:49.066Z"
     },
     {
       "requirement_id": "V5.2.3",
@@ -2238,7 +2238,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.955Z"
+      "last_audited_at": "2026-03-15T10:08:49.066Z"
     },
     {
       "requirement_id": "V5.2.4",
@@ -2262,7 +2262,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.956Z"
+      "last_audited_at": "2026-03-15T10:08:49.066Z"
     },
     {
       "requirement_id": "V5.2.5",
@@ -2286,7 +2286,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.956Z"
+      "last_audited_at": "2026-03-15T10:08:49.066Z"
     },
     {
       "requirement_id": "V5.2.6",
@@ -2310,7 +2310,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.956Z"
+      "last_audited_at": "2026-03-15T10:08:49.066Z"
     },
     {
       "requirement_id": "V5.3.1",
@@ -2334,7 +2334,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.956Z"
+      "last_audited_at": "2026-03-15T10:08:49.067Z"
     },
     {
       "requirement_id": "V5.3.2",
@@ -2358,7 +2358,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.957Z"
+      "last_audited_at": "2026-03-15T10:08:49.067Z"
     },
     {
       "requirement_id": "V5.3.3",
@@ -2382,7 +2382,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.958Z"
+      "last_audited_at": "2026-03-15T10:08:49.068Z"
     },
     {
       "requirement_id": "V5.4.1",
@@ -2406,7 +2406,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.958Z"
+      "last_audited_at": "2026-03-15T10:08:49.068Z"
     },
     {
       "requirement_id": "V5.4.2",
@@ -2430,7 +2430,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.958Z"
+      "last_audited_at": "2026-03-15T10:08:49.068Z"
     },
     {
       "requirement_id": "V5.4.3",
@@ -2454,7 +2454,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.959Z"
+      "last_audited_at": "2026-03-15T10:08:49.069Z"
     },
     {
       "requirement_id": "V6.1.1",
@@ -2470,15 +2470,15 @@
         "worker/submission-security.ts:45",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54",
-        "tests/integration/m1.integration.test.ts:60",
-        "tests/integration/m1.integration.test.ts:247"
+        "tests/integration/m1.integration.test.ts:58",
+        "tests/integration/m1.integration.test.ts:64",
+        "tests/integration/m1.integration.test.ts:254"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.960Z"
+      "last_audited_at": "2026-03-15T10:08:49.071Z"
     },
     {
       "requirement_id": "V6.1.2",
@@ -2502,7 +2502,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.961Z"
+      "last_audited_at": "2026-03-15T10:08:49.071Z"
     },
     {
       "requirement_id": "V6.1.3",
@@ -2517,16 +2517,16 @@
         "src/App.tsx:424",
         "src/App.tsx:522",
         "src/App.tsx:1071",
-        "worker/index.ts:458",
+        "worker/index.ts:107",
+        "worker/index.ts:505",
         "worker/submission-security.ts:45",
-        "worker/submission-security.ts:173",
-        "worker/submission-security.ts:177"
+        "worker/submission-security.ts:173"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.962Z"
+      "last_audited_at": "2026-03-15T10:08:49.072Z"
     },
     {
       "requirement_id": "V6.2.1",
@@ -2550,7 +2550,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.962Z"
+      "last_audited_at": "2026-03-15T10:08:49.072Z"
     },
     {
       "requirement_id": "V6.2.2",
@@ -2574,7 +2574,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.962Z"
+      "last_audited_at": "2026-03-15T10:08:49.072Z"
     },
     {
       "requirement_id": "V6.2.3",
@@ -2598,7 +2598,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.963Z"
+      "last_audited_at": "2026-03-15T10:08:49.073Z"
     },
     {
       "requirement_id": "V6.2.4",
@@ -2622,7 +2622,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.963Z"
+      "last_audited_at": "2026-03-15T10:08:49.073Z"
     },
     {
       "requirement_id": "V6.2.5",
@@ -2637,16 +2637,16 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79",
-        "worker/index.ts:82",
-        "worker/index.ts:83"
+        "worker/index.ts:83",
+        "worker/index.ts:84",
+        "worker/index.ts:87",
+        "worker/index.ts:88"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.964Z"
+      "last_audited_at": "2026-03-15T10:08:49.074Z"
     },
     {
       "requirement_id": "V6.2.6",
@@ -2670,7 +2670,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.964Z"
+      "last_audited_at": "2026-03-15T10:08:49.074Z"
     },
     {
       "requirement_id": "V6.2.7",
@@ -2685,16 +2685,16 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79",
-        "worker/index.ts:82",
-        "worker/index.ts:83"
+        "worker/index.ts:83",
+        "worker/index.ts:84",
+        "worker/index.ts:87",
+        "worker/index.ts:88"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.965Z"
+      "last_audited_at": "2026-03-15T10:08:49.075Z"
     },
     {
       "requirement_id": "V6.2.8",
@@ -2711,14 +2711,14 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79"
+        "worker/index.ts:83",
+        "worker/index.ts:84"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.966Z"
+      "last_audited_at": "2026-03-15T10:08:49.076Z"
     },
     {
       "requirement_id": "V6.2.9",
@@ -2733,16 +2733,16 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79",
-        "worker/index.ts:82",
-        "worker/index.ts:83"
+        "worker/index.ts:83",
+        "worker/index.ts:84",
+        "worker/index.ts:87",
+        "worker/index.ts:88"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.967Z"
+      "last_audited_at": "2026-03-15T10:08:49.077Z"
     },
     {
       "requirement_id": "V6.2.10",
@@ -2766,7 +2766,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.968Z"
+      "last_audited_at": "2026-03-15T10:08:49.078Z"
     },
     {
       "requirement_id": "V6.2.11",
@@ -2782,15 +2782,15 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79",
-        "worker/index.ts:82"
+        "worker/index.ts:83",
+        "worker/index.ts:84",
+        "worker/index.ts:87"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.969Z"
+      "last_audited_at": "2026-03-15T10:08:49.079Z"
     },
     {
       "requirement_id": "V6.2.12",
@@ -2814,7 +2814,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.970Z"
+      "last_audited_at": "2026-03-15T10:08:49.080Z"
     },
     {
       "requirement_id": "V6.3.1",
@@ -2838,7 +2838,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.970Z"
+      "last_audited_at": "2026-03-15T10:08:49.081Z"
     },
     {
       "requirement_id": "V6.3.2",
@@ -2862,7 +2862,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.971Z"
+      "last_audited_at": "2026-03-15T10:08:49.081Z"
     },
     {
       "requirement_id": "V6.3.3",
@@ -2877,16 +2877,16 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79",
-        "worker/index.ts:82",
-        "worker/index.ts:83"
+        "worker/index.ts:83",
+        "worker/index.ts:84",
+        "worker/index.ts:87",
+        "worker/index.ts:88"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.972Z"
+      "last_audited_at": "2026-03-15T10:08:49.082Z"
     },
     {
       "requirement_id": "V6.3.4",
@@ -2910,7 +2910,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.972Z"
+      "last_audited_at": "2026-03-15T10:08:49.083Z"
     },
     {
       "requirement_id": "V6.3.5",
@@ -2925,16 +2925,16 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79",
-        "worker/index.ts:82",
-        "worker/index.ts:83"
+        "worker/index.ts:83",
+        "worker/index.ts:84",
+        "worker/index.ts:87",
+        "worker/index.ts:88"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.973Z"
+      "last_audited_at": "2026-03-15T10:08:49.084Z"
     },
     {
       "requirement_id": "V6.3.6",
@@ -2949,16 +2949,16 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79",
-        "worker/index.ts:82",
-        "worker/index.ts:83"
+        "worker/index.ts:51",
+        "worker/index.ts:83",
+        "worker/index.ts:84",
+        "worker/index.ts:87"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.974Z"
+      "last_audited_at": "2026-03-15T10:08:49.085Z"
     },
     {
       "requirement_id": "V6.3.7",
@@ -2974,15 +2974,15 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79",
-        "worker/index.ts:82"
+        "worker/index.ts:83",
+        "worker/index.ts:84",
+        "worker/index.ts:87"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.975Z"
+      "last_audited_at": "2026-03-15T10:08:49.086Z"
     },
     {
       "requirement_id": "V6.3.8",
@@ -3006,7 +3006,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.976Z"
+      "last_audited_at": "2026-03-15T10:08:49.087Z"
     },
     {
       "requirement_id": "V6.4.1",
@@ -3030,7 +3030,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.977Z"
+      "last_audited_at": "2026-03-15T10:08:49.087Z"
     },
     {
       "requirement_id": "V6.4.2",
@@ -3054,7 +3054,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.978Z"
+      "last_audited_at": "2026-03-15T10:08:49.089Z"
     },
     {
       "requirement_id": "V6.4.3",
@@ -3078,7 +3078,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.980Z"
+      "last_audited_at": "2026-03-15T10:08:49.091Z"
     },
     {
       "requirement_id": "V6.4.4",
@@ -3094,15 +3094,15 @@
         "src/features/farmer/form/farmer-submission-form.tsx:33",
         "src/features/farmer/form/farmer-submission-form.tsx:49",
         "src/features/farmer/form/farmer-submission-form.tsx:68",
-        "tests/e2e/helpers.ts:32",
-        "tests/e2e/helpers.ts:145",
-        "tests/e2e/helpers.ts:153"
+        "worker/index.ts:51",
+        "worker/index.ts:115",
+        "worker/index.ts:121"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.981Z"
+      "last_audited_at": "2026-03-15T10:08:49.092Z"
     },
     {
       "requirement_id": "V6.4.5",
@@ -3126,7 +3126,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.983Z"
+      "last_audited_at": "2026-03-15T10:08:49.094Z"
     },
     {
       "requirement_id": "V6.4.6",
@@ -3150,7 +3150,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.985Z"
+      "last_audited_at": "2026-03-15T10:08:49.096Z"
     },
     {
       "requirement_id": "V6.5.1",
@@ -3174,7 +3174,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.985Z"
+      "last_audited_at": "2026-03-15T10:08:49.096Z"
     },
     {
       "requirement_id": "V6.5.2",
@@ -3190,15 +3190,15 @@
         "src/features/admin/onboarding/use-admin-onboarding.ts:46",
         "src/features/admin/onboarding/use-admin-onboarding.ts:47",
         "worker/index.ts:26",
-        "worker/index.ts:352",
-        "worker/index.ts:353",
-        "worker/index.ts:360"
+        "worker/index.ts:399",
+        "worker/index.ts:400",
+        "worker/index.ts:407"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.986Z"
+      "last_audited_at": "2026-03-15T10:08:49.097Z"
     },
     {
       "requirement_id": "V6.5.3",
@@ -3222,7 +3222,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.987Z"
+      "last_audited_at": "2026-03-15T10:08:49.097Z"
     },
     {
       "requirement_id": "V6.5.4",
@@ -3246,7 +3246,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.987Z"
+      "last_audited_at": "2026-03-15T10:08:49.098Z"
     },
     {
       "requirement_id": "V6.5.5",
@@ -3270,7 +3270,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.988Z"
+      "last_audited_at": "2026-03-15T10:08:49.099Z"
     },
     {
       "requirement_id": "V6.5.6",
@@ -3294,7 +3294,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.990Z"
+      "last_audited_at": "2026-03-15T10:08:49.101Z"
     },
     {
       "requirement_id": "V6.5.7",
@@ -3318,7 +3318,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.991Z"
+      "last_audited_at": "2026-03-15T10:08:49.103Z"
     },
     {
       "requirement_id": "V6.5.8",
@@ -3342,7 +3342,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.993Z"
+      "last_audited_at": "2026-03-15T10:08:49.105Z"
     },
     {
       "requirement_id": "V6.6.1",
@@ -3366,7 +3366,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.993Z"
+      "last_audited_at": "2026-03-15T10:08:49.105Z"
     },
     {
       "requirement_id": "V6.6.2",
@@ -3390,7 +3390,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.994Z"
+      "last_audited_at": "2026-03-15T10:08:49.106Z"
     },
     {
       "requirement_id": "V6.6.3",
@@ -3414,7 +3414,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.996Z"
+      "last_audited_at": "2026-03-15T10:08:49.108Z"
     },
     {
       "requirement_id": "V6.6.4",
@@ -3438,7 +3438,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.997Z"
+      "last_audited_at": "2026-03-15T10:08:49.109Z"
     },
     {
       "requirement_id": "V6.7.1",
@@ -3454,15 +3454,15 @@
         "src/features/admin/onboarding/use-admin-onboarding.ts:46",
         "src/features/admin/onboarding/use-admin-onboarding.ts:47",
         "worker/index.ts:26",
-        "worker/index.ts:352",
-        "worker/index.ts:353",
-        "worker/index.ts:360"
+        "worker/index.ts:399",
+        "worker/index.ts:400",
+        "worker/index.ts:407"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.998Z"
+      "last_audited_at": "2026-03-15T10:08:49.110Z"
     },
     {
       "requirement_id": "V6.7.2",
@@ -3486,7 +3486,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.999Z"
+      "last_audited_at": "2026-03-15T10:08:49.110Z"
     },
     {
       "requirement_id": "V6.8.1",
@@ -3510,7 +3510,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:45.999Z"
+      "last_audited_at": "2026-03-15T10:08:49.111Z"
     },
     {
       "requirement_id": "V6.8.2",
@@ -3525,7 +3525,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.000Z"
+      "last_audited_at": "2026-03-15T10:08:49.111Z"
     },
     {
       "requirement_id": "V6.8.3",
@@ -3540,7 +3540,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.000Z"
+      "last_audited_at": "2026-03-15T10:08:49.111Z"
     },
     {
       "requirement_id": "V6.8.4",
@@ -3558,13 +3558,13 @@
         "src/features/farmer/form/farmer-submission-form.tsx:33",
         "src/features/farmer/form/farmer-submission-form.tsx:49",
         "src/features/farmer/form/farmer-submission-form.tsx:68",
-        "worker/submission-security.ts:45"
+        "worker/index.ts:51"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.001Z"
+      "last_audited_at": "2026-03-15T10:08:49.112Z"
     },
     {
       "requirement_id": "V7.1.1",
@@ -3588,7 +3588,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.002Z"
+      "last_audited_at": "2026-03-15T10:08:49.113Z"
     },
     {
       "requirement_id": "V7.1.2",
@@ -3612,7 +3612,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.004Z"
+      "last_audited_at": "2026-03-15T10:08:49.115Z"
     },
     {
       "requirement_id": "V7.1.3",
@@ -3636,7 +3636,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.004Z"
+      "last_audited_at": "2026-03-15T10:08:49.115Z"
     },
     {
       "requirement_id": "V7.2.1",
@@ -3660,7 +3660,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.004Z"
+      "last_audited_at": "2026-03-15T10:08:49.115Z"
     },
     {
       "requirement_id": "V7.2.2",
@@ -3677,14 +3677,14 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79"
+        "worker/index.ts:83",
+        "worker/index.ts:84"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.005Z"
+      "last_audited_at": "2026-03-15T10:08:49.116Z"
     },
     {
       "requirement_id": "V7.2.3",
@@ -3708,7 +3708,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.005Z"
+      "last_audited_at": "2026-03-15T10:08:49.117Z"
     },
     {
       "requirement_id": "V7.2.4",
@@ -3732,7 +3732,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.006Z"
+      "last_audited_at": "2026-03-15T10:08:49.117Z"
     },
     {
       "requirement_id": "V7.3.1",
@@ -3756,7 +3756,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.007Z"
+      "last_audited_at": "2026-03-15T10:08:49.119Z"
     },
     {
       "requirement_id": "V7.3.2",
@@ -3780,7 +3780,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.008Z"
+      "last_audited_at": "2026-03-15T10:08:49.119Z"
     },
     {
       "requirement_id": "V7.4.1",
@@ -3796,15 +3796,15 @@
         "worker/submission-security.ts:45",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54",
-        "tests/integration/m1.integration.test.ts:60",
-        "tests/integration/m1.integration.test.ts:247"
+        "tests/integration/m1.integration.test.ts:58",
+        "tests/integration/m1.integration.test.ts:64",
+        "tests/integration/m1.integration.test.ts:254"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.010Z"
+      "last_audited_at": "2026-03-15T10:08:49.121Z"
     },
     {
       "requirement_id": "V7.4.2",
@@ -3828,7 +3828,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.011Z"
+      "last_audited_at": "2026-03-15T10:08:49.122Z"
     },
     {
       "requirement_id": "V7.4.3",
@@ -3844,15 +3844,15 @@
         "src/shared/validation.ts:11",
         "src/shared/validation.ts:12",
         "src/shared/validation.ts:13",
-        "worker/submission-security.ts:45",
-        "tests/e2e/helpers.ts:103",
-        "tests/e2e/helpers.ts:109"
+        "worker/index.ts:115",
+        "worker/index.ts:121",
+        "worker/submission-security.ts:45"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.013Z"
+      "last_audited_at": "2026-03-15T10:08:49.124Z"
     },
     {
       "requirement_id": "V7.4.4",
@@ -3876,7 +3876,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.013Z"
+      "last_audited_at": "2026-03-15T10:08:49.124Z"
     },
     {
       "requirement_id": "V7.4.5",
@@ -3900,7 +3900,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.014Z"
+      "last_audited_at": "2026-03-15T10:08:49.126Z"
     },
     {
       "requirement_id": "V7.5.1",
@@ -3917,14 +3917,14 @@
         "tests/e2e/m1.spec.ts:454",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54",
-        "tests/integration/m1.integration.test.ts:60"
+        "tests/integration/m1.integration.test.ts:58",
+        "tests/integration/m1.integration.test.ts:64"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.016Z"
+      "last_audited_at": "2026-03-15T10:08:49.127Z"
     },
     {
       "requirement_id": "V7.5.2",
@@ -3948,7 +3948,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.018Z"
+      "last_audited_at": "2026-03-15T10:08:49.129Z"
     },
     {
       "requirement_id": "V7.5.3",
@@ -3965,14 +3965,14 @@
         "tests/e2e/m1.spec.ts:454",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54",
-        "tests/integration/m1.integration.test.ts:60"
+        "tests/integration/m1.integration.test.ts:58",
+        "tests/integration/m1.integration.test.ts:64"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.019Z"
+      "last_audited_at": "2026-03-15T10:08:49.130Z"
     },
     {
       "requirement_id": "V7.6.1",
@@ -3996,7 +3996,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.021Z"
+      "last_audited_at": "2026-03-15T10:08:49.132Z"
     },
     {
       "requirement_id": "V7.6.2",
@@ -4020,7 +4020,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.022Z"
+      "last_audited_at": "2026-03-15T10:08:49.134Z"
     },
     {
       "requirement_id": "V8.1.1",
@@ -4044,7 +4044,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.023Z"
+      "last_audited_at": "2026-03-15T10:08:49.134Z"
     },
     {
       "requirement_id": "V8.1.2",
@@ -4068,7 +4068,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.023Z"
+      "last_audited_at": "2026-03-15T10:08:49.134Z"
     },
     {
       "requirement_id": "V8.1.3",
@@ -4086,13 +4086,13 @@
         "worker/submission-security.ts:45",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54"
+        "tests/integration/m1.integration.test.ts:58"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.024Z"
+      "last_audited_at": "2026-03-15T10:08:49.136Z"
     },
     {
       "requirement_id": "V8.1.4",
@@ -4116,7 +4116,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.026Z"
+      "last_audited_at": "2026-03-15T10:08:49.137Z"
     },
     {
       "requirement_id": "V8.2.1",
@@ -4140,7 +4140,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.026Z"
+      "last_audited_at": "2026-03-15T10:08:49.137Z"
     },
     {
       "requirement_id": "V8.2.2",
@@ -4153,18 +4153,18 @@
       "code_references": [
         "src/App.tsx:424",
         "src/App.tsx:522",
-        "worker/index.ts:137",
-        "worker/index.ts:142",
-        "worker/index.ts:145",
-        "worker/submission-security.ts:45",
-        "worker/types.ts:8",
-        "tests/cloudflare-env.d.ts:12"
+        "worker/index.ts:51",
+        "worker/index.ts:115",
+        "worker/index.ts:121",
+        "worker/index.ts:122",
+        "worker/index.ts:172",
+        "worker/index.ts:174"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.027Z"
+      "last_audited_at": "2026-03-15T10:08:49.138Z"
     },
     {
       "requirement_id": "V8.2.3",
@@ -4188,7 +4188,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.028Z"
+      "last_audited_at": "2026-03-15T10:08:49.139Z"
     },
     {
       "requirement_id": "V8.2.4",
@@ -4203,16 +4203,16 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79",
-        "worker/index.ts:82",
-        "worker/index.ts:83"
+        "worker/index.ts:83",
+        "worker/index.ts:84",
+        "worker/index.ts:87",
+        "worker/index.ts:88"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.029Z"
+      "last_audited_at": "2026-03-15T10:08:49.140Z"
     },
     {
       "requirement_id": "V8.3.1",
@@ -4228,15 +4228,15 @@
         "worker/submission-security.ts:45",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54",
-        "tests/integration/m1.integration.test.ts:60",
-        "tests/integration/m1.integration.test.ts:247"
+        "tests/integration/m1.integration.test.ts:58",
+        "tests/integration/m1.integration.test.ts:64",
+        "tests/integration/m1.integration.test.ts:254"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.030Z"
+      "last_audited_at": "2026-03-15T10:08:49.141Z"
     },
     {
       "requirement_id": "V8.3.2",
@@ -4260,7 +4260,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.031Z"
+      "last_audited_at": "2026-03-15T10:08:49.142Z"
     },
     {
       "requirement_id": "V8.3.3",
@@ -4284,7 +4284,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.032Z"
+      "last_audited_at": "2026-03-15T10:08:49.143Z"
     },
     {
       "requirement_id": "V8.4.1",
@@ -4308,7 +4308,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.034Z"
+      "last_audited_at": "2026-03-15T10:08:49.145Z"
     },
     {
       "requirement_id": "V8.4.2",
@@ -4319,20 +4319,20 @@
       "severity": "high",
       "reasoning": "Keyword-level evidence found in codebase; manual validation required for control completeness.",
       "code_references": [
-        "worker/index.ts:137",
-        "worker/index.ts:142",
-        "worker/index.ts:145",
-        "worker/types.ts:8",
-        "tests/cloudflare-env.d.ts:12",
-        "docs/developer-local-cli-manual.md:18",
-        "docs/developer-local-cli-manual.md:109",
-        "docs/developer-local-cli-manual.md:145"
+        "worker/index.ts:51",
+        "worker/index.ts:115",
+        "worker/index.ts:121",
+        "worker/index.ts:122",
+        "worker/index.ts:172",
+        "worker/index.ts:174",
+        "worker/index.ts:178",
+        "worker/index.ts:182"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.036Z"
+      "last_audited_at": "2026-03-15T10:08:49.146Z"
     },
     {
       "requirement_id": "V9.1.1",
@@ -4356,7 +4356,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.036Z"
+      "last_audited_at": "2026-03-15T10:08:49.147Z"
     },
     {
       "requirement_id": "V9.1.2",
@@ -4380,7 +4380,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.037Z"
+      "last_audited_at": "2026-03-15T10:08:49.147Z"
     },
     {
       "requirement_id": "V9.1.3",
@@ -4404,7 +4404,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.037Z"
+      "last_audited_at": "2026-03-15T10:08:49.148Z"
     },
     {
       "requirement_id": "V9.2.1",
@@ -4428,7 +4428,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.037Z"
+      "last_audited_at": "2026-03-15T10:08:49.148Z"
     },
     {
       "requirement_id": "V9.2.2",
@@ -4452,7 +4452,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.037Z"
+      "last_audited_at": "2026-03-15T10:08:49.148Z"
     },
     {
       "requirement_id": "V9.2.3",
@@ -4476,7 +4476,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.038Z"
+      "last_audited_at": "2026-03-15T10:08:49.148Z"
     },
     {
       "requirement_id": "V9.2.4",
@@ -4500,7 +4500,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.038Z"
+      "last_audited_at": "2026-03-15T10:08:49.148Z"
     },
     {
       "requirement_id": "V10.1.1",
@@ -4524,7 +4524,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.038Z"
+      "last_audited_at": "2026-03-15T10:08:49.149Z"
     },
     {
       "requirement_id": "V10.1.2",
@@ -4548,7 +4548,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.039Z"
+      "last_audited_at": "2026-03-15T10:08:49.149Z"
     },
     {
       "requirement_id": "V10.2.1",
@@ -4572,7 +4572,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.040Z"
+      "last_audited_at": "2026-03-15T10:08:49.151Z"
     },
     {
       "requirement_id": "V10.2.2",
@@ -4596,7 +4596,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.041Z"
+      "last_audited_at": "2026-03-15T10:08:49.152Z"
     },
     {
       "requirement_id": "V10.2.3",
@@ -4620,7 +4620,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.042Z"
+      "last_audited_at": "2026-03-15T10:08:49.154Z"
     },
     {
       "requirement_id": "V10.3.1",
@@ -4633,18 +4633,18 @@
       "code_references": [
         "src/App.tsx:184",
         "worker/index.ts:23",
-        "worker/index.ts:66",
-        "worker/index.ts:69",
-        "worker/index.ts:72",
-        "worker/index.ts:82",
-        "worker/index.ts:137",
-        "worker/index.ts:142"
+        "worker/index.ts:51",
+        "worker/index.ts:71",
+        "worker/index.ts:74",
+        "worker/index.ts:77",
+        "worker/index.ts:87",
+        "worker/index.ts:115"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.043Z"
+      "last_audited_at": "2026-03-15T10:08:49.155Z"
     },
     {
       "requirement_id": "V10.3.2",
@@ -4668,7 +4668,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.045Z"
+      "last_audited_at": "2026-03-15T10:08:49.157Z"
     },
     {
       "requirement_id": "V10.3.3",
@@ -4680,19 +4680,19 @@
       "reasoning": "Application code does not implement OAuth 2.0 or OpenID Connect clients, resource servers, authorization servers, or consent-management interfaces. Admin access checks only for the upstream `Cf-Access-Authenticated-User-Email` header, and farmer access uses opaque probe links rather than OAuth or OIDC tokens. No OAuth/OIDC dependencies or protocol endpoints are present in the repository, so these controls are not applicable.",
       "code_references": [
         "src/App.tsx:184",
-        "worker/index.ts:137",
-        "worker/index.ts:142",
-        "worker/index.ts:145",
-        "worker/index.ts:356",
-        "worker/types.ts:8",
-        "tests/cloudflare-env.d.ts:12",
-        "tests/e2e/m1.spec.ts:454"
+        "worker/index.ts:48",
+        "worker/index.ts:51",
+        "worker/index.ts:115",
+        "worker/index.ts:117",
+        "worker/index.ts:121",
+        "worker/index.ts:122",
+        "worker/index.ts:172"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.047Z"
+      "last_audited_at": "2026-03-15T10:08:49.158Z"
     },
     {
       "requirement_id": "V10.3.4",
@@ -4716,7 +4716,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.048Z"
+      "last_audited_at": "2026-03-15T10:08:49.160Z"
     },
     {
       "requirement_id": "V10.3.5",
@@ -4729,18 +4729,18 @@
       "code_references": [
         "src/App.tsx:184",
         "worker/index.ts:23",
-        "worker/index.ts:66",
-        "worker/index.ts:69",
-        "worker/index.ts:72",
-        "worker/index.ts:82",
-        "worker/index.ts:137",
-        "worker/index.ts:142"
+        "worker/index.ts:51",
+        "worker/index.ts:71",
+        "worker/index.ts:74",
+        "worker/index.ts:77",
+        "worker/index.ts:87",
+        "worker/index.ts:115"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.050Z"
+      "last_audited_at": "2026-03-15T10:08:49.161Z"
     },
     {
       "requirement_id": "V10.4.1",
@@ -4764,7 +4764,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.052Z"
+      "last_audited_at": "2026-03-15T10:08:49.163Z"
     },
     {
       "requirement_id": "V10.4.2",
@@ -4788,7 +4788,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.052Z"
+      "last_audited_at": "2026-03-15T10:08:49.163Z"
     },
     {
       "requirement_id": "V10.4.3",
@@ -4812,7 +4812,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.054Z"
+      "last_audited_at": "2026-03-15T10:08:49.165Z"
     },
     {
       "requirement_id": "V10.4.4",
@@ -4836,7 +4836,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.055Z"
+      "last_audited_at": "2026-03-15T10:08:49.166Z"
     },
     {
       "requirement_id": "V10.4.5",
@@ -4860,7 +4860,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.055Z"
+      "last_audited_at": "2026-03-15T10:08:49.166Z"
     },
     {
       "requirement_id": "V10.4.6",
@@ -4884,7 +4884,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.057Z"
+      "last_audited_at": "2026-03-15T10:08:49.168Z"
     },
     {
       "requirement_id": "V10.4.7",
@@ -4908,7 +4908,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.058Z"
+      "last_audited_at": "2026-03-15T10:08:49.169Z"
     },
     {
       "requirement_id": "V10.4.8",
@@ -4932,7 +4932,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.059Z"
+      "last_audited_at": "2026-03-15T10:08:49.170Z"
     },
     {
       "requirement_id": "V10.4.9",
@@ -4956,7 +4956,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.059Z"
+      "last_audited_at": "2026-03-15T10:08:49.170Z"
     },
     {
       "requirement_id": "V10.4.10",
@@ -4974,13 +4974,13 @@
         "src/shared/components/ui/scroll-area.tsx:1",
         "src/shared/components/ui/select.tsx:1",
         "src/shared/components/ui/switch.tsx:1",
-        "worker/index.ts:142"
+        "worker/index.ts:51"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.060Z"
+      "last_audited_at": "2026-03-15T10:08:49.171Z"
     },
     {
       "requirement_id": "V10.4.11",
@@ -4994,8 +4994,8 @@
         "src/App.tsx:184",
         "src/features/farmer/form/farmer-submission-form.tsx:79",
         "src/features/farmer/form/farmer-submission-form.tsx:154",
-        "worker/index.ts:145",
-        "worker/index.ts:453",
+        "worker/index.ts:182",
+        "worker/index.ts:500",
         "worker/security.ts:106",
         "worker/submission-security.ts:119",
         "worker/submission-security.ts:226"
@@ -5004,7 +5004,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.061Z"
+      "last_audited_at": "2026-03-15T10:08:49.173Z"
     },
     {
       "requirement_id": "V10.4.12",
@@ -5028,7 +5028,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.062Z"
+      "last_audited_at": "2026-03-15T10:08:49.173Z"
     },
     {
       "requirement_id": "V10.4.13",
@@ -5052,7 +5052,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.064Z"
+      "last_audited_at": "2026-03-15T10:08:49.175Z"
     },
     {
       "requirement_id": "V10.4.14",
@@ -5064,7 +5064,7 @@
       "reasoning": "Application code does not implement OAuth 2.0 or OpenID Connect clients, resource servers, authorization servers, or consent-management interfaces. Admin access checks only for the upstream `Cf-Access-Authenticated-User-Email` header, and farmer access uses opaque probe links rather than OAuth or OIDC tokens. No OAuth/OIDC dependencies or protocol endpoints are present in the repository, so these controls are not applicable.",
       "code_references": [
         "src/App.tsx:184",
-        "worker/index.ts:476",
+        "worker/index.ts:523",
         "docs/developer-local-cli-manual.md:109",
         "docs/developer-local-cli-manual.md:144",
         "docs/developer-local-cli-manual.md:145",
@@ -5076,7 +5076,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.065Z"
+      "last_audited_at": "2026-03-15T10:08:49.177Z"
     },
     {
       "requirement_id": "V10.4.15",
@@ -5100,7 +5100,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.067Z"
+      "last_audited_at": "2026-03-15T10:08:49.178Z"
     },
     {
       "requirement_id": "V10.4.16",
@@ -5124,7 +5124,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.069Z"
+      "last_audited_at": "2026-03-15T10:08:49.180Z"
     },
     {
       "requirement_id": "V10.5.1",
@@ -5148,7 +5148,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.069Z"
+      "last_audited_at": "2026-03-15T10:08:49.180Z"
     },
     {
       "requirement_id": "V10.5.2",
@@ -5172,7 +5172,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.070Z"
+      "last_audited_at": "2026-03-15T10:08:49.181Z"
     },
     {
       "requirement_id": "V10.5.3",
@@ -5196,7 +5196,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.071Z"
+      "last_audited_at": "2026-03-15T10:08:49.182Z"
     },
     {
       "requirement_id": "V10.5.4",
@@ -5220,7 +5220,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.072Z"
+      "last_audited_at": "2026-03-15T10:08:49.182Z"
     },
     {
       "requirement_id": "V10.5.5",
@@ -5244,7 +5244,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.073Z"
+      "last_audited_at": "2026-03-15T10:08:49.184Z"
     },
     {
       "requirement_id": "V10.6.1",
@@ -5268,7 +5268,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.074Z"
+      "last_audited_at": "2026-03-15T10:08:49.184Z"
     },
     {
       "requirement_id": "V10.6.2",
@@ -5292,7 +5292,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.075Z"
+      "last_audited_at": "2026-03-15T10:08:49.186Z"
     },
     {
       "requirement_id": "V10.7.1",
@@ -5304,7 +5304,7 @@
       "reasoning": "Application code does not implement OAuth 2.0 or OpenID Connect clients, resource servers, authorization servers, or consent-management interfaces. Admin access checks only for the upstream `Cf-Access-Authenticated-User-Email` header, and farmer access uses opaque probe links rather than OAuth or OIDC tokens. No OAuth/OIDC dependencies or protocol endpoints are present in the repository, so these controls are not applicable.",
       "code_references": [
         "src/App.tsx:184",
-        "tests/integration/m1.integration.test.ts:45",
+        "tests/integration/m1.integration.test.ts:49",
         "docs/developer-local-cli-manual.md:109",
         "docs/developer-local-cli-manual.md:145",
         "docs/plans/2026-03-08-admin-ux-improvements.md:54",
@@ -5316,7 +5316,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.077Z"
+      "last_audited_at": "2026-03-15T10:08:49.188Z"
     },
     {
       "requirement_id": "V10.7.2",
@@ -5340,7 +5340,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.079Z"
+      "last_audited_at": "2026-03-15T10:08:49.190Z"
     },
     {
       "requirement_id": "V10.7.3",
@@ -5364,7 +5364,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.079Z"
+      "last_audited_at": "2026-03-15T10:08:49.190Z"
     },
     {
       "requirement_id": "V11.1.1",
@@ -5388,7 +5388,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.081Z"
+      "last_audited_at": "2026-03-15T10:08:49.192Z"
     },
     {
       "requirement_id": "V11.1.2",
@@ -5412,7 +5412,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.083Z"
+      "last_audited_at": "2026-03-15T10:08:49.194Z"
     },
     {
       "requirement_id": "V11.1.3",
@@ -5436,7 +5436,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.084Z"
+      "last_audited_at": "2026-03-15T10:08:49.195Z"
     },
     {
       "requirement_id": "V11.1.4",
@@ -5449,18 +5449,18 @@
       "code_references": [
         "src/App.tsx:166",
         "src/App.tsx:1071",
-        "worker/index.ts:458",
+        "worker/index.ts:107",
+        "worker/index.ts:505",
         "worker/submission-security.ts:173",
         "worker/submission-security.ts:177",
-        "tests/integration/m1.integration.test.ts:219",
-        "tests/integration/m1.integration.test.ts:250",
-        "tests/integration/m1.integration.test.ts:251"
+        "tests/integration/m1.integration.test.ts:226",
+        "tests/integration/m1.integration.test.ts:257"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.086Z"
+      "last_audited_at": "2026-03-15T10:08:49.197Z"
     },
     {
       "requirement_id": "V11.2.1",
@@ -5484,7 +5484,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.088Z"
+      "last_audited_at": "2026-03-15T10:08:49.198Z"
     },
     {
       "requirement_id": "V11.2.2",
@@ -5497,18 +5497,18 @@
       "code_references": [
         "src/App.tsx:424",
         "src/App.tsx:522",
-        "worker/index.ts:78",
-        "worker/index.ts:79",
-        "worker/index.ts:185",
-        "worker/index.ts:187",
-        "worker/index.ts:238",
-        "worker/index.ts:290"
+        "worker/index.ts:83",
+        "worker/index.ts:84",
+        "worker/index.ts:232",
+        "worker/index.ts:234",
+        "worker/index.ts:285",
+        "worker/index.ts:337"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.089Z"
+      "last_audited_at": "2026-03-15T10:08:49.199Z"
     },
     {
       "requirement_id": "V11.2.3",
@@ -5532,7 +5532,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.090Z"
+      "last_audited_at": "2026-03-15T10:08:49.201Z"
     },
     {
       "requirement_id": "V11.2.4",
@@ -5556,7 +5556,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.092Z"
+      "last_audited_at": "2026-03-15T10:08:49.203Z"
     },
     {
       "requirement_id": "V11.2.5",
@@ -5580,7 +5580,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.092Z"
+      "last_audited_at": "2026-03-15T10:08:49.203Z"
     },
     {
       "requirement_id": "V11.3.1",
@@ -5604,7 +5604,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.093Z"
+      "last_audited_at": "2026-03-15T10:08:49.204Z"
     },
     {
       "requirement_id": "V11.3.2",
@@ -5628,7 +5628,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.095Z"
+      "last_audited_at": "2026-03-15T10:08:49.206Z"
     },
     {
       "requirement_id": "V11.3.3",
@@ -5641,18 +5641,18 @@
       "code_references": [
         "worker/index.ts:19",
         "worker/index.ts:30",
-        "worker/index.ts:294",
-        "worker/index.ts:360",
-        "worker/index.ts:519",
-        "worker/index.ts:521",
-        "worker/index.ts:527",
-        "worker/index.ts:529"
+        "worker/index.ts:341",
+        "worker/index.ts:407",
+        "worker/index.ts:566",
+        "worker/index.ts:568",
+        "worker/index.ts:574",
+        "worker/index.ts:576"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.096Z"
+      "last_audited_at": "2026-03-15T10:08:49.209Z"
     },
     {
       "requirement_id": "V11.3.4",
@@ -5676,7 +5676,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.098Z"
+      "last_audited_at": "2026-03-15T10:08:49.211Z"
     },
     {
       "requirement_id": "V11.3.5",
@@ -5691,16 +5691,16 @@
         "worker/index.ts:30",
         "worker/index.ts:34",
         "worker/index.ts:35",
-        "worker/index.ts:294",
-        "worker/index.ts:297",
-        "worker/index.ts:360",
-        "worker/index.ts:503"
+        "worker/index.ts:341",
+        "worker/index.ts:344",
+        "worker/index.ts:407",
+        "worker/index.ts:550"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.099Z"
+      "last_audited_at": "2026-03-15T10:08:49.212Z"
     },
     {
       "requirement_id": "V11.4.1",
@@ -5711,7 +5711,7 @@
       "severity": "none",
       "reasoning": "The only explicit hash primitive implemented in the repository is HMAC-SHA-256 for probe token hashing. No MD5, SHA-1, or other weak hash usage is present in the application code that performs cryptographic operations.",
       "code_references": [
-        "tests/integration/m1.integration.test.ts:171",
+        "tests/integration/m1.integration.test.ts:178",
         "docs/developer-local-cli-manual.md:109",
         "docs/developer-local-cli-manual.md:145",
         "docs/plans/2026-03-08-admin-ux-improvements.md:54",
@@ -5724,7 +5724,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.100Z"
+      "last_audited_at": "2026-03-15T10:08:49.214Z"
     },
     {
       "requirement_id": "V11.4.2",
@@ -5740,15 +5740,15 @@
         "src/features/admin/onboarding/use-admin-onboarding.ts:46",
         "src/features/admin/onboarding/use-admin-onboarding.ts:47",
         "worker/index.ts:26",
-        "worker/index.ts:352",
-        "worker/index.ts:353",
-        "worker/index.ts:360"
+        "worker/index.ts:399",
+        "worker/index.ts:400",
+        "worker/index.ts:407"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.101Z"
+      "last_audited_at": "2026-03-15T10:08:49.215Z"
     },
     {
       "requirement_id": "V11.4.3",
@@ -5759,7 +5759,7 @@
       "severity": "none",
       "reasoning": "The repository uses HMAC-SHA-256 for token-derived data authentication, providing a 256-bit digest length for the token hash persisted in the database. No weaker integrity primitive is used in the application crypto path.",
       "code_references": [
-        "tests/integration/m1.integration.test.ts:171",
+        "tests/integration/m1.integration.test.ts:178",
         "docs/developer-local-cli-manual.md:109",
         "docs/developer-local-cli-manual.md:145",
         "docs/plans/2026-03-08-admin-ux-improvements.md:54",
@@ -5772,7 +5772,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.103Z"
+      "last_audited_at": "2026-03-15T10:08:49.217Z"
     },
     {
       "requirement_id": "V11.4.4",
@@ -5788,15 +5788,15 @@
         "worker/submission-security.ts:45",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54",
-        "tests/integration/m1.integration.test.ts:60",
-        "tests/integration/m1.integration.test.ts:171"
+        "tests/integration/m1.integration.test.ts:58",
+        "tests/integration/m1.integration.test.ts:64",
+        "tests/integration/m1.integration.test.ts:178"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.104Z"
+      "last_audited_at": "2026-03-15T10:08:49.218Z"
     },
     {
       "requirement_id": "V11.5.1",
@@ -5820,7 +5820,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.105Z"
+      "last_audited_at": "2026-03-15T10:08:49.219Z"
     },
     {
       "requirement_id": "V11.5.2",
@@ -5844,7 +5844,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.106Z"
+      "last_audited_at": "2026-03-15T10:08:49.219Z"
     },
     {
       "requirement_id": "V11.6.1",
@@ -5868,7 +5868,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.107Z"
+      "last_audited_at": "2026-03-15T10:08:49.221Z"
     },
     {
       "requirement_id": "V11.6.2",
@@ -5892,7 +5892,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.109Z"
+      "last_audited_at": "2026-03-15T10:08:49.223Z"
     },
     {
       "requirement_id": "V11.7.1",
@@ -5903,20 +5903,20 @@
       "severity": "high",
       "reasoning": "The repository still contains no mechanism to enable full memory encryption or confidential-computing controls for the Worker runtime. Even with encrypted D1 rows and encrypted R2 image objects, tokens, decrypted submission payloads, and decrypted image bytes still enter normal process memory during request handling.",
       "code_references": [
-        "tests/e2e/m1.spec.ts:481",
-        "tests/security.unit.test.ts:146",
-        "docs/developer-local-cli-manual.md:109",
-        "docs/developer-local-cli-manual.md:145",
-        "docs/plans/2026-03-08-admin-ux-improvements.md:54",
-        "docs/plans/2026-03-08-admin-ux-improvements.md:206",
-        "docs/plans/2026-03-08-admin-ux-improvements.md:256",
-        "docs/plans/2026-03-08-admin-ux-improvements.md:294"
+        "worker/index.ts:48",
+        "worker/index.ts:113",
+        "worker/index.ts:117",
+        "worker/index.ts:174",
+        "worker/index.ts:185",
+        "worker/index.ts:190",
+        "worker/index.ts:195",
+        "worker/index.ts:405"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.111Z"
+      "last_audited_at": "2026-03-15T10:08:49.224Z"
     },
     {
       "requirement_id": "V11.7.2",
@@ -5927,8 +5927,8 @@
       "severity": "none",
       "reasoning": "New submissions null plaintext D1 business fields, store crop, vitality, moisture, GPS, and image-key data inside `submission_ciphertext`, and persist uploaded image bytes to R2 as AES-GCM `b1` envelopes. Admin list and image reads decrypt only on demand for the requested response, and integration coverage verifies both encrypted D1 rows and encrypted R2 objects at rest.",
       "code_references": [
-        "tests/integration/m1.integration.test.ts:45",
-        "tests/integration/m1.integration.test.ts:149",
+        "tests/integration/m1.integration.test.ts:49",
+        "tests/integration/m1.integration.test.ts:153",
         "docs/developer-local-cli-manual.md:109",
         "docs/developer-local-cli-manual.md:139",
         "docs/developer-local-cli-manual.md:145",
@@ -5940,7 +5940,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.113Z"
+      "last_audited_at": "2026-03-15T10:08:49.226Z"
     },
     {
       "requirement_id": "V12.1.1",
@@ -5955,16 +5955,16 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79",
-        "worker/index.ts:82",
-        "worker/index.ts:83"
+        "worker/index.ts:83",
+        "worker/index.ts:84",
+        "worker/index.ts:87",
+        "worker/index.ts:88"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.114Z"
+      "last_audited_at": "2026-03-15T10:08:49.227Z"
     },
     {
       "requirement_id": "V12.1.2",
@@ -5980,15 +5980,15 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79",
-        "worker/index.ts:82"
+        "worker/index.ts:83",
+        "worker/index.ts:84",
+        "worker/index.ts:87"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.114Z"
+      "last_audited_at": "2026-03-15T10:08:49.228Z"
     },
     {
       "requirement_id": "V12.1.3",
@@ -6005,14 +6005,14 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79"
+        "worker/index.ts:83",
+        "worker/index.ts:84"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.116Z"
+      "last_audited_at": "2026-03-15T10:08:49.229Z"
     },
     {
       "requirement_id": "V12.1.4",
@@ -6027,16 +6027,16 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79",
-        "worker/index.ts:82",
-        "worker/index.ts:83"
+        "worker/index.ts:83",
+        "worker/index.ts:84",
+        "worker/index.ts:87",
+        "worker/index.ts:88"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.116Z"
+      "last_audited_at": "2026-03-15T10:08:49.230Z"
     },
     {
       "requirement_id": "V12.1.5",
@@ -6060,7 +6060,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.118Z"
+      "last_audited_at": "2026-03-15T10:08:49.231Z"
     },
     {
       "requirement_id": "V12.2.1",
@@ -6073,18 +6073,18 @@
       "code_references": [
         "tests/integration/helpers.ts:8",
         "tests/integration/m1.integration.test.ts:19",
-        "tests/integration/m1.integration.test.ts:52",
-        "tests/integration/m1.integration.test.ts:58",
-        "tests/integration/m1.integration.test.ts:75",
-        "tests/integration/m1.integration.test.ts:94",
-        "tests/integration/m1.integration.test.ts:111",
-        "tests/integration/m1.integration.test.ts:123"
+        "tests/integration/m1.integration.test.ts:56",
+        "tests/integration/m1.integration.test.ts:62",
+        "tests/integration/m1.integration.test.ts:79",
+        "tests/integration/m1.integration.test.ts:98",
+        "tests/integration/m1.integration.test.ts:115",
+        "tests/integration/m1.integration.test.ts:127"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.119Z"
+      "last_audited_at": "2026-03-15T10:08:49.233Z"
     },
     {
       "requirement_id": "V12.2.2",
@@ -6097,18 +6097,18 @@
       "code_references": [
         "tests/integration/helpers.ts:8",
         "tests/integration/m1.integration.test.ts:19",
-        "tests/integration/m1.integration.test.ts:52",
-        "tests/integration/m1.integration.test.ts:58",
-        "tests/integration/m1.integration.test.ts:75",
-        "tests/integration/m1.integration.test.ts:94",
-        "tests/integration/m1.integration.test.ts:111",
-        "tests/integration/m1.integration.test.ts:123"
+        "tests/integration/m1.integration.test.ts:56",
+        "tests/integration/m1.integration.test.ts:62",
+        "tests/integration/m1.integration.test.ts:79",
+        "tests/integration/m1.integration.test.ts:98",
+        "tests/integration/m1.integration.test.ts:115",
+        "tests/integration/m1.integration.test.ts:127"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.121Z"
+      "last_audited_at": "2026-03-15T10:08:49.234Z"
     },
     {
       "requirement_id": "V12.3.1",
@@ -6125,14 +6125,14 @@
         "worker/index.ts:30",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79"
+        "worker/index.ts:83",
+        "worker/index.ts:84"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.122Z"
+      "last_audited_at": "2026-03-15T10:08:49.235Z"
     },
     {
       "requirement_id": "V12.3.2",
@@ -6148,15 +6148,15 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79",
-        "worker/index.ts:82"
+        "worker/index.ts:83",
+        "worker/index.ts:84",
+        "worker/index.ts:87"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.122Z"
+      "last_audited_at": "2026-03-15T10:08:49.236Z"
     },
     {
       "requirement_id": "V12.3.3",
@@ -6171,16 +6171,16 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79",
-        "worker/index.ts:82",
-        "worker/index.ts:83"
+        "worker/index.ts:83",
+        "worker/index.ts:84",
+        "worker/index.ts:87",
+        "worker/index.ts:88"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.123Z"
+      "last_audited_at": "2026-03-15T10:08:49.237Z"
     },
     {
       "requirement_id": "V12.3.4",
@@ -6204,7 +6204,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.124Z"
+      "last_audited_at": "2026-03-15T10:08:49.238Z"
     },
     {
       "requirement_id": "V12.3.5",
@@ -6219,16 +6219,16 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79",
-        "worker/index.ts:82",
-        "worker/index.ts:83"
+        "worker/index.ts:83",
+        "worker/index.ts:84",
+        "worker/index.ts:87",
+        "worker/index.ts:88"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.125Z"
+      "last_audited_at": "2026-03-15T10:08:49.239Z"
     },
     {
       "requirement_id": "V13.1.1",
@@ -6243,16 +6243,16 @@
         "src/App.tsx:424",
         "src/App.tsx:522",
         "src/App.tsx:1071",
-        "worker/index.ts:458",
+        "worker/index.ts:107",
+        "worker/index.ts:505",
         "worker/security.ts:106",
-        "worker/submission-security.ts:45",
-        "worker/submission-security.ts:119"
+        "worker/submission-security.ts:45"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.126Z"
+      "last_audited_at": "2026-03-15T10:08:49.240Z"
     },
     {
       "requirement_id": "V13.1.2",
@@ -6276,7 +6276,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.127Z"
+      "last_audited_at": "2026-03-15T10:08:49.240Z"
     },
     {
       "requirement_id": "V13.1.3",
@@ -6294,13 +6294,13 @@
         "worker/submission-security.ts:119",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54"
+        "tests/integration/m1.integration.test.ts:58"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.128Z"
+      "last_audited_at": "2026-03-15T10:08:49.242Z"
     },
     {
       "requirement_id": "V13.1.4",
@@ -6317,14 +6317,14 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79"
+        "worker/index.ts:83",
+        "worker/index.ts:84"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.129Z"
+      "last_audited_at": "2026-03-15T10:08:49.243Z"
     },
     {
       "requirement_id": "V13.2.1",
@@ -6348,7 +6348,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.129Z"
+      "last_audited_at": "2026-03-15T10:08:49.243Z"
     },
     {
       "requirement_id": "V13.2.2",
@@ -6372,7 +6372,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.129Z"
+      "last_audited_at": "2026-03-15T10:08:49.243Z"
     },
     {
       "requirement_id": "V13.2.3",
@@ -6385,8 +6385,8 @@
       "code_references": [
         "worker/security.ts:106",
         "worker/submission-security.ts:119",
-        "tests/integration/m1.integration.test.ts:171",
-        "tests/integration/m1.integration.test.ts:173",
+        "tests/integration/m1.integration.test.ts:178",
+        "tests/integration/m1.integration.test.ts:180",
         "tests/security.unit.test.ts:56",
         "docs/developer-local-cli-manual.md:109",
         "docs/developer-local-cli-manual.md:145",
@@ -6396,7 +6396,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.131Z"
+      "last_audited_at": "2026-03-15T10:08:49.245Z"
     },
     {
       "requirement_id": "V13.2.4",
@@ -6420,7 +6420,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.132Z"
+      "last_audited_at": "2026-03-15T10:08:49.245Z"
     },
     {
       "requirement_id": "V13.2.5",
@@ -6434,9 +6434,9 @@
         "src/App.tsx:184",
         "src/App.tsx:424",
         "src/App.tsx:522",
-        "worker/index.ts:58",
-        "worker/index.ts:59",
-        "worker/index.ts:60",
+        "worker/index.ts:63",
+        "worker/index.ts:64",
+        "worker/index.ts:65",
         "worker/security.ts:82",
         "worker/security.ts:83"
       ],
@@ -6444,7 +6444,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.133Z"
+      "last_audited_at": "2026-03-15T10:08:49.247Z"
     },
     {
       "requirement_id": "V13.2.6",
@@ -6462,13 +6462,13 @@
         "worker/submission-security.ts:119",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54"
+        "tests/integration/m1.integration.test.ts:58"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.134Z"
+      "last_audited_at": "2026-03-15T10:08:49.248Z"
     },
     {
       "requirement_id": "V13.3.1",
@@ -6492,7 +6492,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.135Z"
+      "last_audited_at": "2026-03-15T10:08:49.249Z"
     },
     {
       "requirement_id": "V13.3.2",
@@ -6504,19 +6504,19 @@
       "reasoning": "Keyword-level evidence found in codebase; manual validation required for control completeness.",
       "code_references": [
         "worker/index.ts:40",
-        "worker/index.ts:137",
-        "worker/index.ts:142",
-        "worker/index.ts:145",
-        "worker/index.ts:587",
-        "worker/index.ts:588",
-        "worker/security.ts:3",
-        "worker/security.ts:56"
+        "worker/index.ts:51",
+        "worker/index.ts:115",
+        "worker/index.ts:121",
+        "worker/index.ts:122",
+        "worker/index.ts:172",
+        "worker/index.ts:174",
+        "worker/index.ts:178"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.137Z"
+      "last_audited_at": "2026-03-15T10:08:49.250Z"
     },
     {
       "requirement_id": "V13.3.3",
@@ -6540,7 +6540,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.138Z"
+      "last_audited_at": "2026-03-15T10:08:49.251Z"
     },
     {
       "requirement_id": "V13.3.4",
@@ -6564,7 +6564,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.139Z"
+      "last_audited_at": "2026-03-15T10:08:49.252Z"
     },
     {
       "requirement_id": "V13.4.1",
@@ -6582,13 +6582,13 @@
         "worker/submission-security.ts:119",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54"
+        "tests/integration/m1.integration.test.ts:58"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.140Z"
+      "last_audited_at": "2026-03-15T10:08:49.254Z"
     },
     {
       "requirement_id": "V13.4.2",
@@ -6612,7 +6612,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.141Z"
+      "last_audited_at": "2026-03-15T10:08:49.254Z"
     },
     {
       "requirement_id": "V13.4.3",
@@ -6625,9 +6625,9 @@
       "code_references": [
         "worker/security.ts:106",
         "worker/submission-security.ts:119",
-        "tests/integration/m1.integration.test.ts:171",
-        "tests/integration/m1.integration.test.ts:173",
-        "tests/integration/m1.integration.test.ts:326",
+        "tests/integration/m1.integration.test.ts:178",
+        "tests/integration/m1.integration.test.ts:180",
+        "tests/integration/m1.integration.test.ts:333",
         "tests/security.unit.test.ts:56",
         "docs/developer-local-cli-manual.md:109",
         "docs/developer-local-cli-manual.md:145"
@@ -6636,7 +6636,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.142Z"
+      "last_audited_at": "2026-03-15T10:08:49.256Z"
     },
     {
       "requirement_id": "V13.4.4",
@@ -6654,13 +6654,13 @@
         "worker/submission-security.ts:119",
         "tests/integration/helpers.ts:9",
         "tests/integration/m1.integration.test.ts:20",
-        "tests/integration/m1.integration.test.ts:53"
+        "tests/integration/m1.integration.test.ts:57"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.144Z"
+      "last_audited_at": "2026-03-15T10:08:49.257Z"
     },
     {
       "requirement_id": "V13.4.5",
@@ -6673,8 +6673,8 @@
       "code_references": [
         "worker/security.ts:106",
         "worker/submission-security.ts:119",
-        "tests/integration/m1.integration.test.ts:171",
-        "tests/integration/m1.integration.test.ts:173",
+        "tests/integration/m1.integration.test.ts:178",
+        "tests/integration/m1.integration.test.ts:180",
         "tests/security.unit.test.ts:56",
         "docs/developer-local-cli-manual.md:109",
         "docs/developer-local-cli-manual.md:145",
@@ -6684,7 +6684,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.145Z"
+      "last_audited_at": "2026-03-15T10:08:49.260Z"
     },
     {
       "requirement_id": "V13.4.6",
@@ -6702,13 +6702,13 @@
         "worker/submission-security.ts:119",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54"
+        "tests/integration/m1.integration.test.ts:58"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.147Z"
+      "last_audited_at": "2026-03-15T10:08:49.262Z"
     },
     {
       "requirement_id": "V13.4.7",
@@ -6732,7 +6732,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.148Z"
+      "last_audited_at": "2026-03-15T10:08:49.263Z"
     },
     {
       "requirement_id": "V14.1.1",
@@ -6756,7 +6756,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.148Z"
+      "last_audited_at": "2026-03-15T10:08:49.264Z"
     },
     {
       "requirement_id": "V14.1.2",
@@ -6769,18 +6769,18 @@
       "code_references": [
         "src/App.tsx:166",
         "src/App.tsx:1071",
-        "worker/index.ts:458",
-        "worker/submission-security.ts:173",
-        "worker/submission-security.ts:177",
-        "tests/integration/m1.integration.test.ts:219",
-        "tests/integration/m1.integration.test.ts:250",
-        "tests/integration/m1.integration.test.ts:251"
+        "worker/index.ts:48",
+        "worker/index.ts:107",
+        "worker/index.ts:113",
+        "worker/index.ts:117",
+        "worker/index.ts:174",
+        "worker/index.ts:185"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.149Z"
+      "last_audited_at": "2026-03-15T10:08:49.265Z"
     },
     {
       "requirement_id": "V14.2.1",
@@ -6804,7 +6804,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.149Z"
+      "last_audited_at": "2026-03-15T10:08:49.265Z"
     },
     {
       "requirement_id": "V14.2.2",
@@ -6817,18 +6817,18 @@
       "code_references": [
         "src/App.tsx:424",
         "src/App.tsx:522",
-        "worker/submission-security.ts:45",
-        "tests/integration/helpers.ts:11",
-        "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54",
-        "tests/integration/m1.integration.test.ts:60",
-        "tests/integration/m1.integration.test.ts:247"
+        "worker/index.ts:48",
+        "worker/index.ts:113",
+        "worker/index.ts:117",
+        "worker/index.ts:174",
+        "worker/index.ts:185",
+        "worker/index.ts:190"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.151Z"
+      "last_audited_at": "2026-03-15T10:08:49.266Z"
     },
     {
       "requirement_id": "V14.2.3",
@@ -6852,7 +6852,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.152Z"
+      "last_audited_at": "2026-03-15T10:08:49.267Z"
     },
     {
       "requirement_id": "V14.2.4",
@@ -6863,20 +6863,20 @@
       "severity": "medium",
       "reasoning": "Keyword-level evidence found in codebase; manual validation required for control completeness.",
       "code_references": [
-        "tests/security.unit.test.ts:146",
-        "docs/developer-local-cli-manual.md:50",
-        "docs/developer-local-cli-manual.md:109",
-        "docs/developer-local-cli-manual.md:129",
-        "docs/developer-local-cli-manual.md:145",
-        "docs/developer-local-cli-manual.md:147",
-        "docs/plans/2026-03-08-admin-ux-improvements.md:54",
-        "docs/plans/2026-03-08-admin-ux-improvements.md:72"
+        "worker/index.ts:48",
+        "worker/index.ts:113",
+        "worker/index.ts:117",
+        "worker/index.ts:174",
+        "worker/index.ts:185",
+        "worker/index.ts:190",
+        "worker/index.ts:195",
+        "worker/index.ts:405"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.153Z"
+      "last_audited_at": "2026-03-15T10:08:49.268Z"
     },
     {
       "requirement_id": "V14.2.5",
@@ -6887,20 +6887,20 @@
       "severity": "high",
       "reasoning": "Keyword-level evidence found in codebase; manual validation required for control completeness.",
       "code_references": [
-        "worker/index.ts:58",
-        "worker/index.ts:59",
-        "worker/index.ts:60",
-        "worker/index.ts:356",
-        "worker/security.ts:82",
-        "worker/security.ts:83",
-        "worker/security.ts:86",
-        "worker/submission-security.ts:117"
+        "worker/index.ts:48",
+        "worker/index.ts:49",
+        "worker/index.ts:63",
+        "worker/index.ts:64",
+        "worker/index.ts:65",
+        "worker/index.ts:117",
+        "worker/index.ts:118",
+        "worker/security.ts:82"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.154Z"
+      "last_audited_at": "2026-03-15T10:08:49.270Z"
     },
     {
       "requirement_id": "V14.2.6",
@@ -6915,16 +6915,16 @@
         "src/App.tsx:522",
         "src/features/farmer/form/farmer-submission-form.tsx:79",
         "src/features/farmer/form/farmer-submission-form.tsx:154",
-        "worker/index.ts:145",
-        "worker/index.ts:453",
-        "worker/submission-security.ts:45",
-        "worker/submission-security.ts:226"
+        "worker/index.ts:48",
+        "worker/index.ts:113",
+        "worker/index.ts:117",
+        "worker/index.ts:174"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.156Z"
+      "last_audited_at": "2026-03-15T10:08:49.271Z"
     },
     {
       "requirement_id": "V14.2.7",
@@ -6935,20 +6935,20 @@
       "severity": "high",
       "reasoning": "Keyword-level evidence found in codebase; manual validation required for control completeness.",
       "code_references": [
-        "docs/developer-local-cli-manual.md:109",
-        "docs/developer-local-cli-manual.md:129",
-        "docs/developer-local-cli-manual.md:145",
-        "docs/plans/2026-03-08-admin-ux-improvements.md:54",
-        "docs/plans/2026-03-08-admin-ux-improvements.md:206",
-        "docs/plans/2026-03-08-admin-ux-improvements.md:256",
-        "docs/plans/2026-03-08-admin-ux-improvements.md:294",
-        "docs/plans/2026-03-08-admin-ux-improvements.md:334"
+        "worker/index.ts:48",
+        "worker/index.ts:113",
+        "worker/index.ts:117",
+        "worker/index.ts:174",
+        "worker/index.ts:185",
+        "worker/index.ts:190",
+        "worker/index.ts:195",
+        "worker/index.ts:405"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.157Z"
+      "last_audited_at": "2026-03-15T10:08:49.272Z"
     },
     {
       "requirement_id": "V14.2.8",
@@ -6972,7 +6972,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.158Z"
+      "last_audited_at": "2026-03-15T10:08:49.273Z"
     },
     {
       "requirement_id": "V14.3.1",
@@ -6996,7 +6996,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.158Z"
+      "last_audited_at": "2026-03-15T10:08:49.274Z"
     },
     {
       "requirement_id": "V14.3.2",
@@ -7020,7 +7020,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.159Z"
+      "last_audited_at": "2026-03-15T10:08:49.274Z"
     },
     {
       "requirement_id": "V14.3.3",
@@ -7044,7 +7044,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.159Z"
+      "last_audited_at": "2026-03-15T10:08:49.274Z"
     },
     {
       "requirement_id": "V15.1.1",
@@ -7061,14 +7061,14 @@
         "worker/submission-security.ts:99",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54",
-        "tests/integration/m1.integration.test.ts:60"
+        "tests/integration/m1.integration.test.ts:58",
+        "tests/integration/m1.integration.test.ts:64"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.161Z"
+      "last_audited_at": "2026-03-15T10:08:49.276Z"
     },
     {
       "requirement_id": "V15.1.2",
@@ -7092,7 +7092,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.162Z"
+      "last_audited_at": "2026-03-15T10:08:49.278Z"
     },
     {
       "requirement_id": "V15.1.3",
@@ -7109,14 +7109,14 @@
         "worker/submission-security.ts:99",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54",
-        "tests/integration/m1.integration.test.ts:60"
+        "tests/integration/m1.integration.test.ts:58",
+        "tests/integration/m1.integration.test.ts:64"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.164Z"
+      "last_audited_at": "2026-03-15T10:08:49.280Z"
     },
     {
       "requirement_id": "V15.1.4",
@@ -7134,13 +7134,13 @@
         "tests/e2e/m1.spec.ts:67",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54"
+        "tests/integration/m1.integration.test.ts:58"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.165Z"
+      "last_audited_at": "2026-03-15T10:08:49.282Z"
     },
     {
       "requirement_id": "V15.1.5",
@@ -7164,7 +7164,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.167Z"
+      "last_audited_at": "2026-03-15T10:08:49.283Z"
     },
     {
       "requirement_id": "V15.2.1",
@@ -7181,14 +7181,14 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79"
+        "worker/index.ts:83",
+        "worker/index.ts:84"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.168Z"
+      "last_audited_at": "2026-03-15T10:08:49.284Z"
     },
     {
       "requirement_id": "V15.2.2",
@@ -7205,14 +7205,14 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79"
+        "worker/index.ts:83",
+        "worker/index.ts:84"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.169Z"
+      "last_audited_at": "2026-03-15T10:08:49.285Z"
     },
     {
       "requirement_id": "V15.2.3",
@@ -7227,16 +7227,16 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79",
-        "worker/index.ts:82",
-        "worker/index.ts:83"
+        "worker/index.ts:83",
+        "worker/index.ts:84",
+        "worker/index.ts:87",
+        "worker/index.ts:88"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.170Z"
+      "last_audited_at": "2026-03-15T10:08:49.286Z"
     },
     {
       "requirement_id": "V15.2.4",
@@ -7251,16 +7251,16 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79",
-        "worker/index.ts:82",
-        "worker/index.ts:83"
+        "worker/index.ts:83",
+        "worker/index.ts:84",
+        "worker/index.ts:87",
+        "worker/index.ts:88"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.170Z"
+      "last_audited_at": "2026-03-15T10:08:49.287Z"
     },
     {
       "requirement_id": "V15.2.5",
@@ -7277,14 +7277,14 @@
         "worker/index.ts:28",
         "worker/index.ts:31",
         "worker/index.ts:36",
-        "worker/index.ts:78",
-        "worker/index.ts:79"
+        "worker/index.ts:83",
+        "worker/index.ts:84"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.171Z"
+      "last_audited_at": "2026-03-15T10:08:49.289Z"
     },
     {
       "requirement_id": "V15.3.1",
@@ -7299,8 +7299,8 @@
         "src/App.tsx:522",
         "src/features/farmer/form/farmer-submission-form.tsx:79",
         "src/features/farmer/form/farmer-submission-form.tsx:154",
-        "worker/index.ts:145",
-        "worker/index.ts:453",
+        "worker/index.ts:182",
+        "worker/index.ts:500",
         "worker/submission-security.ts:45",
         "worker/submission-security.ts:99"
       ],
@@ -7308,7 +7308,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.173Z"
+      "last_audited_at": "2026-03-15T10:08:49.290Z"
     },
     {
       "requirement_id": "V15.3.2",
@@ -7325,14 +7325,14 @@
         "worker/submission-security.ts:99",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54",
-        "tests/integration/m1.integration.test.ts:60"
+        "tests/integration/m1.integration.test.ts:58",
+        "tests/integration/m1.integration.test.ts:64"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.174Z"
+      "last_audited_at": "2026-03-15T10:08:49.291Z"
     },
     {
       "requirement_id": "V15.3.3",
@@ -7349,14 +7349,14 @@
         "worker/submission-security.ts:99",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54",
-        "tests/integration/m1.integration.test.ts:60"
+        "tests/integration/m1.integration.test.ts:58",
+        "tests/integration/m1.integration.test.ts:64"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.176Z"
+      "last_audited_at": "2026-03-15T10:08:49.293Z"
     },
     {
       "requirement_id": "V15.3.4",
@@ -7380,7 +7380,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.176Z"
+      "last_audited_at": "2026-03-15T10:08:49.293Z"
     },
     {
       "requirement_id": "V15.3.5",
@@ -7397,14 +7397,14 @@
         "worker/submission-security.ts:99",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:45",
-        "tests/integration/m1.integration.test.ts:54"
+        "tests/integration/m1.integration.test.ts:49",
+        "tests/integration/m1.integration.test.ts:58"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.177Z"
+      "last_audited_at": "2026-03-15T10:08:49.295Z"
     },
     {
       "requirement_id": "V15.3.6",
@@ -7428,7 +7428,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.179Z"
+      "last_audited_at": "2026-03-15T10:08:49.296Z"
     },
     {
       "requirement_id": "V15.3.7",
@@ -7445,14 +7445,14 @@
         "worker/submission-security.ts:99",
         "tests/integration/helpers.ts:11",
         "tests/integration/m1.integration.test.ts:21",
-        "tests/integration/m1.integration.test.ts:54",
-        "tests/integration/m1.integration.test.ts:60"
+        "tests/integration/m1.integration.test.ts:58",
+        "tests/integration/m1.integration.test.ts:64"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.180Z"
+      "last_audited_at": "2026-03-15T10:08:49.298Z"
     },
     {
       "requirement_id": "V15.4.1",
@@ -7476,7 +7476,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.180Z"
+      "last_audited_at": "2026-03-15T10:08:49.298Z"
     },
     {
       "requirement_id": "V15.4.2",
@@ -7500,7 +7500,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.181Z"
+      "last_audited_at": "2026-03-15T10:08:49.298Z"
     },
     {
       "requirement_id": "V15.4.3",
@@ -7514,9 +7514,9 @@
         "worker/submission-security.ts:99",
         "tests/e2e/m1.spec.ts:238",
         "tests/e2e/m1.spec.ts:309",
-        "tests/integration/m1.integration.test.ts:68",
-        "tests/integration/m1.integration.test.ts:280",
-        "tests/integration/m1.integration.test.ts:295",
+        "tests/integration/m1.integration.test.ts:72",
+        "tests/integration/m1.integration.test.ts:287",
+        "tests/integration/m1.integration.test.ts:302",
         "docs/developer-local-cli-manual.md:100",
         "docs/developer-local-cli-manual.md:109"
       ],
@@ -7524,7 +7524,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.182Z"
+      "last_audited_at": "2026-03-15T10:08:49.300Z"
     },
     {
       "requirement_id": "V15.4.4",
@@ -7548,7 +7548,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.184Z"
+      "last_audited_at": "2026-03-15T10:08:49.301Z"
     },
     {
       "requirement_id": "V16.1.1",
@@ -7572,7 +7572,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.184Z"
+      "last_audited_at": "2026-03-15T10:08:49.302Z"
     },
     {
       "requirement_id": "V16.2.1",
@@ -7596,7 +7596,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.184Z"
+      "last_audited_at": "2026-03-15T10:08:49.302Z"
     },
     {
       "requirement_id": "V16.2.2",
@@ -7620,7 +7620,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.184Z"
+      "last_audited_at": "2026-03-15T10:08:49.302Z"
     },
     {
       "requirement_id": "V16.2.3",
@@ -7644,7 +7644,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.185Z"
+      "last_audited_at": "2026-03-15T10:08:49.302Z"
     },
     {
       "requirement_id": "V16.2.4",
@@ -7668,7 +7668,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.185Z"
+      "last_audited_at": "2026-03-15T10:08:49.303Z"
     },
     {
       "requirement_id": "V16.2.5",
@@ -7692,7 +7692,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.185Z"
+      "last_audited_at": "2026-03-15T10:08:49.303Z"
     },
     {
       "requirement_id": "V16.3.1",
@@ -7716,7 +7716,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.185Z"
+      "last_audited_at": "2026-03-15T10:08:49.303Z"
     },
     {
       "requirement_id": "V16.3.2",
@@ -7740,7 +7740,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.185Z"
+      "last_audited_at": "2026-03-15T10:08:49.303Z"
     },
     {
       "requirement_id": "V16.3.3",
@@ -7764,7 +7764,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.186Z"
+      "last_audited_at": "2026-03-15T10:08:49.303Z"
     },
     {
       "requirement_id": "V16.3.4",
@@ -7788,7 +7788,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.186Z"
+      "last_audited_at": "2026-03-15T10:08:49.304Z"
     },
     {
       "requirement_id": "V16.4.1",
@@ -7812,7 +7812,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.186Z"
+      "last_audited_at": "2026-03-15T10:08:49.304Z"
     },
     {
       "requirement_id": "V16.4.2",
@@ -7836,7 +7836,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.186Z"
+      "last_audited_at": "2026-03-15T10:08:49.304Z"
     },
     {
       "requirement_id": "V16.4.3",
@@ -7860,7 +7860,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.186Z"
+      "last_audited_at": "2026-03-15T10:08:49.304Z"
     },
     {
       "requirement_id": "V16.5.1",
@@ -7884,7 +7884,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.186Z"
+      "last_audited_at": "2026-03-15T10:08:49.304Z"
     },
     {
       "requirement_id": "V16.5.2",
@@ -7908,7 +7908,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.187Z"
+      "last_audited_at": "2026-03-15T10:08:49.304Z"
     },
     {
       "requirement_id": "V16.5.3",
@@ -7932,7 +7932,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.187Z"
+      "last_audited_at": "2026-03-15T10:08:49.304Z"
     },
     {
       "requirement_id": "V16.5.4",
@@ -7956,7 +7956,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.187Z"
+      "last_audited_at": "2026-03-15T10:08:49.305Z"
     },
     {
       "requirement_id": "V17.1.1",
@@ -7971,7 +7971,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.187Z"
+      "last_audited_at": "2026-03-15T10:08:49.305Z"
     },
     {
       "requirement_id": "V17.1.2",
@@ -7986,7 +7986,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.187Z"
+      "last_audited_at": "2026-03-15T10:08:49.305Z"
     },
     {
       "requirement_id": "V17.2.1",
@@ -8001,7 +8001,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.187Z"
+      "last_audited_at": "2026-03-15T10:08:49.305Z"
     },
     {
       "requirement_id": "V17.2.2",
@@ -8016,7 +8016,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.187Z"
+      "last_audited_at": "2026-03-15T10:08:49.305Z"
     },
     {
       "requirement_id": "V17.2.3",
@@ -8031,7 +8031,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.187Z"
+      "last_audited_at": "2026-03-15T10:08:49.305Z"
     },
     {
       "requirement_id": "V17.2.4",
@@ -8046,7 +8046,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.187Z"
+      "last_audited_at": "2026-03-15T10:08:49.305Z"
     },
     {
       "requirement_id": "V17.2.5",
@@ -8061,7 +8061,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.187Z"
+      "last_audited_at": "2026-03-15T10:08:49.305Z"
     },
     {
       "requirement_id": "V17.2.6",
@@ -8076,7 +8076,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.188Z"
+      "last_audited_at": "2026-03-15T10:08:49.305Z"
     },
     {
       "requirement_id": "V17.2.7",
@@ -8091,7 +8091,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.188Z"
+      "last_audited_at": "2026-03-15T10:08:49.305Z"
     },
     {
       "requirement_id": "V17.2.8",
@@ -8106,7 +8106,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.188Z"
+      "last_audited_at": "2026-03-15T10:08:49.305Z"
     },
     {
       "requirement_id": "V17.3.1",
@@ -8121,7 +8121,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.188Z"
+      "last_audited_at": "2026-03-15T10:08:49.305Z"
     },
     {
       "requirement_id": "V17.3.2",
@@ -8136,7 +8136,7 @@
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-15T09:55:46.188Z"
+      "last_audited_at": "2026-03-15T10:08:49.306Z"
     }
   ]
 }

@@ -1,5 +1,8 @@
 # ASVS Level 2 Implementation Plan (2026-03-14)
 
+Superseded for execution detail by `2026-03-15-asvs-level2-multi-agent-execution-plan.md`.
+This document remains the strategy-level framing; the newer plan is the agent-assignment and file-ownership execution plan.
+
 ## Purpose
 
 Bring `ls-oneup` to an honest ASVS Level 2 posture first.

@@ -1,0 +1,466 @@
+{
+  "campaign_id": "2026-03-level2",
+  "version": 1,
+  "status": "ready_for_execution",
+  "purpose": "Agent-legible execution workboard for reaching an honest ASVS Level 2 posture through file-owned implementation slices.",
+  "human_plan": "docs/plans/2026-03-15-asvs-level2-multi-agent-execution-plan.md",
+  "strategy_plan": "docs/plans/2026-03-14-asvs-level2-implementation-plan.md",
+  "orchestrator_rules": {
+    "max_parallel_agents": 4,
+    "dispatch_policy": [
+      "Prefer slices with status ready over blocked or proposed slices.",
+      "Never dispatch two slices that both own the same hotspot file.",
+      "Treat worker/index.ts and docs/requirements/12-m1-security-decision-record.md as serialized hotspots unless a slice is explicitly extraction-first.",
+      "Do not assign docs/security/asvs/** to implementation agents.",
+      "After each slice completes, update the workboard before spawning dependent slices."
+    ],
+    "global_forbidden_paths": [
+      "docs/security/asvs/**"
+    ],
+    "shared_hotspots": [
+      "worker/index.ts",
+      "docs/requirements/12-m1-security-decision-record.md",
+      "src/App.tsx"
+    ],
+    "completion_requirements": [
+      "changed_files",
+      "tests_run",
+      "docs_updated",
+      "controls_ready_for_reaudit",
+      "residual_risks"
+    ]
+  },
+  "completed_slices": [
+    {
+      "slice_id": "C1a-sensitive-response-caching",
+      "status": "completed",
+      "goal": "Harden anti-caching for admin and token-bound sensitive responses.",
+      "changed_files": [
+        "worker/index.ts",
+        "tests/integration/m1.integration.test.ts",
+        "docs/requirements/09-m1-api-contract.md",
+        "docs/requirements/12-m1-security-decision-record.md",
+        "docs/security/crypto-policy.md"
+      ],
+      "controls_ready_for_reaudit": [
+        "V14.2.2",
+        "V14.3.2"
+      ]
+    }
+  ],
+  "slices": [
+    {
+      "slice_id": "X1-edge-response-helpers",
+      "status": "ready",
+      "wave": 0,
+      "goal": "Extract reusable response security and header policy helpers from the worker router.",
+      "owned_files": [
+        "worker/security.ts",
+        "worker/http-response-policy.ts"
+      ],
+      "supporting_files": [
+        "worker/index.ts",
+        "tests/integration/m1.integration.test.ts"
+      ],
+      "forbidden_files": [
+        "docs/security/asvs/**",
+        "docs/requirements/12-m1-security-decision-record.md"
+      ],
+      "depends_on": [],
+      "blocks": [
+        "A2-header-and-transport-policy"
+      ],
+      "parallel_with": [
+        "D2-logging-and-dependency-posture"
+      ],
+      "requires_extraction": false,
+      "tests_required": [
+        "npm run test:integration"
+      ],
+      "docs_required": [],
+      "definition_of_done": [
+        "worker/index.ts delegates response security and header defaults to helper functions or a helper module.",
+        "The helper surface is narrow enough that later header-policy slices can edit helpers without broad router conflicts.",
+        "Integration coverage still passes after extraction."
+      ],
+      "handoff_schema": {
+        "changed_files": "string[]",
+        "tests_run": "string[]",
+        "docs_updated": "string[]",
+        "controls_ready_for_reaudit": "string[]",
+        "residual_risks": "string[]"
+      },
+      "agent_prompt": "Claim slice X1-edge-response-helpers. You own worker/security.ts and new worker/http-response-policy.ts. Supporting files are worker/index.ts and tests/integration/m1.integration.test.ts. Do not edit docs/security/asvs/** or docs/requirements/12-m1-security-decision-record.md. Extract reusable response security/header helpers out of worker/index.ts with minimal behavior change, keep tests green, and report changed files, tests run, docs updated, controls ready for re-audit, and residual risks."
+    },
+    {
+      "slice_id": "X2-submit-request-guards",
+      "status": "ready",
+      "wave": 0,
+      "goal": "Extract submit-route request guards so validation and upload policy can evolve without reopening the whole worker router.",
+      "owned_files": [
+        "worker/request-guards.ts",
+        "src/shared/validation.ts",
+        "src/shared/domain.ts"
+      ],
+      "supporting_files": [
+        "worker/index.ts",
+        "tests/integration/m1.integration.test.ts"
+      ],
+      "forbidden_files": [
+        "docs/security/asvs/**",
+        "worker/submission-security.ts",
+        "docs/requirements/12-m1-security-decision-record.md"
+      ],
+      "depends_on": [],
+      "blocks": [
+        "B2-method-and-upload-policy"
+      ],
+      "parallel_with": [
+        "D2-logging-and-dependency-posture"
+      ],
+      "requires_extraction": false,
+      "tests_required": [
+        "npm run test:integration"
+      ],
+      "docs_required": [],
+      "definition_of_done": [
+        "Multipart/image/form validation guards live outside the main route body.",
+        "The route still behaves the same before policy hardening starts.",
+        "Later upload-policy work can land mostly in worker/request-guards.ts and shared validation files."
+      ],
+      "handoff_schema": {
+        "changed_files": "string[]",
+        "tests_run": "string[]",
+        "docs_updated": "string[]",
+        "controls_ready_for_reaudit": "string[]",
+        "residual_risks": "string[]"
+      },
+      "agent_prompt": "Claim slice X2-submit-request-guards. You own new worker/request-guards.ts plus src/shared/validation.ts and src/shared/domain.ts. Supporting files are worker/index.ts and tests/integration/m1.integration.test.ts. Do not edit docs/security/asvs/**, worker/submission-security.ts, or docs/requirements/12-m1-security-decision-record.md. Extract submit-route request guards with minimal behavior change and report changed files, tests run, docs updated, controls ready for re-audit, and residual risks."
+    },
+    {
+      "slice_id": "A2-header-and-transport-policy",
+      "status": "blocked",
+      "wave": 1,
+      "goal": "Implement a coherent browser and transport header policy and document deployment-only controls honestly.",
+      "owned_files": [
+        "worker/security.ts",
+        "worker/http-response-policy.ts",
+        "wrangler.jsonc"
+      ],
+      "supporting_files": [
+        "worker/index.ts",
+        "tests/integration/m1.integration.test.ts",
+        "docs/requirements/08-local-testing-and-first-release-runbook.md"
+      ],
+      "forbidden_files": [
+        "docs/security/asvs/**",
+        "docs/requirements/12-m1-security-decision-record.md"
+      ],
+      "depends_on": [
+        "X1-edge-response-helpers"
+      ],
+      "blocks": [
+        "F1-frontend-security-alignment",
+        "G1-evidence-consolidation"
+      ],
+      "parallel_with": [
+        "B2-method-and-upload-policy",
+        "C2-retention-and-image-metadata",
+        "D2-logging-and-dependency-posture"
+      ],
+      "requires_extraction": false,
+      "tests_required": [
+        "npm run test:integration"
+      ],
+      "docs_required": [
+        "docs/requirements/08-local-testing-and-first-release-runbook.md"
+      ],
+      "definition_of_done": [
+        "The repo has one coherent response-header policy rather than scattered per-route behavior.",
+        "Deployment-only transport controls are documented instead of implied.",
+        "Integration tests cover changed header behavior on sensitive and HTML-rendering routes."
+      ],
+      "handoff_schema": {
+        "changed_files": "string[]",
+        "tests_run": "string[]",
+        "docs_updated": "string[]",
+        "controls_ready_for_reaudit": "string[]",
+        "residual_risks": "string[]"
+      },
+      "agent_prompt": "Claim slice A2-header-and-transport-policy after X1-edge-response-helpers is complete. You own worker/security.ts, worker/http-response-policy.ts, and wrangler.jsonc. Supporting files are worker/index.ts, tests/integration/m1.integration.test.ts, and docs/requirements/08-local-testing-and-first-release-runbook.md. Do not edit docs/security/asvs/** or docs/requirements/12-m1-security-decision-record.md. Implement a coherent header policy, document deployment-only transport controls honestly, keep changes minimal, and return the standard handoff."
+    },
+    {
+      "slice_id": "B2-method-and-upload-policy",
+      "status": "blocked",
+      "wave": 1,
+      "goal": "Add explicit method policy and deeper upload validation without widening ownership.",
+      "owned_files": [
+        "src/shared/validation.ts",
+        "src/shared/domain.ts",
+        "worker/request-guards.ts"
+      ],
+      "supporting_files": [
+        "worker/index.ts",
+        "tests/integration/m1.integration.test.ts",
+        "tests/e2e/m1.spec.ts",
+        "docs/requirements/09-m1-api-contract.md"
+      ],
+      "forbidden_files": [
+        "docs/security/asvs/**",
+        "worker/submission-security.ts",
+        "docs/requirements/12-m1-security-decision-record.md"
+      ],
+      "depends_on": [
+        "X2-submit-request-guards"
+      ],
+      "blocks": [
+        "F1-frontend-security-alignment",
+        "G1-evidence-consolidation"
+      ],
+      "parallel_with": [
+        "A2-header-and-transport-policy",
+        "C2-retention-and-image-metadata",
+        "D2-logging-and-dependency-posture"
+      ],
+      "requires_extraction": false,
+      "tests_required": [
+        "npm run test:integration",
+        "npm run test:e2e"
+      ],
+      "docs_required": [
+        "docs/requirements/09-m1-api-contract.md"
+      ],
+      "definition_of_done": [
+        "Known routes have explicit method behavior instead of implicit 404 fallthrough for supported paths.",
+        "Upload rules go beyond MIME and raw byte size where feasible on Workers.",
+        "Contract docs and tests reflect the stricter request policy."
+      ],
+      "handoff_schema": {
+        "changed_files": "string[]",
+        "tests_run": "string[]",
+        "docs_updated": "string[]",
+        "controls_ready_for_reaudit": "string[]",
+        "residual_risks": "string[]"
+      },
+      "agent_prompt": "Claim slice B2-method-and-upload-policy after X2-submit-request-guards is complete. You own src/shared/validation.ts, src/shared/domain.ts, and worker/request-guards.ts. Supporting files are worker/index.ts, tests/integration/m1.integration.test.ts, tests/e2e/m1.spec.ts, and docs/requirements/09-m1-api-contract.md. Do not edit docs/security/asvs/**, worker/submission-security.ts, or docs/requirements/12-m1-security-decision-record.md. Implement explicit method policy and deeper upload hardening, update contract docs and tests, and return the standard handoff."
+    },
+    {
+      "slice_id": "C2-retention-and-image-metadata",
+      "status": "ready",
+      "wave": 1,
+      "goal": "Define and implement storage-side retention and image-metadata handling with clear tests and docs.",
+      "owned_files": [
+        "worker/repository.ts",
+        "worker/submission-security.ts",
+        "worker/data-retention.ts"
+      ],
+      "supporting_files": [
+        "worker/index.ts",
+        "tests/security.unit.test.ts",
+        "tests/integration/m1.integration.test.ts",
+        "docs/security/crypto-policy.md"
+      ],
+      "forbidden_files": [
+        "docs/security/asvs/**",
+        "src/features/**",
+        "docs/requirements/12-m1-security-decision-record.md"
+      ],
+      "depends_on": [],
+      "blocks": [
+        "G1-evidence-consolidation"
+      ],
+      "parallel_with": [
+        "A2-header-and-transport-policy",
+        "B2-method-and-upload-policy",
+        "D2-logging-and-dependency-posture"
+      ],
+      "requires_extraction": false,
+      "tests_required": [
+        "npm run test:unit",
+        "npm run test:integration",
+        "npm run crypto:run"
+      ],
+      "docs_required": [
+        "docs/security/crypto-policy.md"
+      ],
+      "definition_of_done": [
+        "Retention behavior or retention boundaries are represented in code or fail-closed policy helpers rather than vague notes.",
+        "Image metadata handling is explicit: stripped, rejected, or documented with evidence if stripping is infeasible.",
+        "Storage-side tests cover the new behavior."
+      ],
+      "handoff_schema": {
+        "changed_files": "string[]",
+        "tests_run": "string[]",
+        "docs_updated": "string[]",
+        "controls_ready_for_reaudit": "string[]",
+        "residual_risks": "string[]"
+      },
+      "agent_prompt": "Claim slice C2-retention-and-image-metadata. You own worker/repository.ts, worker/submission-security.ts, and new worker/data-retention.ts. Supporting files are worker/index.ts, tests/security.unit.test.ts, tests/integration/m1.integration.test.ts, and docs/security/crypto-policy.md. Do not edit docs/security/asvs/**, src/features/**, or docs/requirements/12-m1-security-decision-record.md. Implement storage-side retention and image metadata handling with tests and minimal supporting router changes, then return the standard handoff."
+    },
+    {
+      "slice_id": "D2-logging-and-dependency-posture",
+      "status": "ready",
+      "wave": 1,
+      "goal": "Create one authoritative docs/evidence lane for logging, risky components, and operational security posture.",
+      "owned_files": [
+        "docs/requirements/08-local-testing-and-first-release-runbook.md",
+        "docs/requirements/09-m1-api-contract.md",
+        "docs/requirements/12-m1-security-decision-record.md",
+        "docs/security/dependency-risk-register.md",
+        "docs/security/logging-and-error-handling.md"
+      ],
+      "supporting_files": [
+        "tests/security.unit.test.ts",
+        "tests/integration/m1.integration.test.ts",
+        "tests/e2e/m1.spec.ts"
+      ],
+      "forbidden_files": [
+        "docs/security/asvs/**",
+        "worker/index.ts"
+      ],
+      "depends_on": [],
+      "blocks": [
+        "G1-evidence-consolidation"
+      ],
+      "parallel_with": [
+        "X1-edge-response-helpers",
+        "X2-submit-request-guards",
+        "A2-header-and-transport-policy",
+        "B2-method-and-upload-policy",
+        "C2-retention-and-image-metadata"
+      ],
+      "requires_extraction": false,
+      "tests_required": [
+        "npm run lint",
+        "npm run typecheck"
+      ],
+      "docs_required": [
+        "docs/requirements/08-local-testing-and-first-release-runbook.md",
+        "docs/requirements/09-m1-api-contract.md",
+        "docs/requirements/12-m1-security-decision-record.md",
+        "docs/security/dependency-risk-register.md",
+        "docs/security/logging-and-error-handling.md"
+      ],
+      "definition_of_done": [
+        "The repo has one clear place for logging/error-handling expectations.",
+        "Risky components and dangerous functionality are documented without touching ASVS artifacts.",
+        "Shared ADR and runbook guidance stop drifting across slices."
+      ],
+      "handoff_schema": {
+        "changed_files": "string[]",
+        "tests_run": "string[]",
+        "docs_updated": "string[]",
+        "controls_ready_for_reaudit": "string[]",
+        "residual_risks": "string[]"
+      },
+      "agent_prompt": "Claim slice D2-logging-and-dependency-posture. You own docs/requirements/08-local-testing-and-first-release-runbook.md, docs/requirements/09-m1-api-contract.md, docs/requirements/12-m1-security-decision-record.md, and new docs/security/dependency-risk-register.md plus docs/security/logging-and-error-handling.md. Supporting files are tests/security.unit.test.ts, tests/integration/m1.integration.test.ts, and tests/e2e/m1.spec.ts. Do not edit docs/security/asvs/** or worker/index.ts. Produce the missing docs/evidence layer and return the standard handoff."
+    },
+    {
+      "slice_id": "F1-frontend-security-alignment",
+      "status": "blocked",
+      "wave": 2,
+      "goal": "Align browser-visible behavior with the implemented edge and upload policy.",
+      "owned_files": [
+        "src/App.tsx",
+        "src/features/**",
+        "src/styles.css"
+      ],
+      "supporting_files": [
+        "tests/e2e/m1.spec.ts",
+        "docs/requirements/09-m1-api-contract.md"
+      ],
+      "forbidden_files": [
+        "docs/security/asvs/**",
+        "worker/submission-security.ts",
+        "docs/requirements/12-m1-security-decision-record.md"
+      ],
+      "depends_on": [
+        "A2-header-and-transport-policy",
+        "B2-method-and-upload-policy"
+      ],
+      "blocks": [
+        "G1-evidence-consolidation"
+      ],
+      "parallel_with": [],
+      "requires_extraction": false,
+      "tests_required": [
+        "npm run test:e2e"
+      ],
+      "docs_required": [
+        "docs/requirements/09-m1-api-contract.md"
+      ],
+      "definition_of_done": [
+        "Browser-visible behavior reflects the actual edge and API restrictions.",
+        "Client storage or asset assumptions do not undermine the server policy.",
+        "User-visible changes are covered by e2e tests."
+      ],
+      "handoff_schema": {
+        "changed_files": "string[]",
+        "tests_run": "string[]",
+        "docs_updated": "string[]",
+        "controls_ready_for_reaudit": "string[]",
+        "residual_risks": "string[]"
+      },
+      "agent_prompt": "Claim slice F1-frontend-security-alignment only after A2-header-and-transport-policy and B2-method-and-upload-policy are complete. You own src/App.tsx, src/features/**, and src/styles.css. Supporting files are tests/e2e/m1.spec.ts and docs/requirements/09-m1-api-contract.md. Do not edit docs/security/asvs/**, worker/submission-security.ts, or docs/requirements/12-m1-security-decision-record.md. Align browser-visible behavior with the implemented server policy and return the standard handoff."
+    },
+    {
+      "slice_id": "G1-evidence-consolidation",
+      "status": "blocked",
+      "wave": 3,
+      "goal": "Consolidate tests and requirement docs into an auditor-ready evidence pack before re-audit.",
+      "owned_files": [
+        "tests/security.unit.test.ts",
+        "tests/integration/m1.integration.test.ts",
+        "tests/e2e/m1.spec.ts",
+        "docs/requirements/08-local-testing-and-first-release-runbook.md",
+        "docs/requirements/09-m1-api-contract.md",
+        "docs/requirements/12-m1-security-decision-record.md"
+      ],
+      "supporting_files": [
+        "docs/security/dependency-risk-register.md",
+        "docs/security/logging-and-error-handling.md",
+        "docs/security/crypto-policy.md"
+      ],
+      "forbidden_files": [
+        "docs/security/asvs/**"
+      ],
+      "depends_on": [
+        "A2-header-and-transport-policy",
+        "B2-method-and-upload-policy",
+        "C2-retention-and-image-metadata",
+        "D2-logging-and-dependency-posture",
+        "F1-frontend-security-alignment"
+      ],
+      "blocks": [],
+      "parallel_with": [],
+      "requires_extraction": false,
+      "tests_required": [
+        "npm run format",
+        "npm run lint",
+        "npm run typecheck",
+        "npm run test:unit",
+        "npm run test:integration",
+        "npm run test:e2e",
+        "npm run crypto:run"
+      ],
+      "docs_required": [
+        "docs/requirements/08-local-testing-and-first-release-runbook.md",
+        "docs/requirements/09-m1-api-contract.md",
+        "docs/requirements/12-m1-security-decision-record.md"
+      ],
+      "definition_of_done": [
+        "Behavior changes from earlier slices are reflected in tests and docs with no major evidence gaps.",
+        "The repo is ready for another ASVS review without the auditor needing oral history to interpret changes.",
+        "ASVS artifacts remain untouched by implementation work."
+      ],
+      "handoff_schema": {
+        "changed_files": "string[]",
+        "tests_run": "string[]",
+        "docs_updated": "string[]",
+        "controls_ready_for_reaudit": "string[]",
+        "residual_risks": "string[]"
+      },
+      "agent_prompt": "Claim slice G1-evidence-consolidation only after all implementation slices are complete. You own tests/security.unit.test.ts, tests/integration/m1.integration.test.ts, tests/e2e/m1.spec.ts, docs/requirements/08-local-testing-and-first-release-runbook.md, docs/requirements/09-m1-api-contract.md, and docs/requirements/12-m1-security-decision-record.md. Supporting files are docs/security/dependency-risk-register.md, docs/security/logging-and-error-handling.md, and docs/security/crypto-policy.md. Do not edit docs/security/asvs/**. Consolidate evidence for re-audit and return the standard handoff."
+    }
+  ]
+}

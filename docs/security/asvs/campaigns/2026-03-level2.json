@@ -1,9 +1,10 @@
 {
   "campaign_id": "2026-03-level2",
   "target_level": "2",
-  "status": "planned",
+  "status": "ready_for_execution",
   "source_checklist": "docs/security/asvs/checklist.machine.json",
   "summary": "Initial Level 2 remediation campaign for ls-oneup using module-based workstreams and audit-only ASVS artifacts.",
+  "execution_workboard": "docs/security/asvs/campaigns/2026-03-level2-workboard.json",
   "workstreams": [
     {
       "id": "A",
