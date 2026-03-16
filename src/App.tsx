@@ -1067,8 +1067,8 @@ function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps)
   );
 }
 
-async function maybeCompress(file: File): Promise<File> {
-  if (file.size <= 2 * 1024 * 1024 || !["image/jpeg", "image/png"].includes(file.type)) {
+async function prepareImageForUpload(file: File): Promise<File> {
+  if (!["image/jpeg", "image/png"].includes(file.type)) {
     return file;
   }
 
@@ -1098,15 +1098,31 @@ async function maybeCompress(file: File): Promise<File> {
 
   ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
   const outputType = file.type === "image/png" ? "image/png" : "image/jpeg";
-  const blob = await new Promise<Blob | null>((resolve) =>
-    canvas.toBlob(resolve, outputType, outputType === "image/jpeg" ? 0.82 : 0.92),
-  );
 
-  if (!blob || blob.size >= file.size) {
-    return file;
+  if (outputType === "image/png") {
+    const pngBlob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, outputType));
+    if (!pngBlob) {
+      return file;
+    }
+    return new File([pngBlob], file.name, { type: outputType, lastModified: Date.now() });
   }
 
-  return new File([blob], file.name, { type: outputType, lastModified: Date.now() });
+  const qualitySteps = file.size > 2 * 1024 * 1024 ? [0.9, 0.82, 0.74, 0.66] : [0.92, 0.86];
+
+  for (const quality of qualitySteps) {
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, outputType, quality),
+    );
+    if (!blob) {
+      continue;
+    }
+
+    if (blob.size <= 2 * 1024 * 1024 || quality === qualitySteps[qualitySteps.length - 1]) {
+      return new File([blob], file.name, { type: outputType, lastModified: Date.now() });
+    }
+  }
+
+  return file;
 }
 
 function FarmerPage({ token }: { token: string }): JSX.Element {
@@ -1267,7 +1283,7 @@ function FarmerPage({ token }: { token: string }): JSX.Element {
       return;
     }
 
-    const preparedImage = await maybeCompress(imageFile);
+    const preparedImage = await prepareImageForUpload(imageFile);
 
     const formData = new FormData();
     formData.set("crop_name", cropName.trim());

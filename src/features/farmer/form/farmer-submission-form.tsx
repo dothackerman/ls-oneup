@@ -131,7 +131,8 @@ export function FarmerSubmissionForm({
                     {selectedFileName ?? "Noch keine Datei ausgewählt"}
                   </p>
                   <p id="image-file-help" className="text-xs text-muted-foreground">
-                    Wählen Sie genau ein Bild im Format JPEG oder PNG.
+                    Wählen Sie genau ein Bild im Format JPEG oder PNG. Das Bild wird vor dem Upload
+                    vorbereitet; eingebettete Metadaten werden nicht gespeichert.
                   </p>
                 </div>
 

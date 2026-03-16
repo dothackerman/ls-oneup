@@ -98,6 +98,20 @@ export function buildTinyPng4x4ImagePayload(): ImagePayload {
   };
 }
 
+export function buildTinyPngWithTextMetadataPayload(): ImagePayload {
+  const base = buildSolidPng(4, 4);
+  const textData = Buffer.from("Comment\x00camera-roll", "latin1");
+  const textChunk = pngChunk("tEXt", textData);
+  const iend = base.subarray(base.length - 12);
+  const withoutIend = base.subarray(0, base.length - 12);
+
+  return {
+    name: "probe-with-metadata.png",
+    mimeType: "image/png",
+    buffer: Buffer.concat([withoutIend, textChunk, iend]),
+  };
+}
+
 export async function createProbeOrder(
   request: APIRequestContext,
   options?: {

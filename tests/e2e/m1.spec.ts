@@ -2,6 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { Buffer } from "node:buffer";
 import {
   buildTinyPng4x4ImagePayload,
+  buildTinyPngWithTextMetadataPayload,
   createProbeOrder,
   expireProbeById,
   submitProbe,
@@ -367,6 +368,32 @@ test("E2E-FARM-008 returns 405 on unsupported submit methods", async ({ request 
   const response = await request.get(`/api/probe/${token}/submit`);
   expect(response.status()).toBe(405);
   expect(response.headers().allow).toBe("POST");
+});
+
+test("E2E-FARM-009 strips image metadata before browser submit", async ({
+  page,
+  request,
+  context,
+}) => {
+  const { token } = await createProbeOrder(request, {
+    orderPrefix: "E2E-FARM-009",
+  });
+
+  await context.grantPermissions(["geolocation"]);
+  await context.setGeolocation({ latitude: 47.3769, longitude: 8.5417 });
+
+  await page.goto(`/p/${token}`);
+
+  await page.getByLabel("Kulturname").fill("Kartoffeln");
+  await chooseSelectOption(page, "Pflanzenvitalität", "normal");
+  await chooseSelectOption(page, "Bodenfeuchte", "normal");
+  await page.getByRole("button", { name: "GPS erfassen" }).click();
+  await page.setInputFiles("input[type='file']", buildTinyPngWithTextMetadataPayload());
+
+  await page.getByRole("button", { name: "Absenden" }).click();
+
+  await expect(page.getByText("Erfolgreich eingereicht am")).toBeVisible();
+  await expect(page.getByText("Bildmetadaten muessen")).toHaveCount(0);
 });
 
 test("E2E-ADMIN-004 allows viewing uploaded image from admin table", async ({ page, request }) => {
