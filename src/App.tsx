@@ -293,6 +293,83 @@ type AdminPageProps = {
   onThemePreferenceChange: (value: AdminThemePreference) => void;
 };
 
+type WelcomePageProps = {
+  themePreference: AdminThemePreference;
+  onThemePreferenceChange: (value: AdminThemePreference) => void;
+};
+
+function WelcomePage({
+  themePreference,
+  onThemePreferenceChange,
+}: WelcomePageProps): React.JSX.Element {
+  return (
+    <main className="mx-auto min-h-screen w-full max-w-5xl space-y-5 px-4 pb-10 pt-6 sm:px-6 lg:px-8">
+      <header className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="font-display text-3xl font-bold text-foreground">Leaf Sap One Up</h1>
+          <p className="mt-1 text-sm font-medium text-muted-foreground">Willkommen</p>
+        </div>
+
+        <div className="flex flex-wrap items-end gap-2">
+          <Button asChild type="button" variant="outline">
+            <a href="/admin">Zum Adminbereich</a>
+          </Button>
+
+          <Select
+            value={themePreference}
+            onValueChange={(value) => onThemePreferenceChange(value as AdminThemePreference)}
+          >
+            <SelectTrigger aria-label="Farbmodus" className="min-w-44 gap-2">
+              <span className="text-muted-foreground">Farbmodus:</span>
+              <SelectValue>{themePreferenceLabel(themePreference)}</SelectValue>
+            </SelectTrigger>
+            <SelectContent align="end" position="popper">
+              <SelectItem value="system">System</SelectItem>
+              <SelectItem value="light">Hell</SelectItem>
+              <SelectItem value="dark">Dunkel</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </header>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-display text-xl">Willkommen bei Leaf Sap One Up</CardTitle>
+          <CardDescription>
+            Diese Anwendung wird von EDAPRO GmbH genutzt und von Oriol Gut entwickelt.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2 text-sm text-foreground/90">
+            <p>
+              Nutzung: <a className="underline underline-offset-4" href="https://edapro.ch/">https://edapro.ch/</a>
+            </p>
+            <p>EDAPRO GmbH, Halterhus 1, 6017 Ruswil, Schweiz</p>
+            <p>
+              Entwicklung: <a className="underline underline-offset-4" href="https://oriolgut.ch/">Oriol Gut (oriolgut.ch)</a>
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              Navigation
+            </p>
+            <nav aria-label="Hauptnavigation">
+              <ul className="flex flex-wrap gap-2">
+                <li>
+                  <Button asChild>
+                    <a href="/admin">Admin</a>
+                  </Button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </CardContent>
+      </Card>
+    </main>
+  );
+}
+
 function AdminPage({
   themePreference,
   onThemePreferenceChange,
@@ -1372,6 +1449,8 @@ function FarmerPage({ token }: { token: string }): React.JSX.Element {
 export default function App(): React.JSX.Element {
   const path = window.location.pathname;
   const isAdminRoute = path.startsWith("/admin");
+  const isWelcomeRoute = path === "/";
+  const isThemeSelectableRoute = isAdminRoute || isWelcomeRoute;
 
   const [themePreference, setThemePreference] = useState<AdminThemePreference>(() =>
     getStoredAdminThemePreference(),
@@ -1386,7 +1465,7 @@ export default function App(): React.JSX.Element {
     const media = window.matchMedia("(prefers-color-scheme: dark)");
 
     const applyTheme = (): void => {
-      if (!isAdminRoute) {
+      if (!isThemeSelectableRoute) {
         root.classList.remove("dark");
         root.style.colorScheme = "light";
         return;
@@ -1407,7 +1486,13 @@ export default function App(): React.JSX.Element {
 
     media.addEventListener("change", listener);
     return () => media.removeEventListener("change", listener);
-  }, [isAdminRoute, themePreference]);
+  }, [isThemeSelectableRoute, themePreference]);
+
+  if (isWelcomeRoute) {
+    return (
+      <WelcomePage themePreference={themePreference} onThemePreferenceChange={setThemePreference} />
+    );
+  }
 
   if (isAdminRoute) {
     return (
