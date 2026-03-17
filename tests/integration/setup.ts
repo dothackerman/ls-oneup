@@ -14,7 +14,17 @@ async function clearProbeImages(): Promise<void> {
 }
 
 beforeEach(async () => {
-  await applyD1Migrations(env.DB, env.TEST_MIGRATIONS);
+  const runnableMigrations = env.TEST_MIGRATIONS.map((migration) => ({
+    ...migration,
+    queries: migration.queries.filter(
+      (query) => query.replace(/--.*$/gm, "").trim().length > 0,
+    ),
+  })).filter((migration) => migration.queries.length > 0);
+
+  await applyD1Migrations(
+    env.DB,
+    runnableMigrations,
+  );
   await env.DB.exec("DELETE FROM probes;");
   await clearProbeImages();
 });

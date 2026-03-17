@@ -4,16 +4,6 @@ import { buildValidForm, createProbeOrder, tokenFromUrl } from "./helpers";
 import { hashTokenForStorage, legacyPlainTokenHash } from "../../worker/security";
 import { decryptSubmissionImageBytes } from "../../worker/submission-security";
 
-async function expectD1Failure(run: () => Promise<unknown>): Promise<void> {
-  let failed = false;
-  try {
-    await run();
-  } catch {
-    failed = true;
-  }
-  expect(failed).toBe(true);
-}
-
 describe("M1 integration", () => {
   it("INT-EDGE-001 serves admin shell with browser security headers", async () => {
     const response = await SELF.fetch("https://example.test/admin");
@@ -402,50 +392,96 @@ describe("M1 integration", () => {
     expect(listed.objects.length).toBe(1);
   });
 
-  it("INT-DATA-001 blocks DB submit-state updates with missing mandatory farmer fields", async () => {
-    const { probeId } = await createProbeOrder({ order_number: "ORD-DATA-REQ" });
-    const now = new Date().toISOString();
+  it("INT-DATA-001 rejects API submit payloads for all required submit-time constraints", async () => {
+    const oversizedBytes = new Uint8Array(2 * 1024 * 1024 + 1);
+    const invalidCases: Array<{
+      name: string;
+      mutate: (form: FormData) => void;
+    }> = [
+      {
+        name: "missing crop_name without submission_ciphertext",
+        mutate: (form) => {
+          form.delete("crop_name");
+        },
+      },
+      {
+        name: "invalid plant_vitality enum",
+        mutate: (form) => {
+          form.set("vitality", "ungueltig");
+        },
+      },
+      {
+        name: "invalid soil_moisture enum",
+        mutate: (form) => {
+          form.set("soil_moisture", "ungueltig");
+        },
+      },
+      {
+        name: "gps_lat out of range",
+        mutate: (form) => {
+          form.set("gps_lat", "90.01");
+        },
+      },
+      {
+        name: "gps_lon out of range",
+        mutate: (form) => {
+          form.set("gps_lon", "180.01");
+        },
+      },
+      {
+        name: "missing gps_captured_at",
+        mutate: (form) => {
+          form.delete("gps_captured_at");
+        },
+      },
+      {
+        name: "missing image_key equivalent (image omitted)",
+        mutate: (form) => {
+          form.delete("image");
+        },
+      },
+      {
+        name: "invalid image_mime",
+        mutate: (form) => {
+          form.delete("image");
+          form.append(
+            "image",
+            new File([new Uint8Array([1, 2, 3])], "x.txt", { type: "text/plain" }),
+          );
+        },
+      },
+      {
+        name: "image_bytes out of range",
+        mutate: (form) => {
+          form.delete("image");
+          form.append("image", new File([oversizedBytes], "large.jpg", { type: "image/jpeg" }));
+        },
+      },
+      {
+        name: "missing image_uploaded_at equivalent (no file entry)",
+        mutate: (form) => {
+          form.delete("image");
+          form.set("image", "not-a-file");
+        },
+      },
+    ];
 
-    await expectD1Failure(() =>
-      env.DB.prepare("UPDATE probes SET submitted_at = ?1 WHERE id = ?2").bind(now, probeId).run(),
+    await Promise.all(
+      invalidCases.map(async (invalidCase) => {
+        const { tokenUrl } = await createProbeOrder();
+        const token = tokenFromUrl(tokenUrl);
+        const form = buildValidForm();
+        invalidCase.mutate(form);
+
+        const response = await SELF.fetch(`https://example.test/api/probe/${token}/submit`, {
+          method: "POST",
+          body: form,
+        });
+
+        expect(response.status, invalidCase.name).toBeGreaterThanOrEqual(400);
+        expect(response.status, invalidCase.name).toBeLessThan(500);
+      }),
     );
-
-    const row = await env.DB.prepare("SELECT submitted_at FROM probes WHERE id = ?1")
-      .bind(probeId)
-      .first<{ submitted_at: string | null }>();
-
-    expect(row?.submitted_at ?? null).toBeNull();
-  });
-
-  it("INT-DATA-002 blocks DB submit-state updates with invalid enum and MIME values", async () => {
-    const { probeId } = await createProbeOrder({ order_number: "ORD-DATA-ENUM" });
-    const now = new Date().toISOString();
-
-    await expectD1Failure(() =>
-      env.DB.prepare(
-        `UPDATE probes
-         SET submitted_at = ?1,
-             crop_name = 'Kartoffeln',
-             plant_vitality = 'ungueltig',
-             soil_moisture = 'normal',
-             gps_lat = 47.3769,
-             gps_lon = 8.5417,
-             gps_captured_at = ?2,
-             image_key = 'img/test.jpg',
-             image_mime = 'image/gif',
-             image_bytes = 1000,
-             image_uploaded_at = ?3
-         WHERE id = ?4`,
-      )
-        .bind(now, now, now, probeId)
-        .run(),
-    );
-
-    const row = await env.DB.prepare("SELECT submitted_at FROM probes WHERE id = ?1")
-      .bind(probeId)
-      .first<{ submitted_at: string | null }>();
-
-    expect(row?.submitted_at ?? null).toBeNull();
   });
 
   it("INT-STATUS-001 and INT-ADMIN-002 expose submitted status and image view", async () => {
