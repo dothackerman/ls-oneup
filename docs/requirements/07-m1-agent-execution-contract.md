@@ -13,7 +13,7 @@ Define the execution contract so a coding agent with subagents can implement M1 
 ## Scope Boundaries
 1. Implement only M1 scope from `02-milestones.md`.
 2. Do not implement M2/M3 features preemptively.
-3. Do not deploy to Cloudflare from agents in this phase.
+3. Do not execute production Cloudflare release actions from agents; production deploy/migrate flows are human-triggered via GitHub Actions.
 
 ## Required Subagent Structure (Recommended)
 1. `architecture-subagent`

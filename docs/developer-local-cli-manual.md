@@ -11,7 +11,7 @@ Single source of truth for local CLI usage in `ls-oneup`:
 1. This manual covers local machine workflows.
 2. Production deployment is executed through GitHub Actions manual workflows.
 3. Local production commands are guarded and intended for explicit break-glass/manual use only.
-4. Agents may prepare changes and release instructions, but should not execute release actions unless explicitly requested.
+4. Agent-specific execution constraints are defined in `AGENTS.md` and `.agents/*` docs.
 
 ## Prerequisites
 1. `git`

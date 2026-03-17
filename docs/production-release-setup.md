@@ -15,7 +15,7 @@ Use this guide to configure the first production release with an explicit local/
 
 ## 2) Provision production D1 and R2 resources
 
-Run once from your machine (with Wrangler auth):
+Run once from your machine (with Wrangler auth). This first provisioning step is human-operated:
 
 ```bash
 npx wrangler d1 create ls-oneup-db
@@ -71,6 +71,8 @@ Recommended first release order:
 1. Run migration workflow
 2. Run deploy workflow
 3. Run post-deploy smoke checks
+
+Agents may prepare these changes and instructions, but production deploy/migration execution remains human-triggered through GitHub Actions.
 
 ## 7) Optional local CLI equivalents
 

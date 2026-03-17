@@ -24,8 +24,9 @@ If unsure, start with the smallest route and expand only if blocked.
    - `docs/requirements/16-onboarding-parity.md`
    - `.agents/checklists/ux-change.md`
 2. Backend route:
-   - `docs/requirements/07-m1-agent-execution-contract.md`
+   - `docs/production-release-setup.md` (for deploy/migration/release tasks)
    - `docs/requirements/08-local-testing-and-first-release-runbook.md`
+   - `docs/requirements/07-m1-agent-execution-contract.md`
    - `.agents/checklists/backend-change.md`
 3. Data/contract route:
    - `docs/requirements/09-m1-api-contract.md`
@@ -63,4 +64,4 @@ If unsure, start with the smallest route and expand only if blocked.
 ## Hard Constraints
 1. Keep changes minimal and requirement-linked.
 2. Update requirement docs in the same change when behavior/contract changes.
-3. Do not run Cloudflare release/deploy commands unless explicitly requested.
+3. Do not run production Cloudflare release/deploy/migration commands from agents. Production release is human-triggered through GitHub Actions.

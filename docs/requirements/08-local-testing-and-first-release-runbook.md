@@ -49,7 +49,7 @@ Before milestone sign-off:
 2. R2 interactions are testable in local/dev mode (or mocked where needed).
 3. No cloud deployment is required for local testing.
 4. Local Workers runtime testing is not constrained by Cloudflare free-tier deployment/build limits.
-5. Production secrets are not committed to `wrangler.jsonc`; local secrets are loaded from `.dev.vars`.
+5. Production secrets are not committed to `wrangler.production.jsonc` (or any repo config); local secrets are loaded from `.dev.vars` used with `wrangler.jsonc`.
 
 ## First Release (Cloudflare) - GitHub Actions Manual Dispatch
 

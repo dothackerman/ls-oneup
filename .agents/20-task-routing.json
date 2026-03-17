@@ -28,15 +28,22 @@
       "load": ["docs/requirements/14-frontend-styling-policy.md", "docs/requirements/15-ux-governance.md", "docs/requirements/16-onboarding-parity.md", ".agents/checklists/ux-change.md"]
     },
     {
-      "id": "backend",
+      "id": "release-deploy",
       "priority": 4,
+      "keywords": ["deploy", "deployment", "release", "production", "wrangler", "github actions", "migration"],
+      "paths": [".github/workflows/**", "wrangler.production.jsonc", "docs/production-release-setup.md"],
+      "load": ["docs/production-release-setup.md", "docs/requirements/08-local-testing-and-first-release-runbook.md", "docs/requirements/07-m1-agent-execution-contract.md"]
+    },
+    {
+      "id": "backend",
+      "priority": 5,
       "keywords": ["worker", "endpoint", "runtime", "integration"],
       "paths": ["worker/**", "tests/integration/**"],
       "load": ["docs/requirements/07-m1-agent-execution-contract.md", "docs/requirements/08-local-testing-and-first-release-runbook.md", ".agents/checklists/backend-change.md"]
     },
     {
       "id": "frontend-non-ux",
-      "priority": 5,
+      "priority": 6,
       "keywords": ["component", "react", "frontend"],
       "paths": ["src/**"],
       "load": ["docs/requirements/14-frontend-styling-policy.md"]
