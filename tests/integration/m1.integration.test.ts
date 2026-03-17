@@ -399,19 +399,19 @@ describe("M1 integration", () => {
       mutate: (form: FormData) => void;
     }> = [
       {
-        name: "missing crop_name without submission_ciphertext",
+        name: "missing crop_name field",
         mutate: (form) => {
           form.delete("crop_name");
         },
       },
       {
-        name: "invalid plant_vitality enum",
+        name: "invalid vitality field value",
         mutate: (form) => {
           form.set("vitality", "ungueltig");
         },
       },
       {
-        name: "invalid soil_moisture enum",
+        name: "invalid soil_moisture field value",
         mutate: (form) => {
           form.set("soil_moisture", "ungueltig");
         },
@@ -435,7 +435,7 @@ describe("M1 integration", () => {
         },
       },
       {
-        name: "missing image_key equivalent (image omitted)",
+        name: "missing image file",
         mutate: (form) => {
           form.delete("image");
         },
@@ -451,7 +451,7 @@ describe("M1 integration", () => {
         },
       },
       {
-        name: "image_bytes out of range",
+        name: "image file too large (>2MB)",
         mutate: (form) => {
           form.delete("image");
           form.append("image", new File([oversizedBytes], "large.jpg", { type: "image/jpeg" }));
