@@ -104,7 +104,7 @@ function assertUniqueKeyIds(keyRing: SubmissionDataKeyRing): void {
 function decodeBase64Url(value: string): Uint8Array {
   const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
   const padding = normalized.length % 4 === 0 ? "" : "=".repeat(4 - (normalized.length % 4));
-  let binary = "";
+  let binary: string;
   try {
     binary = atob(`${normalized}${padding}`);
   } catch {

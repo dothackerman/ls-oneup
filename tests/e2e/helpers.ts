@@ -214,6 +214,8 @@ export async function expireProbeById(probeId: string): Promise<void> {
     );
   } catch (error) {
     const details = error instanceof Error ? error.message : "unknown error";
-    throw new Error(`Failed to expire probe via local D1 SQL: ${details}`);
+    throw new Error(`Failed to expire probe via local D1 SQL: ${details}`, {
+      cause: error,
+    });
   }
 }
