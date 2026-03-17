@@ -15,9 +15,6 @@
   "execution_policy_path": "docs/security/asvs/execution-policy.json",
   "campaigns_root": "docs/security/asvs/campaigns",
   "commands": {
-    "asvs_sync": "npm run asvs:sync",
-    "asvs_audit": "npm run asvs:audit",
-    "asvs_gate": "npm run asvs:gate",
     "format": "npm run format",
     "lint": "npm run lint",
     "typecheck": "npm run typecheck",

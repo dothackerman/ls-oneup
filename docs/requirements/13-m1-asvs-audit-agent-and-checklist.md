@@ -47,31 +47,33 @@ Primary reader entry points:
 - `docs/security/asvs/checklist.md`
 - `docs/security/asvs/repo-config.json`
 
-## Commands
+## Operator entry points
 
-- `npm run asvs:sync`
-- `npm run asvs:audit`
-- `npm run asvs:gate`
-- `npm run asvs:run`
+- `/asvs-review`
+- `/asvs-remediate`
+
+ASVS is intentionally skill-driven in this repository; script/CI gates are out of scope for this contract.
 
 ## Checklist row contract
 
 Each requirement row must include:
 - `requirement_id`
-- `status` (`completed|todo|not_applicable|deferred_exception`)
+- `status` (`completed|not_reviewed|not_implemented|needs_decision|not_applicable|deferred_exception`)
 - `severity` (`critical|high|medium|low|none`)
 - `reasoning`
 - `code_references` (array of `file:line`)
 
 Status semantics:
 - `completed` — implemented and evidenced in code references
-- `todo` — not yet implemented or still missing enough evidence
+- `not_reviewed` — preliminary evidence exists but control verification is still pending
+- `not_implemented` — no implementation evidence found yet for the control
+- `needs_decision` — implementation/evidence depends on explicit operator or architecture decisions
 - `not_applicable` — out of scope for this codebase, with specific reasoning
 - `deferred_exception` — operator-accepted exception for a control that remains open; this is not equivalent to completion and must retain explicit reasoning
 
 ## Acceptance criteria
 
-1. Running `npm run asvs:sync` refreshes upstream metadata and baseline checklist.
-2. Running `npm run asvs:audit` evaluates all checklist items and writes findings.
+1. Running `/asvs-review` refreshes upstream metadata, checklist state, and findings artifacts.
+2. Running `/asvs-remediate` implements selected slices without directly editing ASVS checklist artifacts.
 3. Checklist report prioritizes readability for reviewers, including status summary, level summary, and chapter summary.
-4. Repo adapter files exist under `docs/security/asvs/` so global `asvs-review` and `asvs-remediate` skills can operate without repo-local skill logic.
+4. Repo adapter files exist under `docs/security/asvs/` so global `asvs-review` and `asvs-remediate` skills can operate without repo-local ASVS script logic.

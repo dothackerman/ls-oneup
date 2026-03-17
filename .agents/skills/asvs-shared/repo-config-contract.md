@@ -16,7 +16,8 @@ Optional:
 
 Purpose:
 - identifies the repository
-- defines audit roots, commands, trust boundaries, and protected artifacts
+- defines audit roots, trust boundaries, and protected artifacts
+- optionally defines repository-local quality commands used during remediation validation
 
 Minimum fields:
 
@@ -29,10 +30,13 @@ Minimum fields:
 - `audit_artifact_root`
 - `surface_map_path`
 - `execution_policy_path`
-- `commands`
 - `trust_boundaries`
 - `sensitive_data_classes`
 - `protected_artifacts`
+
+Optional fields:
+
+- `commands` (for format/lint/typecheck/test commands; ASVS-specific sync/audit/gate commands are not required)
 
 ### `surface-map.json`
 

@@ -42,17 +42,17 @@ You do not:
 
 ## Core Flow
 
-1. Run the repo-configured ASVS commands if they exist.
+1. If repo-configured helper commands exist, run them when useful for evidence quality checks (format/lint/typecheck/tests).
 2. Refresh upstream source metadata.
-3. Refresh checklist artifacts.
+3. Refresh checklist artifacts directly from repository evidence and source metadata.
 4. Triage open controls.
 5. Use parallel subagents for evidence gathering where useful:
    - by chapter
    - by control family
    - by architectural surface if the repo adapter is strong
-6. Re-run the ASVS gate.
+6. Validate checklist artifact integrity and status vocabulary consistency.
 7. Report:
-   - gate summary
+   - audit summary
    - major open areas
    - deferred exceptions
    - ambiguities for planner/operator follow-up
@@ -61,11 +61,13 @@ You do not:
 
 Allowed statuses:
 - `completed`
-- `todo`
+- `not_reviewed`
+- `not_implemented`
+- `needs_decision`
 - `not_applicable`
 - `deferred_exception`
 
-For `todo`, `not_applicable`, and `deferred_exception`, reasoning is mandatory.
+For `not_reviewed`, `not_implemented`, `needs_decision`, `not_applicable`, and `deferred_exception`, reasoning is mandatory.
 
 ## Parallel Analysis Guidance
 

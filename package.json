@@ -28,10 +28,6 @@
     "pw:cli:snapshot": "node scripts/playwright-cli-run.mjs snapshot",
     "crypto:inventory": "node scripts/crypto-inventory.mjs",
     "ci:local": "npm run crypto:run && npm run format && npm run lint && npm run typecheck && npm run test:integration && npm run test:e2e",
-    "asvs:sync": "node scripts/asvs-sync.mjs",
-    "asvs:audit": "node scripts/asvs-audit.mjs",
-    "asvs:gate": "node scripts/asvs-gate.mjs",
-    "asvs:run": "npm run asvs:sync && npm run asvs:audit && npm run asvs:gate",
     "crypto:audit": "npm run crypto:inventory",
     "crypto:gate": "node scripts/crypto-gate.mjs",
     "crypto:run": "npm run crypto:inventory && npm run crypto:gate"

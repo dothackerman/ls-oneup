@@ -1,6 +1,6 @@
-# ASVS / vOS Security Checklist Pipeline
+# ASVS / vOS Security Skill Workflow
 
-This directory tracks OWASP ASVS source state and local codebase validation.
+This directory tracks OWASP ASVS source state and local codebase validation artifacts.
 This README is maintenance-oriented. Start with [security index](../README.md) or [ASVS checklist](./checklist.md).
 
 Global reusable skills:
@@ -37,34 +37,28 @@ Repo-local adapter files in this repository:
 
 ## Workflow
 
-1. Sync upstream ASVS source and (re)build checklist baseline:
+This repository is skill-driven for ASVS. Run ASVS from the reusable skills:
 
 ```bash
-npm run asvs:sync
+/asvs-review
 ```
 
-2. Audit local codebase against checklist:
+Use remediation for implementation slices only:
 
 ```bash
-npm run asvs:audit
+/asvs-remediate
 ```
 
-3. Enforce quality gate:
+Then run `/asvs-review` again to refresh checklist state from new evidence.
 
-```bash
-npm run asvs:gate
-```
-
-Or run all in one:
-
-```bash
-npm run asvs:run
-```
+There is no CI enforcement or package-script gate for ASVS in this repository.
 
 ## Status semantics
 
 - `completed` — implemented and evidenced in code references
-- `todo` — not yet implemented or missing evidence
+- `not_reviewed` — preliminary evidence exists but control verification is still pending
+- `not_implemented` — no implementation evidence found yet for the control
+- `needs_decision` — implementation/evidence depends on explicit operator or architecture decisions
 - `not_applicable` — out of scope for this codebase (must include reasoning)
 - `deferred_exception` — operator-accepted exception for an open control (must include reasoning and is not a completion)
 
@@ -79,3 +73,7 @@ npm run asvs:run
 ## Responsibility note
 
 The global `asvs-review` skill may run with any available model. The repository owner is responsible for reviewing findings quality before relying on audit results.
+
+## One-time cleanup note
+
+Legacy script-based ASVS execution (`npm run asvs:*`) was removed in this repository in favor of skill-first operation and adapter-driven artifacts. Historical references may still exist in older planning documents, but active operational flow is exclusively skill-based.

@@ -22,7 +22,7 @@ For audience-based navigation across all docs, start at [docs hub](../README.md)
 These are intentionally separated from the top-level repository README.
 
 1. [ASVS audit contract](../requirements/13-m1-asvs-audit-agent-and-checklist.md)
-2. [ASVS / vOS pipeline README](./asvs/README.md)
+2. [ASVS / vOS skill workflow README](./asvs/README.md)
 3. [Machine-readable ASVS checklist](./asvs/checklist.machine.json)
 4. [ASVS delta summary](./asvs/checklist.delta.md)
 5. [Repo adapter config](./asvs/repo-config.json)
