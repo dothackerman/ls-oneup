@@ -21,6 +21,7 @@ Define the exact HTTP contract for Milestone 1.
    - `expires: 0`
    - admin responses also include `vary: Cf-Access-Authenticated-User-Email`
 7. Known API routes return `405 METHOD_NOT_ALLOWED` with an `Allow` header when the path exists but the HTTP method is unsupported.
+8. The browser UI should surface `METHOD_NOT_ALLOWED` errors with a clear method-mismatch message and include the `Allow` value when present.
 
 ## Domain Types
 1. `vitality`: `normal | schwach_langsam | krankheit_oder_anderes_problem`

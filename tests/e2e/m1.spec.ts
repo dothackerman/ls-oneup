@@ -370,6 +370,49 @@ test("E2E-FARM-008 returns 405 on unsupported submit methods", async ({ request 
   expect(response.headers().allow).toBe("POST");
 });
 
+test("E2E-FARM-008b surfaces METHOD_NOT_ALLOWED gracefully in farmer UI", async ({
+  page,
+  request,
+  context,
+}) => {
+  const { token } = await createProbeOrder(request, {
+    orderPrefix: "E2E-FARM-008B",
+  });
+
+  await context.grantPermissions(["geolocation"]);
+  await context.setGeolocation({ latitude: 47.3769, longitude: 8.5417 });
+  await page.goto(`/p/${token}`);
+
+  await page.route(`**/api/probe/${token}/submit`, async (route) => {
+    if (route.request().method() !== "POST") {
+      await route.continue();
+      return;
+    }
+
+    await route.fulfill({
+      status: 405,
+      headers: {
+        "content-type": "application/json",
+        allow: "POST",
+      },
+      body: JSON.stringify({
+        error_code: "METHOD_NOT_ALLOWED",
+        message: "HTTP-Methode nicht erlaubt.",
+      }),
+    });
+  });
+
+  await page.getByLabel("Kulturname").fill("Kartoffeln");
+  await chooseSelectOption(page, "Pflanzenvitalität", "normal");
+  await chooseSelectOption(page, "Bodenfeuchte", "normal");
+  await page.getByRole("button", { name: "GPS erfassen" }).click();
+  await page.setInputFiles("input[type='file']", buildTinyPng4x4ImagePayload());
+  await page.getByRole("button", { name: "Absenden" }).click();
+
+  await expect(page.getByText("HTTP-Methode nicht erlaubt. Erlaubt: POST.")).toBeVisible();
+  await expect(page.getByText("Erfolgreich eingereicht am")).toHaveCount(0);
+});
+
 test("E2E-FARM-009 strips image metadata before browser submit", async ({
   page,
   request,

@@ -186,6 +186,22 @@ async function readApiPayload<T>(
   }
 }
 
+function apiErrorMessage(
+  response: Response,
+  payload: ApiPayload<unknown>,
+  fallbackMessage: string,
+): string {
+  if (payload.error_code === "METHOD_NOT_ALLOWED" || response.status === 405) {
+    const allowHeader = response.headers.get("allow");
+    if (allowHeader) {
+      return `HTTP-Methode nicht erlaubt. Erlaubt: ${allowHeader}.`;
+    }
+    return "HTTP-Methode nicht erlaubt.";
+  }
+
+  return payload.message || fallbackMessage;
+}
+
 function isOnboardingPreviewProbe(probeId: string): boolean {
   return probeId === ONBOARDING_PREVIEW_PROBE_ID;
 }
@@ -473,13 +489,11 @@ function AdminPage({
 
   async function loadProbes({ resetPage = false }: { resetPage?: boolean } = {}): Promise<void> {
     const res = await fetch("/api/admin/probes");
-    const payload = await readApiPayload<{ items?: AdminProbe[] }>(
-      res,
-      "Proben konnten nicht geladen werden.",
-    );
+    const fallbackMessage = "Proben konnten nicht geladen werden.";
+    const payload = await readApiPayload<{ items?: AdminProbe[] }>(res, fallbackMessage);
 
     if (!res.ok) {
-      throw new Error(payload.message || "Laden fehlgeschlagen.");
+      throw new Error(apiErrorMessage(res, payload, fallbackMessage));
     }
 
     setProbes(Array.isArray(payload.items) ? payload.items : []);
@@ -510,13 +524,11 @@ function AdminPage({
         }),
       });
 
-      const payload = await readApiPayload<{ items?: CreatedProbe[] }>(
-        response,
-        "Proben konnten nicht erstellt werden.",
-      );
+      const fallbackMessage = "Proben konnten nicht erstellt werden.";
+      const payload = await readApiPayload<{ items?: CreatedProbe[] }>(response, fallbackMessage);
 
       if (!response.ok) {
-        setError(payload.message || "Erstellung fehlgeschlagen.");
+        setError(apiErrorMessage(response, payload, fallbackMessage));
         return;
       }
 
@@ -604,10 +616,11 @@ function AdminPage({
         body: JSON.stringify({ crop_name: cropName }),
       });
 
-      const payload = await readApiPayload(res, "Kulturname konnte nicht überschrieben werden.");
+      const fallbackMessage = "Kulturname konnte nicht überschrieben werden.";
+      const payload = await readApiPayload(res, fallbackMessage);
 
       if (!res.ok) {
-        setError(payload.message || "Überschreiben fehlgeschlagen.");
+        setError(apiErrorMessage(res, payload, fallbackMessage));
         return;
       }
 
@@ -1148,6 +1161,8 @@ function AdminPage({
 }
 
 async function prepareImageForUpload(file: File): Promise<File> {
+  // Browser-side re-encoding strips common embedded metadata before upload.
+  // Server validation remains authoritative and can still reject the file.
   if (!["image/jpeg", "image/png"].includes(file.type)) {
     return file;
   }
@@ -1242,15 +1257,13 @@ function FarmerPage({ token }: { token: string }): React.JSX.Element {
       }
 
       const response = await fetch(`/api/probe/${token}`);
-      const payload = await readApiPayload<ProbeLookup>(
-        response,
-        "Link konnte nicht geladen werden.",
-      );
+      const fallbackMessage = "Link konnte nicht geladen werden.";
+      const payload = await readApiPayload<ProbeLookup>(response, fallbackMessage);
 
       setLoading(false);
 
       if (!response.ok) {
-        setError(payload.message || "Link konnte nicht geladen werden.");
+        setError(apiErrorMessage(response, payload, fallbackMessage));
         return;
       }
 
@@ -1379,13 +1392,11 @@ function FarmerPage({ token }: { token: string }): React.JSX.Element {
       body: formData,
     });
 
-    const payload = await readApiPayload<{ submitted_at?: string }>(
-      response,
-      "Senden fehlgeschlagen.",
-    );
+    const fallbackMessage = "Senden fehlgeschlagen.";
+    const payload = await readApiPayload<{ submitted_at?: string }>(response, fallbackMessage);
 
     if (!response.ok) {
-      setError(payload.message || "Senden fehlgeschlagen.");
+      setError(apiErrorMessage(response, payload, fallbackMessage));
       setSuccess(null);
       return;
     }
