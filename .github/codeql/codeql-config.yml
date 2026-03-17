@@ -1,0 +1,22 @@
+name: "ls-oneup codeql"
+
+queries:
+  - uses: security-extended
+  - uses: security-and-quality
+
+paths:
+  - src
+  - worker
+  - scripts
+
+paths-ignore:
+  - tests
+  - docs
+  - migrations
+  - public
+  - test-results
+  - tmp
+  - .wrangler-config
+  - .playwright
+  - .playwright-browsers
+  - dist
