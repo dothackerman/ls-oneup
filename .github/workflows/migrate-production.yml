@@ -1,0 +1,65 @@
+name: Migrate Production D1
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_migration:
+        description: Type MIGRATE_PRODUCTION to continue
+        required: true
+        type: string
+      allow_destructive_migrations:
+        description: Set true only when intentionally applying destructive SQL migrations
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: migrate-production
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    name: Apply production migrations
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate branch and confirmation
+        run: |
+          if [ "${GITHUB_REF}" != "refs/heads/main" ]; then
+            echo "Production migrations only allowed from main."
+            exit 1
+          fi
+          if [ "${{ github.event.inputs.confirm_migration }}" != "MIGRATE_PRODUCTION" ]; then
+            echo "Invalid confirmation token."
+            exit 1
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: List pending production migrations
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler d1 migrations list ls-oneup-db --remote --config wrangler.production.jsonc
+
+      - name: Apply production migrations
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PROD_CONFIRM: I_UNDERSTAND_THIS_TARGETS_PRODUCTION
+          PROD_MIGRATION_CONFIRM: MIGRATE_PROD
+          ALLOW_DESTRUCTIVE_MIGRATIONS: ${{ github.event.inputs.allow_destructive_migrations }}
+        run: npm run db:migrate:prod

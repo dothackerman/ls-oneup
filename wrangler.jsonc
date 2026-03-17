@@ -1,5 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
+  // Local development and test runtime config only.
+  // Production deploys must use wrangler.production.jsonc.
   // Worker-managed response headers live in code.
   // Deployment-only transport controls such as HTTPS redirects and HSTS are configured at the Cloudflare edge and documented in the runbook.
   "name": "ls-oneup",
