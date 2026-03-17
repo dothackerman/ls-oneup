@@ -22,7 +22,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@shared/components/ui/card";
-import { Dialog, DialogContent, DialogTitle } from "@shared/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@shared/components/ui/dialog";
 import { Input } from "@shared/components/ui/input";
 import { Label } from "@shared/components/ui/label";
 import { ScrollArea } from "@shared/components/ui/scroll-area";
@@ -1106,6 +1106,9 @@ function AdminPage({
               <DialogTitle className="font-display text-xl">
                 Bildvorschau Probe {previewProbe.probe_number}
               </DialogTitle>
+              <DialogDescription className="sr-only">
+                Vergrösserte Bildvorschau zur ausgewählten Probe.
+              </DialogDescription>
               <Button type="button" variant="outline" onClick={closePreview}>
                 Schliessen
               </Button>
