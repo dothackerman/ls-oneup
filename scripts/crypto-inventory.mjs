@@ -37,7 +37,7 @@ const MARKERS = [
 ];
 
 async function walk(dir) {
-  let entries = [];
+  let entries;
   try {
     entries = await fs.readdir(dir, { withFileTypes: true });
   } catch {

@@ -123,7 +123,7 @@ const TECH_ABSENCE_RULES = [
 
 async function walk(dir) {
   const out = [];
-  let entries = [];
+  let entries;
   try {
     entries = await fs.readdir(dir, { withFileTypes: true });
   } catch {
