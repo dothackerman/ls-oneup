@@ -1,0 +1,40 @@
+{
+  "repo_name": "example-repo",
+  "system_purpose": "One-sentence description of what the system does.",
+  "deployment_model": "cloudflare-workers",
+  "primary_stack": {
+    "runtime": "node or workers",
+    "frontend": "react or none",
+    "database": "d1, postgres, sqlite, none",
+    "storage": "r2, s3, none"
+  },
+  "code_roots": ["src", "worker", "tests"],
+  "docs_roots": ["docs"],
+  "audit_artifact_root": "docs/security/asvs",
+  "surface_map_path": "docs/security/asvs/surface-map.json",
+  "execution_policy_path": "docs/security/asvs/execution-policy.json",
+  "campaigns_root": "docs/security/asvs/campaigns",
+  "commands": {
+    "asvs_sync": "npm run asvs:sync",
+    "asvs_audit": "npm run asvs:audit",
+    "asvs_gate": "npm run asvs:gate",
+    "format": "npm run format",
+    "lint": "npm run lint",
+    "typecheck": "npm run typecheck",
+    "test_unit": "npm run test:unit",
+    "test_integration": "npm run test:integration",
+    "test_e2e": "npm run test:e2e"
+  },
+  "trust_boundaries": [
+    "Describe the main inbound trust boundaries.",
+    "Describe upstream auth or identity assumptions."
+  ],
+  "sensitive_data_classes": [
+    "tokens",
+    "user content",
+    "location data"
+  ],
+  "protected_artifacts": [
+    "docs/security/asvs/**"
+  ]
+}
