@@ -11,3 +11,4 @@ test-results
 coverage
 .dev.vars
 .DS_Store
+.vscode/settings.json
