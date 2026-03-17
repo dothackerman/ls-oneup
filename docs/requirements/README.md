@@ -2,7 +2,7 @@
 
 This folder contains the living requirement and implementation-guidance documents for `ls-oneup`.
 
-For audience-based navigation across all docs, start at `../README.md`.
+For audience-based navigation across all docs, start at [docs hub](../README.md).
 
 ## Document Order
 0. `00-index.md`
@@ -47,6 +47,6 @@ For audience-based navigation across all docs, start at `../README.md`.
 3. Treat open questions as backlog items, not hidden assumptions.
 
 ## Related Navigation
-1. Security hub: `../security/README.md`
-2. Human-readable ASVS checklist: `../security/asvs/checklist.human.md`
-3. ASVS maintenance artifacts: `../security/asvs/README.md`
+1. Security hub: [docs/security/README.md](../security/README.md)
+2. ASVS checklist: [docs/security/asvs/checklist.md](../security/asvs/checklist.md)
+3. ASVS maintenance artifacts: [docs/security/asvs/README.md](../security/asvs/README.md)

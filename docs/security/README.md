@@ -1,20 +1,20 @@
 # Security Documentation Index
 
-Use this folder as the human-facing entry point for repository security documentation.
+Use this folder as the entry point for repository security documentation.
 
-For audience-based navigation across all docs, start at `../README.md`.
+For audience-based navigation across all docs, start at [docs hub](../README.md).
 
-## Human Start Here
+## Start Here
 
 1. [Security decision record](../requirements/12-m1-security-decision-record.md)
-2. [Human-readable ASVS checklist](./asvs/checklist.human.md)
+2. [ASVS checklist](./asvs/checklist.md)
 3. [ASVS Level 2 implementation plan](../plans/2026-03-14-asvs-level2-implementation-plan.md)
 4. [Crypto policy](./crypto-policy.md)
 
 ## Navigation Notes
 
 - Start with the decision record when you want the current application security posture and design tradeoffs.
-- Start with the ASVS human checklist when you want the current audit result without parsing JSON.
+- Start with the ASVS checklist when you want the current audit result without parsing JSON.
 - Start with the crypto policy when you want implementation-level cryptography scope, key handling, and rotation rules.
 
 ## Maintenance And Agent Artifacts

@@ -26,7 +26,7 @@ npm run asvs:run
 - `docs/security/asvs/source-state.json`
 - `docs/security/asvs/version-history.jsonl`
 - `docs/security/asvs/checklist.machine.json`
-- `docs/security/asvs/checklist.human.md`
+- `docs/security/asvs/checklist.md`
 - `docs/security/asvs/checklist.findings.jsonl`
 - `docs/security/asvs/checklist.delta.json`
 - `docs/security/asvs/checklist.delta.md`

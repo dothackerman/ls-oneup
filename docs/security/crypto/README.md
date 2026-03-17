@@ -1,7 +1,7 @@
 # Crypto Inventory Pipeline
 
 This directory tracks the repository's cryptographic inventory, discovery output, and operating policy.
-This README is maintenance-oriented. Human readers should usually start with `../README.md` or `../crypto-policy.md`.
+This README is maintenance-oriented. Start with [security index](../README.md) or [crypto policy](../crypto-policy.md).
 
 ## Recommended Entry Points
 
@@ -11,9 +11,9 @@ This README is maintenance-oriented. Human readers should usually start with `..
 
 ## Files
 
-- `../crypto-inventory.json` - maintained inventory of active cryptographic primitives, key sources, rotation rules, and migration plans.
-- `../crypto-discovery.json` - generated discovery artifact showing crypto-related code and operational references found in the repository.
-- `../crypto-policy.md` - key-management, crypto-agility, and fail-secure policy for the M1 runtime.
+- [docs/security/crypto-inventory.json](../crypto-inventory.json) - maintained inventory of active cryptographic primitives, key sources, rotation rules, and migration plans.
+- [docs/security/crypto-discovery.json](../crypto-discovery.json) - generated discovery artifact showing crypto-related code and operational references found in the repository.
+- [docs/security/crypto-policy.md](../crypto-policy.md) - key-management, crypto-agility, and fail-secure policy for the M1 runtime.
 
 ## Workflow
 

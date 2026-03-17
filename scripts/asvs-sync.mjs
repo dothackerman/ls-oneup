@@ -8,7 +8,7 @@ const OUT_DIR = path.resolve("docs/security/asvs");
 const SOURCE_STATE_PATH = path.join(OUT_DIR, "source-state.json");
 const HISTORY_PATH = path.join(OUT_DIR, "version-history.jsonl");
 const CHECKLIST_MACHINE_PATH = path.join(OUT_DIR, "checklist.machine.json");
-const CHECKLIST_HUMAN_PATH = path.join(OUT_DIR, "checklist.human.md");
+const CHECKLIST_REPORT_PATH = path.join(OUT_DIR, "checklist.md");
 
 const FLAT_JSON =
   "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json";
@@ -88,7 +88,7 @@ async function readJsonIfExists(p) {
 
 function toHumanMarkdown(sourceState, checklist) {
   const header = [
-    "# ASVS Checklist (Human View)",
+    "# ASVS Checklist",
     "",
     `- Upstream repo: ${sourceState.upstream_repo}`,
     `- Upstream ref: ${sourceState.upstream_ref}`,
@@ -198,7 +198,7 @@ async function main() {
     "utf8",
   );
 
-  await fs.writeFile(CHECKLIST_HUMAN_PATH, toHumanMarkdown(sourceState, mergedChecklist), "utf8");
+  await fs.writeFile(CHECKLIST_REPORT_PATH, toHumanMarkdown(sourceState, mergedChecklist), "utf8");
 
   console.log(
     `ASVS sync complete: ${mergedChecklist.length} items (commit ${sourceState.upstream_commit_sha.slice(0, 12)})`,

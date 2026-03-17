@@ -1,7 +1,7 @@
 # ASVS / vOS Security Checklist Pipeline
 
 This directory tracks OWASP ASVS source state and local codebase validation.
-This README is maintenance-oriented. Human readers should usually start with `../README.md` or `./checklist.human.md`.
+This README is maintenance-oriented. Start with [security index](../README.md) or [ASVS checklist](./checklist.md).
 
 Global reusable skills:
 - `asvs-review`
@@ -16,7 +16,7 @@ Repo-local adapter files in this repository:
 ## Recommended Entry Points
 
 1. [Security documentation index](../README.md)
-2. [Human-readable checklist](./checklist.human.md)
+2. [ASVS checklist](./checklist.md)
 3. [Machine-readable checklist](./checklist.machine.json)
 4. [Checklist delta summary](./checklist.delta.md)
 5. [ASVS audit contract](../../requirements/13-m1-asvs-audit-agent-and-checklist.md)
@@ -27,13 +27,13 @@ Repo-local adapter files in this repository:
 
 ## Files
 
-- `source-state.json` — latest upstream source metadata (commit + blob hash + checked time)
-- `version-history.jsonl` — append-only check history
-- `checklist.machine.json` — machine-readable checklist with status/reasoning/code refs
-- `checklist.human.md` — human-readable report
-- `checklist.findings.jsonl` — append-only per-item audit findings
-- `checklist.delta.json` — machine-readable diff vs previous run
-- `checklist.delta.md` — human-readable delta summary
+- [source-state.json](./source-state.json) — latest upstream source metadata (commit + blob hash + checked time)
+- [version-history.jsonl](./version-history.jsonl) — append-only check history
+- [checklist.machine.json](./checklist.machine.json) — machine-readable checklist with status/reasoning/code refs
+- [checklist.md](./checklist.md) — checklist report
+- [checklist.findings.jsonl](./checklist.findings.jsonl) — append-only per-item audit findings
+- [checklist.delta.json](./checklist.delta.json) — machine-readable diff vs previous run
+- [checklist.delta.md](./checklist.delta.md) — delta summary
 
 ## Workflow
 

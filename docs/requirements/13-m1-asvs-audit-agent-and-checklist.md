@@ -6,7 +6,7 @@ Establish a repeatable security-audit workflow that:
 
 1. Uses official OWASP ASVS source data from GitHub.
 2. Tracks upstream version/hash check history locally.
-3. Maintains both machine-readable and human-readable checklist states.
+3. Maintains both machine-readable and review-friendly checklist states.
 4. Supports full-repository validation with code references and reasoning.
 5. Documents owner responsibility for reviewing audit quality before relying on results.
 
@@ -35,7 +35,7 @@ The audit workflow must document that:
 - `source-state.json`
 - `version-history.jsonl`
 - `checklist.machine.json`
-- `checklist.human.md`
+- `checklist.md`
 - `checklist.findings.jsonl`
 - `checklist.delta.json`
 - `checklist.delta.md`
@@ -44,7 +44,7 @@ The audit workflow must document that:
 Primary reader entry points:
 - `docs/security/README.md`
 - `docs/security/asvs/README.md`
-- `docs/security/asvs/checklist.human.md`
+- `docs/security/asvs/checklist.md`
 - `docs/security/asvs/repo-config.json`
 
 ## Commands
@@ -73,5 +73,5 @@ Status semantics:
 
 1. Running `npm run asvs:sync` refreshes upstream metadata and baseline checklist.
 2. Running `npm run asvs:audit` evaluates all checklist items and writes findings.
-3. Human report prioritizes readability for human reviewers, including status summary, level summary, and chapter summary.
+3. Checklist report prioritizes readability for reviewers, including status summary, level summary, and chapter summary.
 4. Repo adapter files exist under `docs/security/asvs/` so global `asvs-review` and `asvs-remediate` skills can operate without repo-local skill logic.

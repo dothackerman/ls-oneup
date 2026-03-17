@@ -1,7 +1,7 @@
-# ASVS Checklist (Human View)
+# ASVS Checklist
 
-This report is optimized for human review.
-Structured per-control data remains in `checklist.machine.json` and `checklist.findings.jsonl`.
+This report is optimized for review.
+Structured per-control data remains in [checklist.machine.json](./checklist.machine.json) and [checklist.findings.jsonl](./checklist.findings.jsonl).
 
 ## Snapshot
 
@@ -60,10 +60,10 @@ Structured per-control data remains in `checklist.machine.json` and `checklist.f
 - V11 Cryptography: 18 completed, 1 todo, 5 not applicable.
 - Remaining open crypto control: V11.7.1 — The repository still contains no mechanism to enable full memory encryption or confidential-computing controls for the Worker runtime. Even with encrypted D1 rows and encrypted R2 image objects, tokens, decrypted submission payloads, and decrypted image bytes still enter normal process memory during request handling.
 
-## Human Navigation
+## Navigation
 
-- Security overview: `../README.md`
-- Security decision record: `../../requirements/12-m1-security-decision-record.md`
-- Level 2 implementation plan: `../../plans/2026-03-14-asvs-level2-implementation-plan.md`
-- ASVS pipeline and maintenance notes: `README.md`
-- Full structured checklist: `checklist.machine.json`
+- Security overview: [docs/security/README.md](../README.md)
+- Security decision record: [docs/requirements/12-m1-security-decision-record.md](../../requirements/12-m1-security-decision-record.md)
+- Level 2 implementation plan: [docs/plans/2026-03-14-asvs-level2-implementation-plan.md](../../plans/2026-03-14-asvs-level2-implementation-plan.md)
+- ASVS pipeline and maintenance notes: [docs/security/asvs/README.md](./README.md)
+- Full structured checklist: [checklist.machine.json](./checklist.machine.json)
