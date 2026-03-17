@@ -21,10 +21,9 @@ The integration suite now covers trigger-equivalent constraints at the API bound
 - `gps_lat` outside `[-90, 90]` -> rejected with 4xx.
 - `gps_lon` outside `[-180, 180]` -> rejected with 4xx.
 - Missing `gps_captured_at` -> rejected with 4xx.
-- Missing `image_key` equivalent (`image` missing, so key cannot be generated) -> rejected with 4xx.
+- Missing `image` file (so both `image_key` and `image_uploaded_at` cannot be produced) -> rejected with 4xx.
 - Invalid `image_mime` -> rejected with 4xx.
 - `image_bytes` out of range (file too large) -> rejected with 4xx.
-- Missing `image_uploaded_at` equivalent (`image` missing, so upload timestamp cannot be produced) -> rejected with 4xx.
 
 ## Consequences
 - D1 migration execution is deterministic in local/prod runners.

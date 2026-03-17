@@ -1,1 +1,0 @@
--- trigger removed: enforced at application layer (see docs/decisions/001-remove-d1-triggers.md)

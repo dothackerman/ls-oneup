@@ -457,13 +457,6 @@ describe("M1 integration", () => {
           form.append("image", new File([oversizedBytes], "large.jpg", { type: "image/jpeg" }));
         },
       },
-      {
-        name: "missing image_uploaded_at equivalent (no file entry)",
-        mutate: (form) => {
-          form.delete("image");
-          form.set("image", "not-a-file");
-        },
-      },
     ];
 
     await Promise.all(
