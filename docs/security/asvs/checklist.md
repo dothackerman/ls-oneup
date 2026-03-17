@@ -5,8 +5,8 @@ Structured per-control data remains in [checklist.machine.json](./checklist.mach
 
 ## Snapshot
 
-- Generated at: 2026-03-15T10:08:49.317Z
-- Source commit: ae4ab5b261a72b63edd6a10b4e2d600ea6937e2b
+- Generated at: 2026-03-17T11:05:45.817Z
+- Source commit: a79c0184f0d5ade9dc4c9f4c0f22362e8136e4af
 - Source blob: f7ae2926598c4648ff7614a6968e4c8fd89524bd
 - Total requirements: 345
 - Completed: 18

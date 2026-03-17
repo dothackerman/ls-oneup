@@ -1,6 +1,6 @@
 # ASVS Delta Report
 
-- Generated at: 2026-03-15T10:08:49.317Z
+- Generated at: 2026-03-17T11:05:45.818Z
 - Changed controls: 0
 - New TODOs: 0
 - Resolved TODOs: 0
