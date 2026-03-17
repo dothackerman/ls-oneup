@@ -2,6 +2,8 @@
 
 This folder contains the living requirement and implementation-guidance documents for `ls-oneup`.
 
+For audience-based navigation across all docs, start at `../README.md`.
+
 ## Document Order
 0. `00-index.md`
    - quick-start index with conditional loading guidance for agents

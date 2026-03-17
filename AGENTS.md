@@ -24,7 +24,7 @@ If unsure, start with the smallest route and expand only if blocked.
    - `docs/requirements/16-onboarding-parity.md`
    - `.agents/checklists/ux-change.md`
 2. Backend route:
-   - `docs/production-release-setup.md` (for deploy/migration/release tasks)
+   - `docs/maintainers/production-release.md` (for deploy/migration/release tasks)
    - `docs/requirements/08-local-testing-and-first-release-runbook.md`
    - `docs/requirements/07-m1-agent-execution-contract.md`
    - `.agents/checklists/backend-change.md`

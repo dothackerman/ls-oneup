@@ -11,7 +11,7 @@ Purpose: route agents to only the required docs/checklists for the detected chan
 1. Use `.agents/20-task-routing.json` for keyword/path-based routing.
 2. Load a maximum of 3 additional files for the selected route.
 3. If multiple routes match, load only the highest-priority route unless the task explicitly spans domains.
-4. For production deploy/migration/release tasks, prefer the dedicated `release-deploy` route so `docs/production-release-setup.md` is included.
+4. For production deploy/migration/release tasks, prefer the dedicated `release-deploy` route so `docs/maintainers/production-release.md` is included.
 
 ## Priority
 1. security

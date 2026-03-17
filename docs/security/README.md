@@ -2,6 +2,8 @@
 
 Use this folder as the human-facing entry point for repository security documentation.
 
+For audience-based navigation across all docs, start at `../README.md`.
+
 ## Human Start Here
 
 1. [Security decision record](../requirements/12-m1-security-decision-record.md)
