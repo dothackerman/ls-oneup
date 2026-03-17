@@ -9,7 +9,7 @@
     },
     "routes": [
         {
-            "pattern": "ls-oneup.oriolgut.ch/",
+            "pattern": "ls-oneup.oriolgut.ch",
             "custom_domain": true,
             "zone_name": "oriolgut.ch",
         },
