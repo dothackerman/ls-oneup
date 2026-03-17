@@ -55,7 +55,7 @@
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.29.0",
     "@cloudflare/vitest-pool-workers": "^0.13.1",
-    "@cloudflare/workers-types": "^4.20260302.0",
+    "@cloudflare/workers-types": "^4.20260317.1",
     "@playwright/cli": "^0.1.1",
     "@playwright/test": "^1.52.0",
     "@tailwindcss/vite": "^4.2.1",
