@@ -3,10 +3,9 @@
 ## Purpose
 Provide:
 1. A getting-started path for local development/testing.
-2. A proposed manual first-release procedure for Cloudflare.
+2. A first-release procedure for Cloudflare with explicit GitHub Actions production workflows.
 
-This is a runbook document.  
-No deployment automation is executed from here.
+This is a runbook document.
 
 ## Getting Started (Local Testing)
 
@@ -52,31 +51,32 @@ Before milestone sign-off:
 4. Local Workers runtime testing is not constrained by Cloudflare free-tier deployment/build limits.
 5. Production secrets are not committed to `wrangler.jsonc`; local secrets are loaded from `.dev.vars`.
 
-## Proposed First Release (Cloudflare) - Manual Only
+## First Release (Cloudflare) - GitHub Actions Manual Dispatch
 
 ### Preconditions
-1. Cloudflare auth is configured on release machine.
+1. Production resources are provisioned (D1 + R2) and bound in `wrangler.production.jsonc`.
 2. Access policies for `/admin` and `/api/admin/*` are prepared.
 3. Full local quality loop is green.
 4. M1 E2E suite is green.
-5. Production token HMAC and submission-encryption secrets are configured with `wrangler secret put`, not committed to the repo.
+5. Production token HMAC and submission-encryption secrets are configured in Cloudflare Worker Secrets, not committed to the repo.
+6. GitHub Environment `production` is configured with `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
 
 ### Deployment-Only Browser And Transport Controls
 1. The Worker enforces response-level browser headers for sensitive API and app-shell routes, but transport guarantees still live at the Cloudflare edge, not in local HTTP dev.
-2. HTTPS redirect policy, TLS mode, certificate lifecycle, and HSTS (`Strict-Transport-Security`) must be configured on the deployed zone or edge service. They are not implied by `wrangler.jsonc`.
+2. HTTPS redirect policy, TLS mode, certificate lifecycle, and HSTS (`Strict-Transport-Security`) must be configured on the deployed zone or edge service. They are not implied by Wrangler config files.
 3. HSTS should only be enabled on the deployed HTTPS hostname after confirming the admin and farmer flows are stable over TLS; local `http://localhost` development intentionally does not emulate HSTS.
 4. If Cloudflare Access or upstream proxy policy ever strips security headers, release verification must treat that as a deployment failure rather than assuming the Worker alone provides complete browser posture.
 
-### Manual Release Steps (Proposal)
+### Release Steps
 1. Confirm release commit on `main`.
-2. Verify environment/secrets/bindings in Cloudflare config.
-3. Configure runtime crypto secrets with `wrangler secret put`.
+2. Verify environment/secrets/bindings in `wrangler.production.jsonc` and Cloudflare.
+3. Configure runtime crypto secrets with `wrangler secret put` (one-time or rotation flow).
 4. Confirm edge transport settings for the production hostname:
    - HTTPS redirect enabled
    - TLS mode appropriate for the origin path
    - HSTS configured at the zone or edge layer if the hostname is ready for it
-5. Apply D1 migrations for target environment.
-6. Deploy Worker/static assets manually using `wrangler`.
+5. Run GitHub Actions workflow `.github/workflows/migrate-production.yml` with required confirmation token.
+6. Run GitHub Actions workflow `.github/workflows/deploy-production.yml` with required confirmation token.
 7. Run post-deploy smoke checks:
    - admin route protected by Access
    - farmer token link flow works
@@ -92,5 +92,5 @@ Before milestone sign-off:
 
 ## Out of Scope in This Phase
 1. Agent-triggered deployment.
-2. Fully automated CI/CD release pipelines.
+2. Automatic deploy-on-push to production (deploys remain manual-dispatch with explicit confirmation).
 3. Production-scale observability tuning.

@@ -5,12 +5,13 @@ Single source of truth for local CLI usage in `ls-oneup`:
 1. Local setup
 2. Local run and verification
 3. Local quality loop
-4. Manual Cloudflare release from local CLI
+4. Guarded production commands that align with GitHub Actions release flow
 
 ## Scope and Boundaries
 1. This manual covers local machine workflows.
-2. Cloudflare deployment is manual and human-operated.
-3. Agents may prepare changes and release instructions, but should not execute release actions unless explicitly requested.
+2. Production deployment is executed through GitHub Actions manual workflows.
+3. Local production commands are guarded and intended for explicit break-glass/manual use only.
+4. Agents may prepare changes and release instructions, but should not execute release actions unless explicitly requested.
 
 ## Prerequisites
 1. `git`
@@ -99,33 +100,35 @@ npm run pw:cli:snapshot
 3. The base config lives in `.playwright/cli.config.json`; the wrapper generates `.playwright/cli.runtime.json` at runtime.
 4. This setup avoids the CLI's Chrome-channel default and removes the need for a system Chrome install on this machine.
 
-## Manual Cloudflare Release (From Local CLI)
+## Production Release Setup
+
+Use:
+
+1. `docs/production-release-setup.md`
+2. `.github/workflows/migrate-production.yml`
+3. `.github/workflows/deploy-production.yml`
+
+## Guarded Production CLI Commands (Break-Glass)
 Run only when release is explicitly requested and environment is ready.
 
-1. Authenticate:
-```bash
-npx wrangler login
-```
-2. Verify local gate:
+1. Verify local gate:
 ```bash
 npm run crypto:run
 npm run ci:local
 ```
-3. Configure production crypto secrets:
+2. List pending production migrations:
 ```bash
-echo '<token-hmac-keys-json>' | npx wrangler secret put TOKEN_HMAC_KEYS_JSON
-echo '<submission-data-keys-json>' | npx wrangler secret put SUBMISSION_DATA_KEYS_JSON
+npm run db:migrate:prod:list
 ```
-4. Apply remote D1 migrations:
+3. Apply guarded production migrations:
 ```bash
-npx wrangler d1 migrations apply ls-oneup-db --remote --config wrangler.jsonc
+PROD_CONFIRM=I_UNDERSTAND_THIS_TARGETS_PRODUCTION PROD_MIGRATION_CONFIRM=MIGRATE_PROD npm run db:migrate:prod
 ```
-5. Deploy:
+4. Deploy production using explicit production config:
 ```bash
-npm run build
-npx wrangler deploy --config wrangler.jsonc
+PROD_CONFIRM=I_UNDERSTAND_THIS_TARGETS_PRODUCTION npm run deploy:prod
 ```
-6. Smoke checks:
+5. Smoke checks:
 - Admin route protection works (`/admin`, `/api/admin/*`)
 - Farmer token open/submit works
 - Submission visible in admin

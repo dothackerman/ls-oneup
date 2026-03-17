@@ -57,47 +57,30 @@ Notes:
 - Do not use the CLI as a CI dependency or a replacement for the existing Playwright test suite.
 - The wrapper forces repo-local `chromium` and workspace-local daemon state so future agents do not depend on a system Chrome install or global cache assumptions.
 
-## Cloudflare Deployment (Manual, via Local CLI)
+## Cloudflare Deployment (Production via GitHub Actions)
 
 This repository uses [Cloudflare Workers](https://developers.cloudflare.com/workers/) with [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/), [D1](https://developers.cloudflare.com/d1/), and [R2](https://developers.cloudflare.com/r2/).
 
-Use the full release runbook for policy/process details:
+Use these references:
 
 - [docs/requirements/08-local-testing-and-first-release-runbook.md](docs/requirements/08-local-testing-and-first-release-runbook.md)
+- [docs/production-release-setup.md](docs/production-release-setup.md)
 
-Typical manual release flow from your machine:
+Production release flow:
 
-1. Authenticate Wrangler.
-
-```bash
-npx wrangler login
-```
-
-2. Verify local quality gate is green.
-
-```bash
-npm run crypto:run
-npm run ci:local
-```
-
-3. Ensure production bindings are configured in [wrangler.jsonc](wrangler.jsonc), crypto inventory is current, and runtime crypto secrets are configured with Wrangler secrets.
-4. Apply D1 migrations to the target environment.
-
-```bash
-npm run crypto:run
-echo '<token-hmac-keys-json>' | npx wrangler secret put TOKEN_HMAC_KEYS_JSON
-echo '<submission-data-keys-json>' | npx wrangler secret put SUBMISSION_DATA_KEYS_JSON
-npx wrangler d1 migrations apply ls-oneup-db --remote --config wrangler.jsonc
-```
-
-5. Build and deploy.
-
-```bash
-npm run build
-npx wrangler deploy --config wrangler.jsonc
-```
-
-6. Run smoke checks:
+1. Complete first-time setup (D1, R2, subdomain route, runtime secrets, GitHub Environment secrets) using [docs/production-release-setup.md](docs/production-release-setup.md).
+2. Run production migration workflow (manual dispatch):
+- [.github/workflows/migrate-production.yml](.github/workflows/migrate-production.yml)
+3. Run production deploy workflow (manual dispatch):
+- [.github/workflows/deploy-production.yml](.github/workflows/deploy-production.yml)
+4. Run smoke checks:
 - Admin route protection (for example with [Cloudflare Access](https://developers.cloudflare.com/cloudflare-one/applications/configure-apps/self-hosted-apps/))
 - Token link open/submit flow
 - Submission visibility in admin
+
+Optional guarded local CLI equivalents:
+
+```bash
+PROD_CONFIRM=I_UNDERSTAND_THIS_TARGETS_PRODUCTION PROD_MIGRATION_CONFIRM=MIGRATE_PROD npm run db:migrate:prod
+PROD_CONFIRM=I_UNDERSTAND_THIS_TARGETS_PRODUCTION npm run deploy:prod
+```
