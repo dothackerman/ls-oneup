@@ -1,33 +1,33 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "ls-oneup",
-  "main": "worker/index.ts",
-  "compatibility_date": "2025-09-06",
-  "assets": {
-    "directory": "./dist",
-    "not_found_handling": "single-page-application",
-  },
-  "routes": [
-    {
-      "pattern": "<subdomain>.<your-domain>/*",
-      "zone_name": "<your-domain>",
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "ls-oneup",
+    "main": "worker/index.ts",
+    "compatibility_date": "2025-09-06",
+    "assets": {
+        "directory": "./dist",
+        "not_found_handling": "single-page-application",
     },
-  ],
-  "vars": {
-    "APP_BASE_URL": "https://<subdomain>.<your-domain>",
-    "DEV_BYPASS_ACCESS": "false",
-  },
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "ls-oneup-db",
-      "database_id": "<replace-with-prod-d1-database-id>",
+    "routes": [
+        {
+            "pattern": "<subdomain>.<your-domain>/*",
+            "zone_name": "<your-domain>",
+        },
+    ],
+    "vars": {
+        "APP_BASE_URL": "https://<subdomain>.<your-domain>",
+        "DEV_BYPASS_ACCESS": "false",
     },
-  ],
-  "r2_buckets": [
-    {
-      "binding": "PROBE_IMAGES",
-      "bucket_name": "<replace-with-prod-r2-bucket-name>",
-    },
-  ],
+    "d1_databases": [
+        {
+            "binding": "DB",
+            "database_name": "ls-oneup-db",
+            "database_id": "f811d3ad-7da6-4ddc-a39a-0d5d7115abb7"
+        },
+    ],
+    "r2_buckets": [
+        {
+            "binding": "PROBE_IMAGES",
+            "bucket_name": "ls-oneup-bucket",
+        },
+    ],
 }
