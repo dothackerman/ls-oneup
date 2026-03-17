@@ -366,20 +366,6 @@ function WelcomePage({
             </p>
           </div>
 
-          <div className="space-y-2">
-            <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-              Navigation
-            </p>
-            <nav aria-label="Hauptnavigation">
-              <ul className="flex flex-wrap gap-2">
-                <li>
-                  <Button asChild>
-                    <a href="/admin">Admin</a>
-                  </Button>
-                </li>
-              </ul>
-            </nav>
-          </div>
         </CardContent>
       </Card>
     </main>
