@@ -76,17 +76,7 @@ Recommended first release order:
 
 Agents may prepare these changes and instructions, but production deploy/migration execution remains human-triggered through GitHub Actions.
 
-## 7) Optional local CLI equivalents
+## 7) Local production execution policy
 
-These commands are intentionally guarded:
-
-```bash
-PROD_CONFIRM=I_UNDERSTAND_THIS_TARGETS_PRODUCTION PROD_MIGRATION_CONFIRM=MIGRATE_PROD npm run db:migrate:prod
-PROD_CONFIRM=I_UNDERSTAND_THIS_TARGETS_PRODUCTION npm run deploy:prod
-```
-
-If a migration includes destructive SQL, set this only when intentional:
-
-```bash
-ALLOW_DESTRUCTIVE_MIGRATIONS=true
-```
+Local production deploy and migration commands are intentionally not provided in this repository.
+Production operations must be executed through the GitHub Actions workflows above so approvals and environment protections remain enforced.

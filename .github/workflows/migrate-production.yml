@@ -55,11 +55,29 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: npx wrangler d1 migrations list ls-oneup-db --remote --config wrangler.production.jsonc
 
+      - name: Check for destructive SQL
+        run: |
+          node -e '
+          const fs = require("node:fs");
+          const path = require("node:path");
+          const allow = String(process.env.ALLOW_DESTRUCTIVE_MIGRATIONS || "false") === "true";
+          if (allow) {
+            process.exit(0);
+          }
+          const destructiveSqlPattern = /\b(drop\s+table|drop\s+index|truncate\s+table|delete\s+from|alter\s+table[\s\S]{0,80}\sdrop\s+(column|constraint))\b/i;
+          const dir = path.join(process.cwd(), "migrations");
+          const files = fs.readdirSync(dir).filter((name) => name.endsWith(".sql")).sort();
+          const hits = files.filter((name) => destructiveSqlPattern.test(fs.readFileSync(path.join(dir, name), "utf8")));
+          if (hits.length > 0) {
+            console.error(`Potentially destructive SQL detected in: ${hits.join(", ")}. Set allow_destructive_migrations=true to proceed intentionally.`);
+            process.exit(1);
+          }
+          '
+        env:
+          ALLOW_DESTRUCTIVE_MIGRATIONS: ${{ github.event.inputs.allow_destructive_migrations }}
+
       - name: Apply production migrations
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          PROD_CONFIRM: I_UNDERSTAND_THIS_TARGETS_PRODUCTION
-          PROD_MIGRATION_CONFIRM: MIGRATE_PROD
-          ALLOW_DESTRUCTIVE_MIGRATIONS: ${{ github.event.inputs.allow_destructive_migrations }}
-        run: npm run db:migrate:prod
+        run: npx wrangler d1 migrations apply ls-oneup-db --remote --config wrangler.production.jsonc
