@@ -61,6 +61,27 @@ If unsure, start with the smallest route and expand only if blocked.
 2. Commit only after required checks are green.
 3. Push after each green logical slice.
 
+## Gitflow Branch Policy (Enforced)
+1. `main` is release-only and protected:
+   - No direct commits.
+   - No direct pushes.
+   - Changes land via pull request only.
+2. `develop` is the default integration branch:
+   - Branch from `develop` for normal work.
+   - Commits on `develop` are allowed.
+3. `bugfix/*` branches are for non-production fixes and routine defects:
+   - Create from `develop`.
+   - Merge back into `develop` via pull request.
+4. `hotfix/*` branches are for urgent production issues:
+   - Create from `main`.
+   - Merge into `main` via pull request.
+   - Then merge/cherry-pick the same fix into `develop` to keep branches aligned.
+5. Branch naming conventions:
+   - `bugfix/<short-kebab-case-summary>`
+   - `hotfix/<short-kebab-case-summary>`
+6. Agent behavior requirement:
+   - If current branch is `main`, switch to `develop` or a valid `bugfix/*` or `hotfix/*` branch before making code changes.
+
 ## Hard Constraints
 1. Keep changes minimal and requirement-linked.
 2. Update requirement docs in the same change when behavior/contract changes.
