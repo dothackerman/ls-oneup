@@ -25,19 +25,23 @@ This document defines the reusable contract shared by the public `asvs-review` a
 ## Checklist Status Vocabulary
 
 - `completed`
-- `todo`
+- `not_reviewed`
+- `not_implemented`
+- `needs_decision`
 - `not_applicable`
 - `deferred_exception`
 
 Semantics:
 - `completed` means the control is implemented and evidenced.
-- `todo` means the control remains open or is under-evidenced.
+- `not_reviewed` means initial evidence may exist but the control has not been fully verified.
+- `not_implemented` means the control remains open with no implementation evidence yet.
+- `needs_decision` means the control remains open pending explicit operator/architecture decisions.
 - `not_applicable` means the control does not apply to the repository as implemented and must include specific reasoning.
 - `deferred_exception` means the control remains open but the operator explicitly accepted the risk. This is not equivalent to completion.
 
 ## Reasoning Requirements
 
-Every row with status `todo`, `not_applicable`, or `deferred_exception` must include reasoning that is:
+Every row with status `not_reviewed`, `not_implemented`, `needs_decision`, `not_applicable`, or `deferred_exception` must include reasoning that is:
 
 1. specific
 2. evidence-based
