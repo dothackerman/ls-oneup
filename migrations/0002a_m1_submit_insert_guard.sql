@@ -65,4 +65,4 @@ BEGIN
     WHEN length(trim(COALESCE(NEW.image_uploaded_at, ''))) = 0
     THEN RAISE(ABORT, 'submitted probe requires image_uploaded_at')
   END;
-END
+END;
