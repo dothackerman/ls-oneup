@@ -397,48 +397,64 @@ describe("M1 integration", () => {
     const invalidCases: Array<{
       name: string;
       mutate: (form: FormData) => void;
+      expectedStatus: number;
+      expectedErrorCode: string;
     }> = [
       {
         name: "missing crop_name field",
         mutate: (form) => {
           form.delete("crop_name");
         },
+        expectedStatus: 400,
+        expectedErrorCode: "VALIDATION_ERROR",
       },
       {
         name: "invalid vitality field value",
         mutate: (form) => {
           form.set("vitality", "ungueltig");
         },
+        expectedStatus: 400,
+        expectedErrorCode: "VALIDATION_ERROR",
       },
       {
         name: "invalid soil_moisture field value",
         mutate: (form) => {
           form.set("soil_moisture", "ungueltig");
         },
+        expectedStatus: 400,
+        expectedErrorCode: "VALIDATION_ERROR",
       },
       {
         name: "gps_lat out of range",
         mutate: (form) => {
           form.set("gps_lat", "90.01");
         },
+        expectedStatus: 400,
+        expectedErrorCode: "VALIDATION_ERROR",
       },
       {
         name: "gps_lon out of range",
         mutate: (form) => {
           form.set("gps_lon", "180.01");
         },
+        expectedStatus: 400,
+        expectedErrorCode: "VALIDATION_ERROR",
       },
       {
         name: "missing gps_captured_at",
         mutate: (form) => {
           form.delete("gps_captured_at");
         },
+        expectedStatus: 400,
+        expectedErrorCode: "VALIDATION_ERROR",
       },
       {
         name: "missing image file",
         mutate: (form) => {
           form.delete("image");
         },
+        expectedStatus: 400,
+        expectedErrorCode: "IMAGE_REQUIRED",
       },
       {
         name: "invalid image_mime",
@@ -449,6 +465,8 @@ describe("M1 integration", () => {
             new File([new Uint8Array([1, 2, 3])], "x.txt", { type: "text/plain" }),
           );
         },
+        expectedStatus: 415,
+        expectedErrorCode: "INVALID_IMAGE_MIME",
       },
       {
         name: "image file too large (>2MB)",
@@ -456,6 +474,8 @@ describe("M1 integration", () => {
           form.delete("image");
           form.append("image", new File([oversizedBytes], "large.jpg", { type: "image/jpeg" }));
         },
+        expectedStatus: 413,
+        expectedErrorCode: "IMAGE_TOO_LARGE",
       },
     ];
 
@@ -471,8 +491,10 @@ describe("M1 integration", () => {
           body: form,
         });
 
-        expect(response.status, invalidCase.name).toBeGreaterThanOrEqual(400);
-        expect(response.status, invalidCase.name).toBeLessThan(500);
+        const payload = (await response.json()) as { error_code: string };
+
+        expect(response.status, invalidCase.name).toBe(invalidCase.expectedStatus);
+        expect(payload.error_code, invalidCase.name).toBe(invalidCase.expectedErrorCode);
       }),
     );
   });
