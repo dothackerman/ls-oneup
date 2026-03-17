@@ -17,7 +17,7 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
 }
 
-export function SpotlightOverlay({ selector }: SpotlightOverlayProps): JSX.Element | null {
+export function SpotlightOverlay({ selector }: SpotlightOverlayProps): React.JSX.Element | null {
   const [rect, setRect] = useState<SpotlightRect | null>(null);
 
   useEffect(() => {

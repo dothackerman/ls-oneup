@@ -59,7 +59,7 @@ export function FarmerSubmissionForm({
   onSoilMoistureChange,
   onImageFileChange,
   onCaptureGps,
-}: FarmerSubmissionFormProps): JSX.Element {
+}: FarmerSubmissionFormProps): React.JSX.Element {
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
 
   return (

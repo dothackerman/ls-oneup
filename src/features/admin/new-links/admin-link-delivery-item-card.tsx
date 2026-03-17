@@ -2,7 +2,7 @@ import { Button } from "@shared/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@shared/components/ui/card";
 import type { LinkDeliveryCardModel } from "./admin-link-delivery-card-model";
 
-function CopyIcon(): JSX.Element {
+function CopyIcon(): React.JSX.Element {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -20,7 +20,7 @@ function CopyIcon(): JSX.Element {
   );
 }
 
-function CheckIcon(): JSX.Element {
+function CheckIcon(): React.JSX.Element {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -41,7 +41,9 @@ type AdminLinkDeliveryItemCardProps = {
   model: LinkDeliveryCardModel;
 };
 
-export function AdminLinkDeliveryItemCard({ model }: AdminLinkDeliveryItemCardProps): JSX.Element {
+export function AdminLinkDeliveryItemCard({
+  model,
+}: AdminLinkDeliveryItemCardProps): React.JSX.Element {
   return (
     <Card
       size="sm"

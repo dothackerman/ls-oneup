@@ -141,7 +141,7 @@ function getStoredAdminThemePreference(): AdminThemePreference {
   return parseThemePreference(window.localStorage.getItem(ADMIN_THEME_STORAGE_KEY));
 }
 
-function EditIcon(): JSX.Element {
+function EditIcon(): React.JSX.Element {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -257,7 +257,7 @@ function TablePager({
   rangeEnd,
   onPrev,
   onNext,
-}: TablePagerProps): JSX.Element {
+}: TablePagerProps): React.JSX.Element {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border/70 bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
       <p>
@@ -293,7 +293,10 @@ type AdminPageProps = {
   onThemePreferenceChange: (value: AdminThemePreference) => void;
 };
 
-function AdminPage({ themePreference, onThemePreferenceChange }: AdminPageProps): JSX.Element {
+function AdminPage({
+  themePreference,
+  onThemePreferenceChange,
+}: AdminPageProps): React.JSX.Element {
   const [customerName, setCustomerName] = useState("");
   const [orderNumber, setOrderNumber] = useState("");
   const [probeCount, setProbeCount] = useState(1);
@@ -1125,7 +1128,7 @@ async function prepareImageForUpload(file: File): Promise<File> {
   return file;
 }
 
-function FarmerPage({ token }: { token: string }): JSX.Element {
+function FarmerPage({ token }: { token: string }): React.JSX.Element {
   const [online, setOnline] = useState(navigator.onLine);
   const [loading, setLoading] = useState(true);
   const [lookup, setLookup] = useState<ProbeLookup | null>(null);
@@ -1366,7 +1369,7 @@ function FarmerPage({ token }: { token: string }): JSX.Element {
   );
 }
 
-export default function App(): JSX.Element {
+export default function App(): React.JSX.Element {
   const path = window.location.pathname;
   const isAdminRoute = path.startsWith("/admin");
 

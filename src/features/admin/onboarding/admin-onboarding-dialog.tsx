@@ -50,7 +50,7 @@ export function AdminOnboardingDialog({
   onPrevious,
   onSkip,
   onNext,
-}: AdminOnboardingDialogProps): JSX.Element {
+}: AdminOnboardingDialogProps): React.JSX.Element {
   const [dialogPlacement, setDialogPlacement] = useState<DialogPlacement | null>(null);
 
   useEffect(() => {

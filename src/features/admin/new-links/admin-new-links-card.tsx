@@ -47,7 +47,7 @@ export function AdminNewLinksCard({
   copiedProbeId,
   onCopyToClipboard,
   showOnboardingPreview = false,
-}: AdminNewLinksCardProps): JSX.Element | null {
+}: AdminNewLinksCardProps): React.JSX.Element | null {
   const hasCreatedItems = createdItems.length > 0;
   const cardModels = buildCardModels({
     createdItems,
