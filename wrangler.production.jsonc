@@ -9,12 +9,13 @@
     },
     "routes": [
         {
-            "pattern": "<subdomain>.<your-domain>/*",
-            "zone_name": "<your-domain>",
+            "pattern": "ls-oneup.oriolgut.ch/*",
+            "custom_domain": true,
+            "zone_name": "oriolgut.ch",
         },
     ],
     "vars": {
-        "APP_BASE_URL": "https://<subdomain>.<your-domain>",
+        "APP_BASE_URL": "https://ls-oneup.oriolgut.ch",
         "DEV_BYPASS_ACCESS": "false",
     },
     "d1_databases": [
