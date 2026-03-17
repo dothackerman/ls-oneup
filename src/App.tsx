@@ -351,21 +351,19 @@ function WelcomePage({
       <Card>
         <CardHeader>
           <CardTitle className="font-display text-xl">Willkommen bei Leaf Sap One Up</CardTitle>
-          <CardDescription>
-            Diese Anwendung wird von EDAPRO GmbH genutzt und von Oriol Gut entwickelt.
-          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2 text-sm text-foreground/90">
-            <p>
-              Nutzung: <a className="underline underline-offset-4" href="https://edapro.ch/">https://edapro.ch/</a>
-            </p>
-            <p>EDAPRO GmbH, Halterhus 1, 6017 Ruswil, Schweiz</p>
-            <p>
-              Entwicklung: <a className="underline underline-offset-4" href="https://oriolgut.ch/">Oriol Gut (oriolgut.ch)</a>
-            </p>
-          </div>
-
+        <CardContent className="text-sm text-foreground/90">
+          <p>
+            Diese Anwendung wird von{" "}
+            <a className="underline underline-offset-4" href="https://edapro.ch/">
+              EDAPRO GmbH
+            </a>{" "}
+            genutzt und von{" "}
+            <a className="underline underline-offset-4" href="https://oriolgut.ch/">
+              Oriol Gut
+            </a>{" "}
+            entwickelt.
+          </p>
         </CardContent>
       </Card>
     </main>
