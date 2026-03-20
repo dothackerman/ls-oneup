@@ -20,10 +20,10 @@ Structured per-control data remains in [checklist.machine.json](./checklist.mach
 ## Level Target View
 
 | Level | Completed | Not reviewed | Not implemented | Needs decision | Deferred exception | Not applicable | Total |
-|---|---|---|---|---|---|---|---|
-| L1 | 3 | 39 | 0 | 0 | 0 | 28 | 70 |
-| L2 | 8 | 101 | 0 | 0 | 0 | 74 | 183 |
-| L3 | 7 | 58 | 0 | 0 | 0 | 27 | 92 |
+| ----- | --------- | ------------ | --------------- | -------------- | ------------------ | -------------- | ----- |
+| L1    | 3         | 39           | 0               | 0              | 0                  | 28             | 70    |
+| L2    | 8         | 101          | 0               | 0              | 0                  | 74             | 183   |
+| L3    | 7         | 58           | 0               | 0              | 0                  | 27             | 92    |
 
 - Current practical target: Level 2 first, with selective Level 3 carryovers where they are cheap, highly relevant, or already partially implemented.
 - Level 2 current state: 8 completed, 101 not reviewed, 0 not implemented, 0 needs decision, 0 deferred exception, 74 not applicable.
@@ -38,30 +38,31 @@ Structured per-control data remains in [checklist.machine.json](./checklist.mach
 
 ## Chapter Summary
 
-| Chapter | Area | Completed | Not reviewed | Not implemented | Needs decision | Deferred exception | Not applicable |
-|---|---|---|---|---|---|---|---|
-| V1 | Encoding and Sanitization | 0 | 29 | 0 | 0 | 0 | 1 |
-| V2 | Validation and Business Logic | 0 | 13 | 0 | 0 | 0 | 0 |
-| V3 | Web Frontend Security | 0 | 31 | 0 | 0 | 0 | 0 |
-| V4 | API and Web Service | 0 | 14 | 0 | 0 | 0 | 2 |
-| V5 | File Handling | 0 | 13 | 0 | 0 | 0 | 0 |
-| V6 | Authentication | 0 | 0 | 0 | 0 | 0 | 47 |
-| V7 | Session Management | 0 | 0 | 0 | 0 | 0 | 19 |
-| V8 | Authorization | 0 | 13 | 0 | 0 | 0 | 0 |
-| V9 | Self-contained Tokens | 0 | 0 | 0 | 0 | 0 | 7 |
-| V10 | OAuth and OIDC | 0 | 0 | 0 | 0 | 0 | 36 |
-| V11 | Cryptography | 18 | 1 | 0 | 0 | 0 | 5 |
-| V12 | Secure Communication | 0 | 12 | 0 | 0 | 0 | 0 |
-| V13 | Configuration | 0 | 21 | 0 | 0 | 0 | 0 |
-| V14 | Data Protection | 0 | 13 | 0 | 0 | 0 | 0 |
-| V15 | Secure Coding and Architecture | 0 | 21 | 0 | 0 | 0 | 0 |
-| V16 | Security Logging and Error Handling | 0 | 17 | 0 | 0 | 0 | 0 |
-| V17 | WebRTC | 0 | 0 | 0 | 0 | 0 | 12 |
+| Chapter | Area                                | Completed | Not reviewed | Not implemented | Needs decision | Deferred exception | Not applicable |
+| ------- | ----------------------------------- | --------- | ------------ | --------------- | -------------- | ------------------ | -------------- |
+| V1      | Encoding and Sanitization           | 0         | 29           | 0               | 0              | 0                  | 1              |
+| V2      | Validation and Business Logic       | 0         | 13           | 0               | 0              | 0                  | 0              |
+| V3      | Web Frontend Security               | 0         | 31           | 0               | 0              | 0                  | 0              |
+| V4      | API and Web Service                 | 0         | 14           | 0               | 0              | 0                  | 2              |
+| V5      | File Handling                       | 0         | 13           | 0               | 0              | 0                  | 0              |
+| V6      | Authentication                      | 0         | 0            | 0               | 0              | 0                  | 47             |
+| V7      | Session Management                  | 0         | 0            | 0               | 0              | 0                  | 19             |
+| V8      | Authorization                       | 0         | 13           | 0               | 0              | 0                  | 0              |
+| V9      | Self-contained Tokens               | 0         | 0            | 0               | 0              | 0                  | 7              |
+| V10     | OAuth and OIDC                      | 0         | 0            | 0               | 0              | 0                  | 36             |
+| V11     | Cryptography                        | 18        | 1            | 0               | 0              | 0                  | 5              |
+| V12     | Secure Communication                | 0         | 12           | 0               | 0              | 0                  | 0              |
+| V13     | Configuration                       | 0         | 21           | 0               | 0              | 0                  | 0              |
+| V14     | Data Protection                     | 0         | 13           | 0               | 0              | 0                  | 0              |
+| V15     | Secure Coding and Architecture      | 0         | 21           | 0               | 0              | 0                  | 0              |
+| V16     | Security Logging and Error Handling | 0         | 17           | 0               | 0              | 0                  | 0              |
+| V17     | WebRTC                              | 0         | 0            | 0               | 0              | 0                  | 12             |
 
 ## Current Security Highlight
 
 - V11 Cryptography: 18 completed, 1 open, 5 not applicable.
 - Remaining open crypto control: V11.7.1 — The repository still contains no mechanism to enable full memory encryption or confidential-computing controls for the Worker runtime. Even with encrypted D1 rows and encrypted R2 image objects, tokens, decrypted submission payloads, and decrypted image bytes still enter normal process memory during request handling.
+- V14.2.8 remains `not_reviewed`, but the evidence now explicitly notes a narrower metadata posture: browser cleanup is best-effort, sensitive JPEG/PNG metadata is still rejected before storage, and benign JPEG APP2/ICC segments are allowed to avoid false positives on normal camera uploads pending future hardening review.
 
 ## Navigation
 

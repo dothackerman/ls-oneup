@@ -6957,22 +6957,24 @@
       "level": "3",
       "status": "not_reviewed",
       "severity": "high",
-      "reasoning": "Keyword-level evidence found in codebase; manual validation required for control completeness.",
+      "reasoning": "Browser uploads are best-effort re-saved before submit, the Worker rejects sensitive or suspicious JPEG APP1/APP13/comment markers plus PNG textual/exif chunks before storage, and benign JPEG APP2/ICC profile segments are intentionally allowed to avoid false positives on normal camera uploads. Manual review is still required to confirm device/browser cleanup coverage and decide whether later hardening should narrow or expand marker handling.",
       "code_references": [
-        "src/App.tsx:56",
-        "src/App.tsx:218",
-        "src/App.tsx:435",
-        "src/App.tsx:437",
-        "src/App.tsx:439",
-        "src/App.tsx:1049",
-        "src/App.tsx:1164",
-        "src/App.tsx:1396"
+        "src/App.tsx:189",
+        "src/App.tsx:203",
+        "src/App.tsx:1160",
+        "src/App.tsx:1378",
+        "src/features/farmer/form/farmer-submission-form.tsx:129",
+        "src/features/farmer/form/farmer-submission-form.tsx:198",
+        "worker/index.ts:445",
+        "worker/submission-security.ts:264",
+        "docs/requirements/09-m1-api-contract.md:233",
+        "docs/security/crypto-policy.md:47"
       ],
       "source": {
         "upstream_version": "5.0.0",
         "upstream_path": "5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.flat.json"
       },
-      "last_audited_at": "2026-03-17T11:38:51.012Z"
+      "last_audited_at": "2026-03-20T18:01:39.755Z"
     },
     {
       "requirement_id": "V14.3.1",
