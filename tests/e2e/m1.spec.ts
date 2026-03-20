@@ -439,6 +439,96 @@ test("E2E-FARM-009 strips image metadata before browser submit", async ({
   await expect(page.getByText("Bildmetadaten muessen")).toHaveCount(0);
 });
 
+test("E2E-FARM-010 shows submit loading state while upload is in flight", async ({
+  page,
+  request,
+  context,
+}) => {
+  const { token } = await createProbeOrder(request, {
+    orderPrefix: "E2E-FARM-010",
+  });
+
+  await context.grantPermissions(["geolocation"]);
+  await context.setGeolocation({ latitude: 47.3769, longitude: 8.5417 });
+  await page.goto(`/p/${token}`);
+
+  await page.route(`**/api/probe/${token}/submit`, async (route) => {
+    if (route.request().method() !== "POST") {
+      await route.continue();
+      return;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    await route.fulfill({
+      status: 201,
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        probe_id: "probe-1",
+        submitted_at: "2026-03-20T12:00:00.000Z",
+        status: "eingereicht",
+      }),
+    });
+  });
+
+  await page.getByLabel("Kulturname").fill("Kartoffeln");
+  await chooseSelectOption(page, "Pflanzenvitalität", "normal");
+  await chooseSelectOption(page, "Bodenfeuchte", "normal");
+  await page.getByRole("button", { name: "GPS erfassen" }).click();
+  await page.setInputFiles("input[type='file']", buildTinyPng4x4ImagePayload());
+  await page.getByRole("button", { name: "Absenden" }).click();
+
+  await expect(page.getByRole("button", { name: "Bild wird gesendet..." })).toBeDisabled();
+  await expect(page.getByText("Erfolgreich eingereicht am")).toBeVisible({ timeout: 5000 });
+});
+
+test("E2E-FARM-011 shows generic retry guidance for metadata-policy failures", async ({
+  page,
+  request,
+  context,
+}) => {
+  const { token } = await createProbeOrder(request, {
+    orderPrefix: "E2E-FARM-011",
+  });
+
+  await context.grantPermissions(["geolocation"]);
+  await context.setGeolocation({ latitude: 47.3769, longitude: 8.5417 });
+  await page.goto(`/p/${token}`);
+
+  await page.route(`**/api/probe/${token}/submit`, async (route) => {
+    if (route.request().method() !== "POST") {
+      await route.continue();
+      return;
+    }
+
+    await route.fulfill({
+      status: 415,
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        error_code: "IMAGE_METADATA_NOT_ALLOWED",
+        message: "Bildmetadaten muessen vor dem Upload entfernt werden.",
+      }),
+    });
+  });
+
+  await page.getByLabel("Kulturname").fill("Kartoffeln");
+  await chooseSelectOption(page, "Pflanzenvitalität", "normal");
+  await chooseSelectOption(page, "Bodenfeuchte", "normal");
+  await page.getByRole("button", { name: "GPS erfassen" }).click();
+  await page.setInputFiles("input[type='file']", buildTinyPng4x4ImagePayload());
+  await page.getByRole("button", { name: "Absenden" }).click();
+
+  await expect(
+    page.getByText(
+      "Beim Senden ist ein Problem aufgetreten. Bitte versuchen Sie es erneut. Falls das Problem weiterhin besteht, kontaktieren Sie bitte Ihren Anbieter.",
+    ),
+  ).toBeVisible();
+  await expect(page.getByText("Bildmetadaten muessen")).toHaveCount(0);
+});
+
 test("E2E-ADMIN-004 allows viewing uploaded image from admin table", async ({ page, request }) => {
   const { orderNumber, token } = await createProbeOrder(request, {
     orderPrefix: "E2E-ADMIN-004",

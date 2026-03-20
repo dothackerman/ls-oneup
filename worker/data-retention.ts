@@ -1,6 +1,8 @@
 import type { AllowedImageMime } from "../src/shared/domain";
 import {
   assertSubmissionImageStoragePolicy,
+  findRejectedSubmissionImageMetadata,
+  type SubmissionImageMetadataCategory,
   SubmissionImagePolicyError,
 } from "./submission-security";
 
@@ -14,6 +16,10 @@ export const IMAGE_METADATA_REJECTED_MESSAGE =
 export type StoredImageRetentionPolicy = {
   deleteAfter: string;
   customMetadata: Record<string, string>;
+};
+
+export type RejectedImageMetadata = {
+  category: SubmissionImageMetadataCategory;
 };
 
 function parseIso(value: string): Date {
@@ -43,15 +49,29 @@ export function isPastSubmissionRetention(submittedAtIso: string, nowIso: string
 }
 
 export function hasRejectedImageMetadata(bytes: Uint8Array, mime: AllowedImageMime): boolean {
+  return describeRejectedImageMetadata(bytes, mime) !== null;
+}
+
+export function describeRejectedImageMetadata(
+  bytes: Uint8Array,
+  mime: AllowedImageMime,
+): RejectedImageMetadata | null {
   try {
     assertSubmissionImageStoragePolicy(bytes, mime);
-    return false;
+    return null;
   } catch (error) {
     if (error instanceof SubmissionImagePolicyError) {
-      return true;
+      return { category: error.metadataCategory };
     }
     throw error;
   }
+}
+
+export function findRejectedImageMetadataCategory(
+  bytes: Uint8Array,
+  mime: AllowedImageMime,
+): SubmissionImageMetadataCategory | null {
+  return findRejectedSubmissionImageMetadata(bytes, mime);
 }
 
 export function buildSubmissionArtifactRetention(

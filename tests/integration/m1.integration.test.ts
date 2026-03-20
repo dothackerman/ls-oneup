@@ -4,6 +4,11 @@ import { buildValidForm, createProbeOrder, tokenFromUrl } from "./helpers";
 import { hashTokenForStorage, legacyPlainTokenHash } from "../../worker/security";
 import { decryptSubmissionImageBytes } from "../../worker/submission-security";
 
+const JPEG_WITH_ALLOWED_APP2 = Uint8Array.from([
+  0xff, 0xd8, 0xff, 0xe2, 0x00, 0x1a, 0x49, 0x43, 0x43, 0x5f, 0x50, 0x52, 0x4f, 0x46, 0x49, 0x4c,
+  0x45, 0x00, 0x01, 0x01, 0x73, 0x52, 0x47, 0x42, 0x00, 0x00, 0xff, 0xd9,
+]);
+
 describe("M1 integration", () => {
   it("INT-EDGE-001 serves admin shell with browser security headers", async () => {
     const response = await SELF.fetch("https://example.test/admin");
@@ -202,6 +207,22 @@ describe("M1 integration", () => {
     expect((await response.json()) as { error_code: string }).toMatchObject({
       error_code: "IMAGE_METADATA_NOT_ALLOWED",
     });
+  });
+
+  it("INT-UPLOAD-004 accepts JPEG uploads with benign APP2 profile segments", async () => {
+    const { tokenUrl } = await createProbeOrder({ order_number: "ORD-UPLOAD-ICC" });
+    const token = tokenFromUrl(tokenUrl);
+
+    const app2Form = buildValidForm();
+    app2Form.delete("image");
+    app2Form.append("image", new File([JPEG_WITH_ALLOWED_APP2], "icc.jpg", { type: "image/jpeg" }));
+
+    const response = await SELF.fetch(`https://example.test/api/probe/${token}/submit`, {
+      method: "POST",
+      body: app2Form,
+    });
+
+    expect(response.status).toBe(201);
   });
 
   it("INT-METHOD-001 returns 405 for unsupported methods on known routes", async () => {

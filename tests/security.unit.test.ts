@@ -63,6 +63,21 @@ const JPEG_WITH_EXIF = Uint8Array.from([
   0x45, 0x46, 0xff, 0xd9,
 ]);
 
+const JPEG_WITH_APP13 = Uint8Array.from([
+  0xff, 0xd8, 0xff, 0xed, 0x00, 0x10, 0x50, 0x68, 0x6f, 0x74, 0x6f, 0x73, 0x68, 0x6f, 0x70, 0x20,
+  0x33, 0x2e, 0x30, 0xff, 0xd9,
+]);
+
+const JPEG_WITH_COMMENT = Uint8Array.from([
+  0xff, 0xd8, 0xff, 0xfe, 0x00, 0x0c, 0x63, 0x61, 0x6d, 0x65, 0x72, 0x61, 0x2d, 0x72, 0x6f, 0x6c,
+  0x6c, 0xff, 0xd9,
+]);
+
+const JPEG_WITH_ICC_PROFILE = Uint8Array.from([
+  0xff, 0xd8, 0xff, 0xe2, 0x00, 0x1a, 0x49, 0x43, 0x43, 0x5f, 0x50, 0x52, 0x4f, 0x46, 0x49, 0x4c,
+  0x45, 0x00, 0x01, 0x01, 0x73, 0x52, 0x47, 0x42, 0x00, 0x00, 0xff, 0xd9,
+]);
+
 const PNG_WITH_TEXT = Uint8Array.from([
   137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 1, 0, 0, 0, 1, 8, 6, 0, 0,
   0, 31, 21, 196, 137, 0, 0, 0, 10, 116, 69, 88, 116, 99, 111, 109, 109, 101, 110, 116, 0, 0, 0, 0,
@@ -190,9 +205,12 @@ describe("worker/security", () => {
     expect(diffDays).toBe(SUBMISSION_ARTIFACT_RETENTION_DAYS);
   });
 
-  it("rejects embedded metadata markers in JPEG and PNG uploads", () => {
+  it("rejects sensitive JPEG/PNG metadata while allowing benign APP2 profiles", () => {
     expect(hasRejectedImageMetadata(JPEG_WITH_EXIF, "image/jpeg")).toBe(true);
+    expect(hasRejectedImageMetadata(JPEG_WITH_APP13, "image/jpeg")).toBe(true);
+    expect(hasRejectedImageMetadata(JPEG_WITH_COMMENT, "image/jpeg")).toBe(true);
     expect(hasRejectedImageMetadata(PNG_WITH_TEXT, "image/png")).toBe(true);
+    expect(hasRejectedImageMetadata(JPEG_WITH_ICC_PROFILE, "image/jpeg")).toBe(false);
     expect(
       hasRejectedImageMetadata(
         Uint8Array.from([255, 216, 255, 224, 0, 16, 74, 70, 73, 70]),

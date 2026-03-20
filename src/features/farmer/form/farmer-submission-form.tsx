@@ -37,6 +37,8 @@ type FarmerSubmissionFormProps = {
   gpsLoading: boolean;
   gps: { lat: number; lon: number; capturedAt: string } | null;
   canSubmit: boolean;
+  submitting: boolean;
+  submitStatusText: string | null;
   onSubmit: (event: FormEvent) => void | Promise<void>;
   onCropNameChange: (value: string) => void;
   onVitalityChange: (value: VitalityValue) => void;
@@ -53,6 +55,8 @@ export function FarmerSubmissionForm({
   gpsLoading,
   gps,
   canSubmit,
+  submitting,
+  submitStatusText,
   onSubmit,
   onCropNameChange,
   onVitalityChange,
@@ -75,6 +79,7 @@ export function FarmerSubmissionForm({
             <Input
               id="crop-name"
               value={cropName}
+              disabled={submitting}
               onChange={(event) => onCropNameChange(event.target.value)}
               required
             />
@@ -84,6 +89,7 @@ export function FarmerSubmissionForm({
             <Label htmlFor="vitality-select">Pflanzenvitalität</Label>
             <Select
               value={vitality}
+              disabled={submitting}
               onValueChange={(value) => onVitalityChange(value as VitalityValue)}
             >
               <SelectTrigger
@@ -107,6 +113,7 @@ export function FarmerSubmissionForm({
             <Label htmlFor="soil-select">Bodenfeuchte</Label>
             <Select
               value={soilMoisture}
+              disabled={submitting}
               onValueChange={(value) => onSoilMoistureChange(value as SoilMoistureValue)}
             >
               <SelectTrigger id="soil-select" aria-label="Bodenfeuchte" className="h-9 w-full">
@@ -136,7 +143,11 @@ export function FarmerSubmissionForm({
                   </p>
                 </div>
 
-                <Button asChild variant="outline" className="w-full sm:w-auto">
+                <Button
+                  asChild
+                  variant="outline"
+                  className={`w-full sm:w-auto ${submitting ? "pointer-events-none opacity-50" : ""}`}
+                >
                   <label htmlFor="image-file">Datei auswählen</label>
                 </Button>
               </div>
@@ -146,6 +157,7 @@ export function FarmerSubmissionForm({
                 type="file"
                 accept="image/jpeg,image/png"
                 className="sr-only"
+                disabled={submitting}
                 aria-describedby="image-file-help"
                 onChange={(event) => {
                   const file = event.target.files?.[0] ?? null;
@@ -155,6 +167,12 @@ export function FarmerSubmissionForm({
                 required
               />
             </div>
+
+            {submitStatusText && (
+              <p className="text-xs text-muted-foreground" aria-live="polite">
+                {submitStatusText}
+              </p>
+            )}
           </div>
 
           <div>
@@ -162,7 +180,7 @@ export function FarmerSubmissionForm({
               type="button"
               variant="outline"
               onClick={() => void onCaptureGps()}
-              disabled={gpsLoading}
+              disabled={gpsLoading || submitting}
             >
               {gpsLoading ? (
                 <span className="inline-flex items-center gap-2">
@@ -186,8 +204,18 @@ export function FarmerSubmissionForm({
             </p>
           </div>
 
-          <Button type="submit" disabled={!canSubmit}>
-            Absenden
+          <Button type="submit" disabled={!canSubmit || submitting}>
+            {submitting ? (
+              <span className="inline-flex items-center gap-2">
+                <span
+                  className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+                  aria-hidden="true"
+                />
+                {submitStatusText ?? "Bild wird gesendet..."}
+              </span>
+            ) : (
+              "Absenden"
+            )}
           </Button>
         </form>
       </CardContent>

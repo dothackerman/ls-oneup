@@ -44,9 +44,12 @@ export class SubmissionSecurityConfigError extends Error {
 }
 
 export class SubmissionImagePolicyError extends Error {
-  constructor(message: string) {
+  readonly metadataCategory: SubmissionImageMetadataCategory;
+
+  constructor(message: string, metadataCategory: SubmissionImageMetadataCategory) {
     super(message);
     this.name = "SubmissionImagePolicyError";
+    this.metadataCategory = metadataCategory;
   }
 }
 
@@ -58,6 +61,18 @@ const JPEG_SOI = 0xffd8;
 const JPEG_SOS = 0xffda;
 const JPEG_EOI = 0xffd9;
 const PNG_TEXT_CHUNKS = new Set(["tEXt", "iTXt", "zTXt", "eXIf"]);
+const JPEG_SEGMENT_NAMES: Record<number, SubmissionImageMetadataCategory> = {
+  0xffe1: "jpeg_app1",
+  0xffed: "jpeg_app13",
+  0xfffe: "jpeg_comment",
+};
+
+export type SubmissionImageMetadataCategory =
+  | "jpeg_app1"
+  | "jpeg_app13"
+  | "jpeg_comment"
+  | "png_text"
+  | "png_exif";
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -251,9 +266,9 @@ function readUint16(bytes: Uint8Array, offset: number): number {
   return (bytes[offset] << 8) | bytes[offset + 1];
 }
 
-function jpegContainsEmbeddedMetadata(bytes: Uint8Array): boolean {
+function classifyJpegEmbeddedMetadata(bytes: Uint8Array): SubmissionImageMetadataCategory | null {
   if (bytes.byteLength < 4 || readUint16(bytes, 0) !== JPEG_SOI) {
-    return false;
+    return null;
   }
 
   let offset = 2;
@@ -265,31 +280,32 @@ function jpegContainsEmbeddedMetadata(bytes: Uint8Array): boolean {
 
     const marker = readUint16(bytes, offset);
     if (marker === JPEG_SOS || marker === JPEG_EOI) {
-      return false;
+      return null;
     }
 
-    if (marker === 0xffe1 || marker === 0xffe2 || marker === 0xffed || marker === 0xfffe) {
-      return true;
+    const metadataCategory = JPEG_SEGMENT_NAMES[marker];
+    if (metadataCategory) {
+      return metadataCategory;
     }
 
     if (offset + 4 > bytes.byteLength) {
-      return false;
+      return null;
     }
 
     const segmentLength = readUint16(bytes, offset + 2);
     if (segmentLength < 2) {
-      return false;
+      return null;
     }
 
     offset += 2 + segmentLength;
   }
 
-  return false;
+  return null;
 }
 
-function pngContainsEmbeddedMetadata(bytes: Uint8Array): boolean {
+function classifyPngEmbeddedMetadata(bytes: Uint8Array): SubmissionImageMetadataCategory | null {
   if (bytes.byteLength < 8) {
-    return false;
+    return null;
   }
 
   let offset = 8;
@@ -300,27 +316,37 @@ function pngContainsEmbeddedMetadata(bytes: Uint8Array): boolean {
       (bytes[offset + 2] << 8) |
       bytes[offset + 3];
     const chunkType = decoder.decode(bytes.slice(offset + 4, offset + 8));
+    if (chunkType === "eXIf") {
+      return "png_exif";
+    }
     if (PNG_TEXT_CHUNKS.has(chunkType)) {
-      return true;
+      return "png_text";
     }
 
     offset += 12 + chunkLength;
   }
 
-  return false;
+  return null;
+}
+
+export function findRejectedSubmissionImageMetadata(
+  bytes: Uint8Array,
+  mime: AllowedImageMime,
+): SubmissionImageMetadataCategory | null {
+  return mime === "image/jpeg"
+    ? classifyJpegEmbeddedMetadata(bytes)
+    : classifyPngEmbeddedMetadata(bytes);
 }
 
 export function assertSubmissionImageStoragePolicy(
   bytes: Uint8Array,
   mime: AllowedImageMime,
 ): void {
-  const hasMetadata =
-    mime === "image/jpeg"
-      ? jpegContainsEmbeddedMetadata(bytes)
-      : pngContainsEmbeddedMetadata(bytes);
-  if (hasMetadata) {
+  const metadataCategory = findRejectedSubmissionImageMetadata(bytes, mime);
+  if (metadataCategory) {
     throw new SubmissionImagePolicyError(
       "Images with embedded EXIF, text, or comment metadata must be rejected before storage.",
+      metadataCategory,
     );
   }
 }

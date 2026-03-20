@@ -46,7 +46,7 @@ import {
 } from "./request-guards";
 import {
   buildSubmissionArtifactRetention,
-  hasRejectedImageMetadata,
+  describeRejectedImageMetadata,
   IMAGE_METADATA_REJECTED_CODE,
   IMAGE_METADATA_REJECTED_MESSAGE,
 } from "./data-retention";
@@ -442,7 +442,15 @@ app.post("/api/probe/:token/submit", async (c) => {
   }
 
   const { fields, image, imageBytes } = guardedRequest;
-  if (hasRejectedImageMetadata(imageBytes, image.type)) {
+  const metadataIssue = describeRejectedImageMetadata(imageBytes, image.type);
+  if (metadataIssue) {
+    console.warn("submit_rejected_image_metadata", {
+      probe_id: initialState.id,
+      error_code: IMAGE_METADATA_REJECTED_CODE,
+      image_mime: image.type,
+      image_bytes: image.size,
+      metadata_category: metadataIssue.category,
+    });
     imageBytes.fill(0);
     return jsonError(415, IMAGE_METADATA_REJECTED_CODE, IMAGE_METADATA_REJECTED_MESSAGE);
   }
