@@ -271,9 +271,9 @@ Required fields:
 7. `image` (single file, `image/jpeg` or `image/png`, max 2 MB)
 8. Uploaded image bytes must match the declared JPEG or PNG file signature; MIME labels alone are insufficient.
 9. Uploads with sensitive or suspicious embedded image metadata (for example JPEG APP1/APP13/comment markers or PNG textual/exif chunks) are rejected instead of being stored verbatim.
-10. Benign JPEG profile segments such as ICC/App2 are not rejected on their own.
+10. JPEG `APP2` markers are currently tolerated to avoid false positives on normal camera uploads; the hotfix does not classify `APP2` subtypes individually.
 11. The browser UI may re-save accepted JPEG/PNG uploads before submit to strip embedded metadata, but the server remains the authoritative validator.
-12. Farmer-visible error copy for metadata-policy failures is intentionally generic and should guide retry/support rather than expose low-level marker details.
+12. Client-facing error copy for metadata-policy failures is intentionally generic and should guide retry/support rather than expose low-level marker details.
 
 Success `201`:
 

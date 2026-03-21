@@ -509,7 +509,8 @@ test("E2E-FARM-011 shows generic retry guidance for metadata-policy failures", a
       },
       body: JSON.stringify({
         error_code: "IMAGE_METADATA_NOT_ALLOWED",
-        message: "Bildmetadaten muessen vor dem Upload entfernt werden.",
+        message:
+          "Beim Senden ist ein Problem aufgetreten. Bitte versuchen Sie es erneut. Falls das Problem weiterhin besteht, kontaktieren Sie bitte Ihren Anbieter.",
       }),
     });
   });

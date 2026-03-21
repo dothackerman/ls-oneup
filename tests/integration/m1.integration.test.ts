@@ -204,8 +204,10 @@ describe("M1 integration", () => {
     });
 
     expect(response.status).toBe(415);
-    expect((await response.json()) as { error_code: string }).toMatchObject({
+    expect((await response.json()) as { error_code: string; message: string }).toMatchObject({
       error_code: "IMAGE_METADATA_NOT_ALLOWED",
+      message:
+        "Beim Senden ist ein Problem aufgetreten. Bitte versuchen Sie es erneut. Falls das Problem weiterhin besteht, kontaktieren Sie bitte Ihren Anbieter.",
     });
   });
 

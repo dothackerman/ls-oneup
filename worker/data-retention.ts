@@ -11,7 +11,7 @@ export const SUBMISSION_ARTIFACT_RETENTION_DAYS = SUBMISSION_RETENTION_DAYS;
 export const SUBMISSION_ARTIFACT_RETENTION_CLASS = "submitted_probe_artifact";
 export const IMAGE_METADATA_REJECTED_CODE = "IMAGE_METADATA_NOT_ALLOWED";
 export const IMAGE_METADATA_REJECTED_MESSAGE =
-  "Bildmetadaten muessen vor dem Upload entfernt werden.";
+  "Beim Senden ist ein Problem aufgetreten. Bitte versuchen Sie es erneut. Falls das Problem weiterhin besteht, kontaktieren Sie bitte Ihren Anbieter.";
 
 export type StoredImageRetentionPolicy = {
   deleteAfter: string;
