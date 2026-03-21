@@ -84,6 +84,10 @@ const PNG_WITH_TEXT = Uint8Array.from([
   0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130,
 ]);
 
+const PNG_WITH_HUGE_CHUNK_LENGTH = Uint8Array.from([
+  137, 80, 78, 71, 13, 10, 26, 10, 128, 0, 0, 0, 116, 69, 88, 116, 0, 0, 0, 0,
+]);
+
 describe("worker/security", () => {
   it("fails closed when no token HMAC configuration is available", () => {
     expect(() => resolveTokenHmacKeyRing({})).toThrow(TokenSecurityConfigError);
@@ -210,6 +214,7 @@ describe("worker/security", () => {
     expect(hasRejectedImageMetadata(JPEG_WITH_APP13, "image/jpeg")).toBe(true);
     expect(hasRejectedImageMetadata(JPEG_WITH_COMMENT, "image/jpeg")).toBe(true);
     expect(hasRejectedImageMetadata(PNG_WITH_TEXT, "image/png")).toBe(true);
+    expect(hasRejectedImageMetadata(PNG_WITH_HUGE_CHUNK_LENGTH, "image/png")).toBe(false);
     expect(hasRejectedImageMetadata(JPEG_WITH_ICC_PROFILE, "image/jpeg")).toBe(false);
     expect(
       hasRejectedImageMetadata(
