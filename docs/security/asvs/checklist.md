@@ -34,7 +34,7 @@ Structured per-control data remains in [checklist.machine.json](./checklist.mach
 - The checklist covers all 345 ASVS controls, not just the crypto work completed recently.
 - A large open-controls count means most ASVS chapters are still open or only lightly evidenced, not that recent security work failed.
 - Deferred exceptions are explicit operator-approved risk accepts, not soft completions.
-- The strongest current chapter is still `V11 Cryptography`, but its inventory-maintenance evidence regressed in this audit because the repo’s crypto gate now reports stale inventory references.
+- The strongest current chapter is still `V11 Cryptography`, and its inventory-maintenance evidence is currently in good standing, with the repo’s crypto gate reporting a clean, up-to-date inventory.
 
 ## Chapter Summary
 

@@ -1,9 +1,9 @@
 {
   "generated_at": "2026-03-21T06:23:56Z",
-  "changed_count": 5,
-  "new_open_controls": 1,
+  "changed_count": 4,
+  "new_open_controls": 0,
   "resolved_open_controls": 2,
-  "severity_changed": 3,
+  "severity_changed": 2,
   "changes": [
     {
       "requirement_id": "V5.2.1",
@@ -32,13 +32,6 @@
       "status_to": "completed",
       "severity_from": "low",
       "severity_to": "none"
-    },
-    {
-      "requirement_id": "V11.1.2",
-      "status_from": "completed",
-      "status_to": "not_reviewed",
-      "severity_from": "none",
-      "severity_to": "medium"
     }
   ]
 }

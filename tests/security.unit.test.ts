@@ -263,6 +263,16 @@ describe("worker/security", () => {
 });
 
 describe("scripts/crypto-gate", () => {
+  it("returns validation errors for non-object inventory shapes", async () => {
+    const errors = await validateInventoryDocument(undefined, {
+      pathExists: async () => true,
+    });
+
+    expect(errors).toContain("top-level schema_version must be 2");
+    expect(errors).toContain("inventory is empty");
+    expect(errors).toContain("migration_plan must contain at least one entry");
+  });
+
   it("treats migration files as provenance rather than live evidence", async () => {
     const errors = await validateInventoryDocument(CRYPTO_INVENTORY_FIXTURE, {
       pathExists: async (relPath: string) =>

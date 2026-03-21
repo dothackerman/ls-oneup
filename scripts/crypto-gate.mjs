@@ -48,6 +48,7 @@ function pushEntryError(errors, entryId, message) {
 export async function validateInventoryDocument(inventory, options = {}) {
   const pathExists = options.pathExists ?? exists;
   const errors = [];
+  const inventoryEntries = Array.isArray(inventory?.inventory) ? inventory.inventory : [];
 
   if (inventory?.schema_version !== INVENTORY_SCHEMA_VERSION) {
     errors.push(`top-level schema_version must be ${INVENTORY_SCHEMA_VERSION}`);
@@ -67,15 +68,15 @@ export async function validateInventoryDocument(inventory, options = {}) {
     errors.push(`policy_ref does not exist: ${inventory.policy_ref}`);
   }
 
-  if (!Array.isArray(inventory.inventory) || inventory.inventory.length === 0) {
+  if (inventoryEntries.length === 0) {
     errors.push("inventory is empty");
   }
 
-  if (!Array.isArray(inventory.migration_plan) || inventory.migration_plan.length === 0) {
+  if (!Array.isArray(inventory?.migration_plan) || inventory.migration_plan.length === 0) {
     errors.push("migration_plan must contain at least one entry");
   }
 
-  for (const entry of inventory.inventory ?? []) {
+  for (const entry of inventoryEntries) {
     const entryId = entry?.id ?? "unknown";
 
     for (const field of REQUIRED_ENTRY_FIELDS) {
