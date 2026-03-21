@@ -1,14 +1,18 @@
 # Decision Record: M1 Token-Link And Submission Security
 
 ## Status
+
 Accepted
 
 ## Date
+
 2026-03-03
 
 ## Context
+
 M1 uses one-time probe links shared via QR code and URL token.
 Security requirements:
+
 1. Token must be hard to guess.
 2. Token must not be stored in plain text.
 3. Link must be one-time and time-bounded.
@@ -16,6 +20,7 @@ Security requirements:
 5. Submitted probe details and uploaded image objects must not remain plaintext in application-managed storage.
 
 ## Decision
+
 1. Token generation:
    - use cryptographically secure random bytes (minimum 32 bytes entropy).
    - encode token as URL-safe string.
@@ -40,6 +45,8 @@ Security requirements:
 6. Inventory and policy:
    - maintain a repository-level cryptographic inventory in `docs/security/crypto-inventory.json`.
    - validate inventory coverage with `npm run crypto:run` before release-oriented changes.
+   - separate gate-validated live crypto evidence from non-gated provenance so deleted or renamed migration files do not break current control evidence.
+   - treat `migrations/*.sql` files as provenance only, never as gate-validated live crypto evidence.
    - keep key lifecycle, fail-secure behavior, and crypto-agility rules in `docs/security/crypto-policy.md`.
 7. Submission storage:
    - encrypt submitted crop, vitality, moisture, GPS, and image-key data before writing to D1.
@@ -55,15 +62,20 @@ Security requirements:
 9. Orphan object handling:
    - if R2 upload succeeds but submit write loses race/fails, run best-effort delete and log result.
 10. Sensitive response caching:
-   - admin API responses and admin-served probe images must return anti-caching headers (`cache-control: no-store`, `pragma: no-cache`, `expires: 0`).
-   - token-bound probe API responses must also return anti-caching headers so probe state and submission outcomes are not stored by browsers or intermediaries.
-   - admin responses should vary on `Cf-Access-Authenticated-User-Email` so access-scoped content is not reused across identities if caching is reintroduced upstream.
+
+- admin API responses and admin-served probe images must return anti-caching headers (`cache-control: no-store`, `pragma: no-cache`, `expires: 0`).
+- token-bound probe API responses must also return anti-caching headers so probe state and submission outcomes are not stored by browsers or intermediaries.
+- admin responses should vary on `Cf-Access-Authenticated-User-Email` so access-scoped content is not reused across identities if caching is reintroduced upstream.
+
 11. Operational evidence:
-   - keep logging/error-handling rules in `docs/security/logging-and-error-handling.md`.
-   - keep risky component and dangerous-functionality notes in `docs/security/dependency-risk-register.md`.
+
+- keep logging/error-handling rules in `docs/security/logging-and-error-handling.md`.
+- keep risky component and dangerous-functionality notes in `docs/security/dependency-risk-register.md`.
 
 ## Consequences
+
 Positive:
+
 1. No reusable plaintext token at rest in DB.
 2. Strong resistance to token guessing.
 3. One-time semantics robust against concurrent submits.
@@ -74,6 +86,7 @@ Positive:
 8. Logging and risky-component evidence now lives in dedicated docs instead of being scattered across runbooks and plan notes.
 
 Trade-offs:
+
 1. Token cannot be recovered from DB; admin must regenerate only in later milestone if needed.
 2. HMAC and submission-key ring management become required operational setup.
 3. Rotation requires retaining legacy secrets until outstanding token lifetimes have elapsed or protected records have been re-encrypted.
@@ -81,8 +94,10 @@ Trade-offs:
 5. Anti-caching headers reduce browser convenience features such as response reuse and make debugging via intermediary caches less pleasant, which is the correct kind of inconvenience here.
 6. Operational posture is more reviewable, but it also creates doc drift risk if future slices change runtime behavior without updating the dedicated evidence docs.
 7. The image-metadata posture is intentionally narrower than blanket rejection: it targets markers currently associated with privacy-sensitive metadata while allowing JPEG `APP2` segments until the false-positive rate is better understood.
+8. Migration filenames remain useful audit breadcrumbs, but they are no longer allowed to masquerade as live crypto evidence in CI gates.
 
 ## Alternatives Considered
+
 1. Plain token stored in DB:
    - rejected due to leakage risk.
 2. Unsalted hash:
@@ -91,6 +106,7 @@ Trade-offs:
    - rejected because M1 requires strict one-time submit state and admin tracking.
 
 ## Verification Requirements
+
 1. Integration test for first-submit-wins race.
 2. Integration test for expired token rejection.
 3. Integration test for invalid token rejection.

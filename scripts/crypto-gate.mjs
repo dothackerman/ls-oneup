@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 import fs from "node:fs/promises";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 
 const ROOT = process.cwd();
 const INVENTORY_PATH = path.join(ROOT, "docs/security/crypto-inventory.json");
 const DISCOVERY_PATH = path.join(ROOT, "docs/security/crypto-discovery.json");
 
+const INVENTORY_SCHEMA_VERSION = 2;
 const REQUIRED_TOP_FIELDS = ["reviewed_at", "owner", "policy_ref"];
 const REQUIRED_ENTRY_FIELDS = [
   "id",
@@ -31,76 +33,131 @@ async function exists(relPath) {
   }
 }
 
-async function main() {
-  const inventory = JSON.parse(await fs.readFile(INVENTORY_PATH, "utf8"));
-  const discovery = JSON.parse(await fs.readFile(DISCOVERY_PATH, "utf8"));
+function isNonEmptyString(value) {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+export function isEphemeralMigrationReference(relPath) {
+  return /^migrations\/.+\.sql$/u.test(relPath);
+}
+
+function pushEntryError(errors, entryId, message) {
+  errors.push(`Invalid inventory entry '${entryId}': ${message}`);
+}
+
+export async function validateInventoryDocument(inventory, options = {}) {
+  const pathExists = options.pathExists ?? exists;
+  const errors = [];
+
+  if (inventory?.schema_version !== INVENTORY_SCHEMA_VERSION) {
+    errors.push(`top-level schema_version must be ${INVENTORY_SCHEMA_VERSION}`);
+  }
 
   for (const field of REQUIRED_TOP_FIELDS) {
     if (!String(inventory?.[field] ?? "").trim()) {
-      fail(`missing top-level inventory field '${field}'`);
+      errors.push(`missing top-level inventory field '${field}'`);
     }
   }
 
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(inventory.reviewed_at ?? ""))) {
-    fail("top-level reviewed_at must be YYYY-MM-DD");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(inventory?.reviewed_at ?? ""))) {
+    errors.push("top-level reviewed_at must be YYYY-MM-DD");
   }
 
-  if (!(await exists(inventory.policy_ref))) {
-    fail(`policy_ref does not exist: ${inventory.policy_ref}`);
+  if (isNonEmptyString(inventory?.policy_ref) && !(await pathExists(inventory.policy_ref))) {
+    errors.push(`policy_ref does not exist: ${inventory.policy_ref}`);
   }
 
   if (!Array.isArray(inventory.inventory) || inventory.inventory.length === 0) {
-    fail("inventory is empty");
+    errors.push("inventory is empty");
   }
 
   if (!Array.isArray(inventory.migration_plan) || inventory.migration_plan.length === 0) {
-    fail("migration_plan must contain at least one entry");
+    errors.push("migration_plan must contain at least one entry");
   }
 
-  let invalidEntries = 0;
-  for (const entry of inventory.inventory) {
+  for (const entry of inventory.inventory ?? []) {
+    const entryId = entry?.id ?? "unknown";
+
     for (const field of REQUIRED_ENTRY_FIELDS) {
       if (!String(entry?.[field] ?? "").trim()) {
-        invalidEntries += 1;
-        console.error(`Invalid inventory entry '${entry?.id ?? "unknown"}': missing ${field}`);
+        pushEntryError(errors, entryId, `missing ${field}`);
       }
     }
 
-    if (!Array.isArray(entry?.code_references) || entry.code_references.length === 0) {
-      invalidEntries += 1;
-      console.error(`Invalid inventory entry '${entry?.id ?? "unknown"}': missing code_references`);
+    if ("code_references" in (entry ?? {})) {
+      pushEntryError(
+        errors,
+        entryId,
+        "legacy code_references is not allowed in schema v2; use current_code_references and provenance_code_references",
+      );
+    }
+
+    if (
+      !Array.isArray(entry?.current_code_references) ||
+      entry.current_code_references.length === 0
+    ) {
+      pushEntryError(errors, entryId, "missing current_code_references");
+    }
+
+    if (!Array.isArray(entry?.provenance_code_references)) {
+      pushEntryError(errors, entryId, "missing provenance_code_references");
     }
 
     if (!Array.isArray(entry?.discovery) || entry.discovery.length === 0) {
-      invalidEntries += 1;
-      console.error(`Invalid inventory entry '${entry?.id ?? "unknown"}': missing discovery mapping`);
+      pushEntryError(errors, entryId, "missing discovery mapping");
     }
 
-    for (const relPath of entry?.code_references ?? []) {
-      if (!(await exists(relPath))) {
-        invalidEntries += 1;
-        console.error(`Invalid inventory entry '${entry?.id ?? "unknown"}': missing path ${relPath}`);
+    for (const relPath of entry?.current_code_references ?? []) {
+      if (!isNonEmptyString(relPath)) {
+        pushEntryError(errors, entryId, "malformed current_code_references entry");
+        continue;
+      }
+
+      if (isEphemeralMigrationReference(relPath)) {
+        pushEntryError(
+          errors,
+          entryId,
+          `ephemeral migration references are not allowed in current_code_references: ${relPath}`,
+        );
+        continue;
+      }
+
+      if (!(await pathExists(relPath))) {
+        pushEntryError(errors, entryId, `missing path ${relPath}`);
+      }
+    }
+
+    for (const relPath of entry?.provenance_code_references ?? []) {
+      if (!isNonEmptyString(relPath)) {
+        pushEntryError(errors, entryId, "malformed provenance_code_references entry");
       }
     }
 
     for (const mapped of entry?.discovery ?? []) {
       if (!String(mapped?.marker_id ?? "").trim() || !String(mapped?.path ?? "").trim()) {
-        invalidEntries += 1;
-        console.error(`Invalid inventory entry '${entry?.id ?? "unknown"}': malformed discovery mapping`);
+        pushEntryError(errors, entryId, "malformed discovery mapping");
         continue;
       }
 
-      if (!(await exists(mapped.path))) {
-        invalidEntries += 1;
-        console.error(
-          `Invalid inventory entry '${entry?.id ?? "unknown"}': missing discovery path ${mapped.path}`,
-        );
+      if (!(await pathExists(mapped.path))) {
+        pushEntryError(errors, entryId, `missing discovery path ${mapped.path}`);
       }
     }
   }
 
-  if (invalidEntries > 0) {
-    fail(`${invalidEntries} inventory validation errors`);
+  return errors;
+}
+
+async function main() {
+  const inventory = JSON.parse(await fs.readFile(INVENTORY_PATH, "utf8"));
+  const discovery = JSON.parse(await fs.readFile(DISCOVERY_PATH, "utf8"));
+  const errors = await validateInventoryDocument(inventory);
+
+  if (errors.length > 0) {
+    for (const message of errors) {
+      console.error(message);
+    }
+    fail(`${errors.length} inventory validation errors`);
   }
 
   const observations = Array.isArray(discovery?.observations) ? discovery.observations : [];
@@ -137,7 +194,9 @@ async function main() {
   console.log("--- END SUMMARY ---");
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}

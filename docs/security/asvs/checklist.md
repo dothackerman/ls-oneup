@@ -60,8 +60,8 @@ Structured per-control data remains in [checklist.machine.json](./checklist.mach
 
 ## Current Security Highlight
 
-- V11 Cryptography: 17 completed, 2 open, 5 not applicable.
-- Crypto inventory maintenance regressed from the previous snapshot: `npm run crypto:run` fails because [docs/security/crypto-inventory.json](../crypto-inventory.json) still references the removed path `migrations/0003_m1_submission_ciphertext.sql`.
+- V11 Cryptography: 18 completed, 1 open, 5 not applicable.
+- Crypto inventory maintenance is green again: `npm run crypto:run` now passes because live crypto evidence is tracked separately from provenance and migration filenames are no longer gate-validated current references.
 - V5 File Handling now has two completed controls with direct evidence: byte-size limits are enforced before processing, and stored image object keys are generated from trusted internal identifiers rather than user filenames.
 - V5.2.2 and V5.2.6 are now explicitly open as implementation gaps rather than vague `not_reviewed` placeholders: filename-extension matching is not enforced, and the Worker still does not cap image dimensions or pixel count.
 

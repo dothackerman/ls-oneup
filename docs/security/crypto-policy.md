@@ -22,7 +22,12 @@ The current runtime scope includes one-time probe-token protection, encrypted su
 
 1. The maintained crypto inventory lives in `docs/security/crypto-inventory.json`.
 2. `npm run crypto:inventory` is the recurring discovery check. It scans runtime and integration-test code for approved Web Crypto markers, compares observed call sites to the inventory, writes `docs/security/crypto-discovery.json`, and fails on undocumented drift.
-3. Any pull request that adds a new cryptographic primitive, key source, or call site must update the inventory in the same change.
+3. Live crypto evidence must be separated from provenance:
+   - `discovery` holds generated live call-site evidence and is gate-validated,
+   - `current_code_references` holds stable current supporting context and is gate-validated,
+   - `provenance_code_references` holds migration lineage, renamed paths, and audit breadcrumbs and is not existence-validated.
+4. `migrations/*.sql` files are provenance only and must not appear in `current_code_references`.
+5. Any pull request that adds a new cryptographic primitive, key source, live call site, or provenance breadcrumb must update the inventory in the same change.
 
 ## Approved Runtime Usage
 

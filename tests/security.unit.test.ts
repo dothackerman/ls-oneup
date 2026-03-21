@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
+  isEphemeralMigrationReference,
+  validateInventoryDocument,
+} from "../scripts/crypto-gate.mjs";
+import {
   TokenSecurityConfigError,
   constantTimeEqual,
   hashTokenForStorage,
@@ -87,6 +91,33 @@ const PNG_WITH_TEXT = Uint8Array.from([
 const PNG_WITH_HUGE_CHUNK_LENGTH = Uint8Array.from([
   137, 80, 78, 71, 13, 10, 26, 10, 128, 0, 0, 0, 116, 69, 88, 116, 0, 0, 0, 0,
 ]);
+
+const CRYPTO_INVENTORY_FIXTURE = {
+  schema_version: 2,
+  reviewed_at: "2026-03-21",
+  owner: "application-engineering",
+  policy_ref: "docs/security/crypto-policy.md",
+  inventory: [
+    {
+      id: "fixture-entry",
+      purpose: "Exercise gate semantics.",
+      scope: "runtime",
+      algorithm: "AES-256-GCM",
+      key_source: "fixture",
+      rotation_policy: "Not applicable.",
+      agility_plan: "Keep the fixture small and explicit.",
+      current_code_references: ["worker/submission-security.ts"],
+      provenance_code_references: ["migrations/0003_m1_submission_ciphertext.sql"],
+      discovery: [
+        {
+          marker_id: "webcrypto-subtle-encrypt",
+          path: "worker/submission-security.ts",
+        },
+      ],
+    },
+  ],
+  migration_plan: ["Keep provenance separate from live evidence."],
+};
 
 describe("worker/security", () => {
   it("fails closed when no token HMAC configuration is available", () => {
@@ -228,5 +259,46 @@ describe("worker/security", () => {
         "image/png",
       ),
     ).toBe(false);
+  });
+});
+
+describe("scripts/crypto-gate", () => {
+  it("treats migration files as provenance rather than live evidence", async () => {
+    const errors = await validateInventoryDocument(CRYPTO_INVENTORY_FIXTURE, {
+      pathExists: async (relPath: string) =>
+        relPath !== "migrations/0003_m1_submission_ciphertext.sql",
+    });
+
+    expect(errors).toEqual([]);
+  });
+
+  it("rejects ephemeral migrations in current live references", async () => {
+    const inventory = {
+      ...CRYPTO_INVENTORY_FIXTURE,
+      inventory: [
+        {
+          ...CRYPTO_INVENTORY_FIXTURE.inventory[0],
+          current_code_references: [
+            "worker/submission-security.ts",
+            "migrations/0002_m1_add_submission_ciphertext.sql",
+          ],
+        },
+      ],
+    };
+
+    const errors = await validateInventoryDocument(inventory, {
+      pathExists: async () => true,
+    });
+
+    expect(errors).toContain(
+      "Invalid inventory entry 'fixture-entry': ephemeral migration references are not allowed in current_code_references: migrations/0002_m1_add_submission_ciphertext.sql",
+    );
+  });
+
+  it("exposes the migration-path rule as a reusable helper", () => {
+    expect(isEphemeralMigrationReference("migrations/0002_m1_add_submission_ciphertext.sql")).toBe(
+      true,
+    );
+    expect(isEphemeralMigrationReference("worker/submission-security.ts")).toBe(false);
   });
 });
