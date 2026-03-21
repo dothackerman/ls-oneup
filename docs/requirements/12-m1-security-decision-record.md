@@ -45,6 +45,9 @@ Security requirements:
    - encrypt submitted crop, vitality, moisture, GPS, and image-key data before writing to D1.
    - encrypt uploaded image bytes before writing them to R2.
    - keep non-sensitive upload metadata (`image_mime`, `image_bytes`, `image_uploaded_at`) in plaintext for validation and delivery.
+   - treat browser-side metadata stripping as best-effort only; the server remains the authoritative upload validator.
+   - reject sensitive or suspicious embedded image metadata markers before storage, specifically JPEG APP1/APP13/comment markers and PNG textual/exif chunks.
+   - tolerate JPEG `APP2` markers for now to avoid false positives on normal camera uploads; this is an explicit temporary trade-off, not a claim that all JPEG metadata is currently scrubbed or rejected.
    - preserve legacy plaintext rows and legacy raw R2 image objects for backward-compatible reads while new submissions write encrypted storage only.
 8. Logging:
    - never log raw tokens.
@@ -77,6 +80,7 @@ Trade-offs:
 4. Admin read paths now depend on successful payload and image decryption plus key availability.
 5. Anti-caching headers reduce browser convenience features such as response reuse and make debugging via intermediary caches less pleasant, which is the correct kind of inconvenience here.
 6. Operational posture is more reviewable, but it also creates doc drift risk if future slices change runtime behavior without updating the dedicated evidence docs.
+7. The image-metadata posture is intentionally narrower than blanket rejection: it targets markers currently associated with privacy-sensitive metadata while allowing JPEG `APP2` segments until the false-positive rate is better understood.
 
 ## Alternatives Considered
 1. Plain token stored in DB:
