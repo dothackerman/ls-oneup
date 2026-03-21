@@ -60,7 +60,7 @@ const decoder = new TextDecoder();
 const JPEG_SOI = 0xffd8;
 const JPEG_SOS = 0xffda;
 const JPEG_EOI = 0xffd9;
-const PNG_TEXT_CHUNKS = new Set(["tEXt", "iTXt", "zTXt", "eXIf"]);
+const PNG_TEXT_CHUNKS = new Set(["tEXt", "iTXt", "zTXt"]);
 const JPEG_SEGMENT_NAMES: Record<number, SubmissionImageMetadataCategory> = {
   0xffe1: "jpeg_app1",
   0xffed: "jpeg_app13",
@@ -266,6 +266,10 @@ function readUint16(bytes: Uint8Array, offset: number): number {
   return (bytes[offset] << 8) | bytes[offset + 1];
 }
 
+function readUint32(bytes: Uint8Array, offset: number): number {
+  return new DataView(bytes.buffer, bytes.byteOffset + offset, 4).getUint32(0, false);
+}
+
 function classifyJpegEmbeddedMetadata(bytes: Uint8Array): SubmissionImageMetadataCategory | null {
   if (bytes.byteLength < 4 || readUint16(bytes, 0) !== JPEG_SOI) {
     return null;
@@ -310,11 +314,16 @@ function classifyPngEmbeddedMetadata(bytes: Uint8Array): SubmissionImageMetadata
 
   let offset = 8;
   while (offset + 8 <= bytes.byteLength) {
-    const chunkLength =
-      (bytes[offset] << 24) |
-      (bytes[offset + 1] << 16) |
-      (bytes[offset + 2] << 8) |
-      bytes[offset + 3];
+    if (offset + 12 > bytes.byteLength) {
+      return null;
+    }
+
+    const chunkLength = readUint32(bytes, offset);
+    const chunkEnd = offset + 12 + chunkLength;
+    if (!Number.isSafeInteger(chunkLength) || chunkEnd <= offset || chunkEnd > bytes.byteLength) {
+      return null;
+    }
+
     const chunkType = decoder.decode(bytes.slice(offset + 4, offset + 8));
     if (chunkType === "eXIf") {
       return "png_exif";
@@ -323,7 +332,7 @@ function classifyPngEmbeddedMetadata(bytes: Uint8Array): SubmissionImageMetadata
       return "png_text";
     }
 
-    offset += 12 + chunkLength;
+    offset = chunkEnd;
   }
 
   return null;
