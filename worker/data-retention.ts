@@ -1,6 +1,7 @@
 import type { AllowedImageMime } from "../src/shared/domain";
 import {
-  assertSubmissionImageStoragePolicy,
+  assertSubmissionImagePolicy,
+  type SubmissionImageRejectionCategory,
   SubmissionImagePolicyError,
 } from "./submission-security";
 
@@ -9,11 +10,15 @@ export const SUBMISSION_ARTIFACT_RETENTION_DAYS = SUBMISSION_RETENTION_DAYS;
 export const SUBMISSION_ARTIFACT_RETENTION_CLASS = "submitted_probe_artifact";
 export const IMAGE_METADATA_REJECTED_CODE = "IMAGE_METADATA_NOT_ALLOWED";
 export const IMAGE_METADATA_REJECTED_MESSAGE =
-  "Bildmetadaten muessen vor dem Upload entfernt werden.";
+  "Beim Senden ist ein Problem aufgetreten. Bitte versuchen Sie es erneut. Falls das Problem weiterhin besteht, kontaktieren Sie bitte Ihren Anbieter.";
 
 export type StoredImageRetentionPolicy = {
   deleteAfter: string;
   customMetadata: Record<string, string>;
+};
+
+export type RejectedSubmissionImage = {
+  category: SubmissionImageRejectionCategory;
 };
 
 function parseIso(value: string): Date {
@@ -42,13 +47,20 @@ export function isPastSubmissionRetention(submittedAtIso: string, nowIso: string
   return submissionRetentionDeadline(submittedAtIso) <= parseIso(nowIso).toISOString();
 }
 
-export function hasRejectedImageMetadata(bytes: Uint8Array, mime: AllowedImageMime): boolean {
+export function hasRejectedSubmissionImage(bytes: Uint8Array, mime: AllowedImageMime): boolean {
+  return describeRejectedSubmissionImage(bytes, mime) !== null;
+}
+
+export function describeRejectedSubmissionImage(
+  bytes: Uint8Array,
+  mime: AllowedImageMime,
+): RejectedSubmissionImage | null {
   try {
-    assertSubmissionImageStoragePolicy(bytes, mime);
-    return false;
+    assertSubmissionImagePolicy(bytes, mime);
+    return null;
   } catch (error) {
     if (error instanceof SubmissionImagePolicyError) {
-      return true;
+      return { category: error.rejectionCategory };
     }
     throw error;
   }

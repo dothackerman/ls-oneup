@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-17T08:06:30.275Z",
+  "generated_at": "2026-03-22T08:45:21.730Z",
   "inventory_path": "docs/security/crypto-inventory.json",
   "scanned_paths": [
     "src",
@@ -36,35 +36,35 @@
       "marker_id": "webcrypto-subtle-import-key",
       "primitive": "Web Crypto importKey",
       "path": "worker/submission-security.ts",
-      "line": 170,
+      "line": 185,
       "snippet": "return await crypto.subtle.importKey(\"raw\", toArrayBuffer(keyBytes), \"AES-GCM\", false, usages);"
     },
     {
       "marker_id": "webcrypto-get-random-values",
       "primitive": "Web Crypto CSPRNG",
       "path": "worker/submission-security.ts",
-      "line": 343,
+      "line": 378,
       "snippet": "crypto.getRandomValues(iv);"
     },
     {
       "marker_id": "webcrypto-subtle-encrypt",
       "primitive": "Web Crypto encrypt",
       "path": "worker/submission-security.ts",
-      "line": 346,
+      "line": 381,
       "snippet": "const ciphertext = await crypto.subtle.encrypt("
     },
     {
       "marker_id": "webcrypto-subtle-decrypt",
       "primitive": "Web Crypto decrypt",
       "path": "worker/submission-security.ts",
-      "line": 393,
+      "line": 428,
       "snippet": "const plaintext = await crypto.subtle.decrypt("
     },
     {
       "marker_id": "webcrypto-get-random-values",
       "primitive": "Web Crypto CSPRNG",
       "path": "tests/integration/m1.integration.test.ts",
-      "line": 139,
+      "line": 134,
       "snippet": "crypto.getRandomValues(b.subarray(0, 65536));"
     }
   ],
