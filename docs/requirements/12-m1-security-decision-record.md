@@ -54,6 +54,7 @@ Security requirements:
    - keep non-sensitive upload metadata (`image_mime`, `image_bytes`, `image_uploaded_at`) in plaintext for validation and delivery.
    - treat browser-side metadata stripping as best-effort only; the server remains the authoritative upload validator.
    - reject sensitive or suspicious embedded image metadata markers before storage, specifically JPEG APP1/APP13/comment markers and PNG textual/exif chunks.
+   - reject malformed PNG chunk framing before storage so truncated or structurally invalid PNGs cannot bypass server-side image policy checks.
    - tolerate JPEG `APP2` markers for now to avoid false positives on normal camera uploads; this is an explicit temporary trade-off, not a claim that all JPEG metadata is currently scrubbed or rejected.
    - preserve legacy plaintext rows and legacy raw R2 image objects for backward-compatible reads while new submissions write encrypted storage only.
 8. Logging:

@@ -44,12 +44,12 @@ export class SubmissionSecurityConfigError extends Error {
 }
 
 export class SubmissionImagePolicyError extends Error {
-  readonly metadataCategory: SubmissionImageMetadataCategory;
+  readonly rejectionCategory: SubmissionImageRejectionCategory;
 
-  constructor(message: string, metadataCategory: SubmissionImageMetadataCategory) {
+  constructor(message: string, rejectionCategory: SubmissionImageRejectionCategory) {
     super(message);
     this.name = "SubmissionImagePolicyError";
-    this.metadataCategory = metadataCategory;
+    this.rejectionCategory = rejectionCategory;
   }
 }
 
@@ -61,18 +61,19 @@ const JPEG_SOI = 0xffd8;
 const JPEG_SOS = 0xffda;
 const JPEG_EOI = 0xffd9;
 const PNG_TEXT_CHUNKS = new Set(["tEXt", "iTXt", "zTXt"]);
-const JPEG_SEGMENT_NAMES: Record<number, SubmissionImageMetadataCategory> = {
+const JPEG_SEGMENT_NAMES: Record<number, SubmissionImageRejectionCategory> = {
   0xffe1: "jpeg_app1",
   0xffed: "jpeg_app13",
   0xfffe: "jpeg_comment",
 };
 
-export type SubmissionImageMetadataCategory =
+export type SubmissionImageRejectionCategory =
   | "jpeg_app1"
   | "jpeg_app13"
   | "jpeg_comment"
   | "png_text"
-  | "png_exif";
+  | "png_exif"
+  | "png_malformed";
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -270,7 +271,7 @@ function readUint32(bytes: Uint8Array, offset: number): number {
   return new DataView(bytes.buffer, bytes.byteOffset + offset, 4).getUint32(0, false);
 }
 
-function classifyJpegEmbeddedMetadata(bytes: Uint8Array): SubmissionImageMetadataCategory | null {
+function classifyJpegEmbeddedMetadata(bytes: Uint8Array): SubmissionImageRejectionCategory | null {
   if (bytes.byteLength < 4 || readUint16(bytes, 0) !== JPEG_SOI) {
     return null;
   }
@@ -307,55 +308,64 @@ function classifyJpegEmbeddedMetadata(bytes: Uint8Array): SubmissionImageMetadat
   return null;
 }
 
-function classifyPngEmbeddedMetadata(bytes: Uint8Array): SubmissionImageMetadataCategory | null {
+function classifyPngSubmissionIssue(bytes: Uint8Array): SubmissionImageRejectionCategory | null {
   if (bytes.byteLength < 8) {
-    return null;
+    return "png_malformed";
   }
 
   let offset = 8;
+  let sawIhdr = false;
   while (offset + 8 <= bytes.byteLength) {
     if (offset + 12 > bytes.byteLength) {
-      return null;
+      return "png_malformed";
     }
 
     const chunkLength = readUint32(bytes, offset);
     const chunkEnd = offset + 12 + chunkLength;
     if (!Number.isSafeInteger(chunkLength) || chunkEnd <= offset || chunkEnd > bytes.byteLength) {
-      return null;
+      return "png_malformed";
     }
 
     const chunkType = decoder.decode(bytes.slice(offset + 4, offset + 8));
+    if (!sawIhdr) {
+      if (chunkType !== "IHDR" || chunkLength !== 13) {
+        return "png_malformed";
+      }
+      sawIhdr = true;
+    }
+
     if (chunkType === "eXIf") {
       return "png_exif";
     }
     if (PNG_TEXT_CHUNKS.has(chunkType)) {
       return "png_text";
     }
+    if (chunkType === "IEND") {
+      return chunkLength === 0 && chunkEnd === bytes.byteLength ? null : "png_malformed";
+    }
 
     offset = chunkEnd;
   }
 
-  return null;
+  return "png_malformed";
 }
 
-export function findRejectedSubmissionImageMetadata(
+export function findRejectedSubmissionImage(
   bytes: Uint8Array,
   mime: AllowedImageMime,
-): SubmissionImageMetadataCategory | null {
-  return mime === "image/jpeg"
-    ? classifyJpegEmbeddedMetadata(bytes)
-    : classifyPngEmbeddedMetadata(bytes);
+): SubmissionImageRejectionCategory | null {
+  return mime === "image/jpeg" ? classifyJpegEmbeddedMetadata(bytes) : classifyPngSubmissionIssue(bytes);
 }
 
-export function assertSubmissionImageStoragePolicy(
+export function assertSubmissionImagePolicy(
   bytes: Uint8Array,
   mime: AllowedImageMime,
 ): void {
-  const metadataCategory = findRejectedSubmissionImageMetadata(bytes, mime);
-  if (metadataCategory) {
+  const rejectionCategory = findRejectedSubmissionImage(bytes, mime);
+  if (rejectionCategory) {
     throw new SubmissionImagePolicyError(
-      "Images with embedded EXIF, text, or comment metadata must be rejected before storage.",
-      metadataCategory,
+      "Images that fail the submission image policy must be rejected before storage.",
+      rejectionCategory,
     );
   }
 }

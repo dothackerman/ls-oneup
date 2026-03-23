@@ -21,7 +21,8 @@ import {
 } from "../worker/submission-security";
 import {
   buildSubmissionArtifactRetention,
-  hasRejectedImageMetadata,
+  describeRejectedSubmissionImage,
+  hasRejectedSubmissionImage,
   SUBMISSION_ARTIFACT_RETENTION_CLASS,
   SUBMISSION_ARTIFACT_RETENTION_DAYS,
 } from "../worker/data-retention";
@@ -90,6 +91,15 @@ const PNG_WITH_TEXT = Uint8Array.from([
 
 const PNG_WITH_HUGE_CHUNK_LENGTH = Uint8Array.from([
   137, 80, 78, 71, 13, 10, 26, 10, 128, 0, 0, 0, 116, 69, 88, 116, 0, 0, 0, 0,
+]);
+
+const PNG_WITH_TRUNCATED_CHUNK_HEADER = Uint8Array.from([
+  137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13,
+]);
+
+const PNG_WITHOUT_IEND = Uint8Array.from([
+  137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 1, 0, 0, 0, 1, 8, 6, 0,
+  0, 0, 31, 21, 196, 137,
 ]);
 
 const CRYPTO_INVENTORY_FIXTURE = {
@@ -241,24 +251,41 @@ describe("worker/security", () => {
   });
 
   it("rejects sensitive JPEG/PNG metadata while allowing benign APP2 profiles", () => {
-    expect(hasRejectedImageMetadata(JPEG_WITH_EXIF, "image/jpeg")).toBe(true);
-    expect(hasRejectedImageMetadata(JPEG_WITH_APP13, "image/jpeg")).toBe(true);
-    expect(hasRejectedImageMetadata(JPEG_WITH_COMMENT, "image/jpeg")).toBe(true);
-    expect(hasRejectedImageMetadata(PNG_WITH_TEXT, "image/png")).toBe(true);
-    expect(hasRejectedImageMetadata(PNG_WITH_HUGE_CHUNK_LENGTH, "image/png")).toBe(false);
-    expect(hasRejectedImageMetadata(JPEG_WITH_ICC_PROFILE, "image/jpeg")).toBe(false);
+    expect(hasRejectedSubmissionImage(JPEG_WITH_EXIF, "image/jpeg")).toBe(true);
+    expect(hasRejectedSubmissionImage(JPEG_WITH_APP13, "image/jpeg")).toBe(true);
+    expect(hasRejectedSubmissionImage(JPEG_WITH_COMMENT, "image/jpeg")).toBe(true);
+    expect(hasRejectedSubmissionImage(PNG_WITH_TEXT, "image/png")).toBe(true);
+    expect(hasRejectedSubmissionImage(PNG_WITH_HUGE_CHUNK_LENGTH, "image/png")).toBe(true);
+    expect(hasRejectedSubmissionImage(JPEG_WITH_ICC_PROFILE, "image/jpeg")).toBe(false);
     expect(
-      hasRejectedImageMetadata(
+      hasRejectedSubmissionImage(
         Uint8Array.from([255, 216, 255, 224, 0, 16, 74, 70, 73, 70]),
         "image/jpeg",
       ),
     ).toBe(false);
     expect(
-      hasRejectedImageMetadata(
+      hasRejectedSubmissionImage(
         Uint8Array.from([137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 0]),
         "image/png",
       ),
-    ).toBe(false);
+    ).toBe(true);
+  });
+
+  it("classifies malformed PNG framing separately from metadata-bearing PNGs", () => {
+    expect(describeRejectedSubmissionImage(PNG_WITH_HUGE_CHUNK_LENGTH, "image/png")).toEqual({
+      category: "png_malformed",
+    });
+    expect(
+      describeRejectedSubmissionImage(PNG_WITH_TRUNCATED_CHUNK_HEADER, "image/png"),
+    ).toEqual({
+      category: "png_malformed",
+    });
+    expect(describeRejectedSubmissionImage(PNG_WITHOUT_IEND, "image/png")).toEqual({
+      category: "png_malformed",
+    });
+    expect(describeRejectedSubmissionImage(PNG_WITH_TEXT, "image/png")).toEqual({
+      category: "png_text",
+    });
   });
 });
 

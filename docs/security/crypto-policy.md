@@ -57,8 +57,9 @@ The current runtime scope includes one-time probe-token protection, encrypted su
 2. The Worker writes encrypted R2 objects with explicit retention metadata (`retention_class`, `delete_after`, `image_metadata_policy`) so operational cleanup does not rely on oral history.
 3. The repository currently computes the D1 retention boundary from `submitted_at` plus the shared retention policy rather than storing a separate per-row deadline column.
 4. User-submitted images that contain sensitive or suspicious embedded metadata markers (for example JPEG APP1/APP13/comment markers or PNG textual/exif chunks) are rejected before encryption and storage.
-5. JPEG `APP2` markers are currently tolerated to avoid false positives on normal camera uploads; future hardening may classify `APP2` subtypes more narrowly if evidence justifies it.
-6. Plaintext metadata persisted in D1 remains intentionally minimal: `image_mime`, `image_bytes`, and `image_uploaded_at` only.
+5. PNG uploads with malformed chunk framing are rejected before encryption and storage so truncated or structurally invalid files cannot bypass the server-side image policy scan.
+6. JPEG `APP2` markers are currently tolerated to avoid false positives on normal camera uploads; future hardening may classify `APP2` subtypes more narrowly if evidence justifies it.
+7. Plaintext metadata persisted in D1 remains intentionally minimal: `image_mime`, `image_bytes`, and `image_uploaded_at` only.
 
 ## Constant-Time Handling
 

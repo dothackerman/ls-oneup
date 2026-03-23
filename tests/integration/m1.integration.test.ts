@@ -9,6 +9,10 @@ const JPEG_WITH_ALLOWED_APP2 = Uint8Array.from([
   0x45, 0x00, 0x01, 0x01, 0x73, 0x52, 0x47, 0x42, 0x00, 0x00, 0xff, 0xd9,
 ]);
 
+const PNG_WITH_INVALID_CHUNK_LENGTH = Uint8Array.from([
+  137, 80, 78, 71, 13, 10, 26, 10, 128, 0, 0, 0, 116, 69, 88, 116, 0, 0, 0, 0,
+]);
+
 describe("M1 integration", () => {
   it("INT-EDGE-001 serves admin shell with browser security headers", async () => {
     const response = await SELF.fetch("https://example.test/admin");
@@ -225,6 +229,30 @@ describe("M1 integration", () => {
     });
 
     expect(response.status).toBe(201);
+  });
+
+  it("INT-UPLOAD-005 rejects malformed PNG uploads with generic retry guidance", async () => {
+    const { tokenUrl } = await createProbeOrder({ order_number: "ORD-UPLOAD-PNG-MALFORMED" });
+    const token = tokenFromUrl(tokenUrl);
+
+    const malformedPngForm = buildValidForm();
+    malformedPngForm.delete("image");
+    malformedPngForm.append(
+      "image",
+      new File([PNG_WITH_INVALID_CHUNK_LENGTH], "bad.png", { type: "image/png" }),
+    );
+
+    const response = await SELF.fetch(`https://example.test/api/probe/${token}/submit`, {
+      method: "POST",
+      body: malformedPngForm,
+    });
+
+    expect(response.status).toBe(415);
+    expect((await response.json()) as { error_code: string; message: string }).toMatchObject({
+      error_code: "IMAGE_METADATA_NOT_ALLOWED",
+      message:
+        "Beim Senden ist ein Problem aufgetreten. Bitte versuchen Sie es erneut. Falls das Problem weiterhin besteht, kontaktieren Sie bitte Ihren Anbieter.",
+    });
   });
 
   it("INT-METHOD-001 returns 405 for unsupported methods on known routes", async () => {

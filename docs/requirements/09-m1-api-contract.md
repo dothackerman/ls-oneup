@@ -270,10 +270,11 @@ Required fields:
 6. `gps_captured_at` (ISO timestamp)
 7. `image` (single file, `image/jpeg` or `image/png`, max 2 MB)
 8. Uploaded image bytes must match the declared JPEG or PNG file signature; MIME labels alone are insufficient.
-9. Uploads with sensitive or suspicious embedded image metadata (for example JPEG APP1/APP13/comment markers or PNG textual/exif chunks) are rejected instead of being stored verbatim.
-10. JPEG `APP2` markers are currently tolerated to avoid false positives on normal camera uploads; the hotfix does not classify `APP2` subtypes individually.
-11. The browser UI may re-save accepted JPEG/PNG uploads before submit to strip embedded metadata, but the server remains the authoritative validator.
-12. Client-facing error copy for metadata-policy failures is intentionally generic and should guide retry/support rather than expose low-level marker details.
+9. PNG uploads must also satisfy bounded server-side structural checks so malformed chunk framing is rejected instead of being stored or short-circuiting the image policy scan.
+10. Uploads with sensitive or suspicious embedded image metadata (for example JPEG APP1/APP13/comment markers or PNG textual/exif chunks) are rejected instead of being stored verbatim.
+11. JPEG `APP2` markers are currently tolerated to avoid false positives on normal camera uploads; the hotfix does not classify `APP2` subtypes individually.
+12. The browser UI may re-save accepted JPEG/PNG uploads before submit to strip embedded metadata, but the server remains the authoritative validator.
+13. Client-facing error copy for metadata-policy failures and malformed PNG rejections is intentionally generic and should guide retry/support rather than expose low-level marker details.
 
 Success `201`:
 
@@ -294,7 +295,7 @@ Response headers:
 Errors:
 
 1. `400` invalid payload / missing fields.
-2. `415` invalid MIME type, file signature mismatch, or rejected image metadata.
+2. `415` invalid MIME type, file signature mismatch, malformed PNG framing, or rejected image metadata.
 3. `413` file too large.
 4. `410` token expired.
 5. `409` token already used (first-submit-wins).
