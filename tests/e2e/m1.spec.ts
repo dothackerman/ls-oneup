@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { Buffer } from "node:buffer";
 import {
+  buildInvalidPngImagePayload,
   buildTinyPng4x4ImagePayload,
   buildTinyPngWithTextMetadataPayload,
   createProbeOrder,
@@ -523,11 +524,61 @@ test("E2E-FARM-011 shows generic retry guidance for metadata-policy failures", a
   await page.getByRole("button", { name: "Absenden" }).click();
 
   await expect(
-    page.getByText(
-      "Beim Senden ist ein Problem aufgetreten. Bitte versuchen Sie es erneut. Falls das Problem weiterhin besteht, kontaktieren Sie bitte Ihren Anbieter.",
-    ),
+    page.getByText("Das gewählte Bild ist ungültig. Versuchen Sie es mit einem anderen Bild."),
   ).toBeVisible();
   await expect(page.getByText("Bildmetadaten muessen")).toHaveCount(0);
+});
+
+test("E2E-FARM-012 shows invalid-image guidance when browser-side PNG preparation fails", async ({
+  page,
+  request,
+  context,
+}) => {
+  const { token } = await createProbeOrder(request, {
+    orderPrefix: "E2E-FARM-012",
+  });
+
+  await context.grantPermissions(["geolocation"]);
+  await context.setGeolocation({ latitude: 47.3769, longitude: 8.5417 });
+  await page.goto(`/p/${token}`);
+
+  await page.getByLabel("Kulturname").fill("Kartoffeln");
+  await chooseSelectOption(page, "Pflanzenvitalität", "normal");
+  await chooseSelectOption(page, "Bodenfeuchte", "normal");
+  await page.getByRole("button", { name: "GPS erfassen" }).click();
+  await page.setInputFiles("input[type='file']", buildInvalidPngImagePayload());
+  await page.getByRole("button", { name: "Absenden" }).click();
+
+  await expect(
+    page.getByText("Das gewählte Bild ist ungültig. Versuchen Sie es mit einem anderen Bild."),
+  ).toBeVisible();
+});
+
+test("E2E-FARM-013 shows the 2 MB message for oversized uploads", async ({
+  page,
+  request,
+  context,
+}) => {
+  const { token } = await createProbeOrder(request, {
+    orderPrefix: "E2E-FARM-013",
+  });
+
+  await context.grantPermissions(["geolocation"]);
+  await context.setGeolocation({ latitude: 47.3769, longitude: 8.5417 });
+  await page.goto(`/p/${token}`);
+
+  await page.getByLabel("Kulturname").fill("Kartoffeln");
+  await chooseSelectOption(page, "Pflanzenvitalität", "normal");
+  await chooseSelectOption(page, "Bodenfeuchte", "normal");
+  await page.getByRole("button", { name: "GPS erfassen" }).click();
+  await page.setInputFiles("input[type='file']", {
+    name: "too-large.jpg",
+    mimeType: "image/jpeg",
+    buffer: Buffer.alloc(2 * 1024 * 1024 + 1, 1),
+  });
+  await page.getByRole("button", { name: "Absenden" }).click();
+
+  await expect(page.getByText("Das Bild ist zu gross. Maximal 2 MB.")).toBeVisible();
 });
 
 test("E2E-ADMIN-004 allows viewing uploaded image from admin table", async ({ page, request }) => {

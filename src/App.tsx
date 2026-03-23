@@ -97,8 +97,16 @@ const ADMIN_PAGE_SIZE = 20;
 const ADMIN_THEME_STORAGE_KEY = "ls-oneup-admin-theme";
 const ONBOARDING_PREVIEW_PROBE_ID = "__onboarding-preview-probe__";
 const ONBOARDING_PREVIEW_IMAGE_URL = "/__onboarding-preview__/image";
-const GENERIC_IMAGE_PROCESSING_ERROR_MESSAGE =
-  "Beim Senden ist ein Problem aufgetreten. Bitte versuchen Sie es erneut. Falls das Problem weiterhin besteht, kontaktieren Sie bitte Ihren Anbieter.";
+const INVALID_IMAGE_ERROR_MESSAGE =
+  "Das gewählte Bild ist ungültig. Versuchen Sie es mit einem anderen Bild.";
+const IMAGE_TOO_LARGE_ERROR_MESSAGE = "Das Bild ist zu gross. Maximal 2 MB.";
+
+class InvalidImageError extends Error {
+  constructor(message = INVALID_IMAGE_ERROR_MESSAGE) {
+    super(message);
+    this.name = "InvalidImageError";
+  }
+}
 
 function formatDate(value: string | null): string {
   if (!value) {
@@ -216,8 +224,16 @@ function farmerSubmitErrorMessage(
   payload: ApiPayload<unknown>,
   fallbackMessage: string,
 ): string {
-  if (payload.error_code === "IMAGE_METADATA_NOT_ALLOWED") {
-    return GENERIC_IMAGE_PROCESSING_ERROR_MESSAGE;
+  if (payload.error_code === "IMAGE_TOO_LARGE" || response.status === 413) {
+    return IMAGE_TOO_LARGE_ERROR_MESSAGE;
+  }
+
+  if (
+    payload.error_code === "IMAGE_METADATA_NOT_ALLOWED" ||
+    payload.error_code === "INVALID_IMAGE_CONTENT" ||
+    response.status === 415
+  ) {
+    return INVALID_IMAGE_ERROR_MESSAGE;
   }
 
   return apiErrorMessage(response, payload, fallbackMessage);
@@ -1184,7 +1200,7 @@ async function prepareImageForUpload(file: File): Promise<File> {
     };
     img.onerror = () => {
       URL.revokeObjectURL(src);
-      reject(new Error("Bild konnte nicht geladen werden."));
+      reject(new InvalidImageError());
     };
     img.src = src;
   });
@@ -1205,7 +1221,7 @@ async function prepareImageForUpload(file: File): Promise<File> {
   if (outputType === "image/png") {
     const pngBlob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, outputType));
     if (!pngBlob) {
-      return file;
+      throw new InvalidImageError();
     }
     return new File([pngBlob], file.name, { type: outputType, lastModified: Date.now() });
   }
@@ -1225,7 +1241,7 @@ async function prepareImageForUpload(file: File): Promise<File> {
     }
   }
 
-  return file;
+  throw new InvalidImageError();
 }
 
 function FarmerPage({ token }: { token: string }): React.JSX.Element {
@@ -1393,6 +1409,11 @@ function FarmerPage({ token }: { token: string }): React.JSX.Element {
       return;
     }
 
+    if (imageFile.size > 2 * 1024 * 1024) {
+      setError(IMAGE_TOO_LARGE_ERROR_MESSAGE);
+      return;
+    }
+
     const fallbackMessage = "Senden fehlgeschlagen.";
     setSubmitPhase("preparing");
     setError(null);
@@ -1424,8 +1445,12 @@ function FarmerPage({ token }: { token: string }): React.JSX.Element {
       }
 
       setSuccess(`Erfolgreich eingereicht am ${formatDate(payload.submitted_at ?? null)}.`);
-    } catch {
-      setError(fallbackMessage);
+    } catch (error) {
+      if (error instanceof InvalidImageError) {
+        setError(error.message);
+      } else {
+        setError(fallbackMessage);
+      }
     } finally {
       setSubmitPhase(null);
     }
