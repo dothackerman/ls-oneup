@@ -112,6 +112,14 @@ export function buildTinyPngWithTextMetadataPayload(): ImagePayload {
   };
 }
 
+export function buildInvalidPngImagePayload(): ImagePayload {
+  return {
+    name: "invalid.png",
+    mimeType: "image/png",
+    buffer: Buffer.from([137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13]),
+  };
+}
+
 export async function createProbeOrder(
   request: APIRequestContext,
   options?: {

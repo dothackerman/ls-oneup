@@ -22,7 +22,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@shared/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@shared/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@shared/components/ui/dialog";
 import { Input } from "@shared/components/ui/input";
 import { Label } from "@shared/components/ui/label";
 import { ScrollArea } from "@shared/components/ui/scroll-area";
@@ -79,6 +84,8 @@ type ProbeLookup = {
   probe_number: number;
 };
 
+type SubmitPhase = "preparing" | "uploading";
+
 type ApiError = {
   error_code: string;
   message: string;
@@ -90,6 +97,16 @@ const ADMIN_PAGE_SIZE = 20;
 const ADMIN_THEME_STORAGE_KEY = "ls-oneup-admin-theme";
 const ONBOARDING_PREVIEW_PROBE_ID = "__onboarding-preview-probe__";
 const ONBOARDING_PREVIEW_IMAGE_URL = "/__onboarding-preview__/image";
+const INVALID_IMAGE_ERROR_MESSAGE =
+  "Das gewählte Bild ist ungültig. Versuchen Sie es mit einem anderen Bild.";
+const IMAGE_TOO_LARGE_ERROR_MESSAGE = "Das Bild ist zu gross. Maximal 2 MB.";
+
+class InvalidImageError extends Error {
+  constructor(message = INVALID_IMAGE_ERROR_MESSAGE) {
+    super(message);
+    this.name = "InvalidImageError";
+  }
+}
 
 function formatDate(value: string | null): string {
   if (!value) {
@@ -200,6 +217,26 @@ function apiErrorMessage(
   }
 
   return payload.message || fallbackMessage;
+}
+
+function farmerSubmitErrorMessage(
+  response: Response,
+  payload: ApiPayload<unknown>,
+  fallbackMessage: string,
+): string {
+  if (payload.error_code === "IMAGE_TOO_LARGE" || response.status === 413) {
+    return IMAGE_TOO_LARGE_ERROR_MESSAGE;
+  }
+
+  if (
+    payload.error_code === "IMAGE_METADATA_NOT_ALLOWED" ||
+    payload.error_code === "INVALID_IMAGE_CONTENT" ||
+    response.status === 415
+  ) {
+    return INVALID_IMAGE_ERROR_MESSAGE;
+  }
+
+  return apiErrorMessage(response, payload, fallbackMessage);
 }
 
 function isOnboardingPreviewProbe(probeId: string): boolean {
@@ -1163,7 +1200,7 @@ async function prepareImageForUpload(file: File): Promise<File> {
     };
     img.onerror = () => {
       URL.revokeObjectURL(src);
-      reject(new Error("Bild konnte nicht geladen werden."));
+      reject(new InvalidImageError());
     };
     img.src = src;
   });
@@ -1184,7 +1221,7 @@ async function prepareImageForUpload(file: File): Promise<File> {
   if (outputType === "image/png") {
     const pngBlob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, outputType));
     if (!pngBlob) {
-      return file;
+      throw new InvalidImageError();
     }
     return new File([pngBlob], file.name, { type: outputType, lastModified: Date.now() });
   }
@@ -1204,7 +1241,7 @@ async function prepareImageForUpload(file: File): Promise<File> {
     }
   }
 
-  return file;
+  throw new InvalidImageError();
 }
 
 function FarmerPage({ token }: { token: string }): React.JSX.Element {
@@ -1220,6 +1257,7 @@ function FarmerPage({ token }: { token: string }): React.JSX.Element {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [gps, setGps] = useState<{ lat: number; lon: number; capturedAt: string } | null>(null);
   const [gpsLoading, setGpsLoading] = useState(false);
+  const [submitPhase, setSubmitPhase] = useState<SubmitPhase | null>(null);
 
   useEffect(() => {
     function updateOnline(): void {
@@ -1328,7 +1366,15 @@ function FarmerPage({ token }: { token: string }): React.JSX.Element {
     Boolean(soilMoisture) &&
     Boolean(gps) &&
     Boolean(imageFile) &&
-    !gpsLoading;
+    !gpsLoading &&
+    submitPhase === null;
+
+  const submitStatusText =
+    submitPhase === "preparing"
+      ? "Bild wird vorbereitet..."
+      : submitPhase === "uploading"
+        ? "Bild wird gesendet..."
+        : null;
 
   async function handleSubmit(event: FormEvent): Promise<void> {
     event.preventDefault();
@@ -1363,33 +1409,51 @@ function FarmerPage({ token }: { token: string }): React.JSX.Element {
       return;
     }
 
-    const preparedImage = await prepareImageForUpload(imageFile);
-
-    const formData = new FormData();
-    formData.set("crop_name", cropName.trim());
-    formData.set("vitality", vitality);
-    formData.set("soil_moisture", soilMoisture);
-    formData.set("gps_lat", String(gps.lat));
-    formData.set("gps_lon", String(gps.lon));
-    formData.set("gps_captured_at", gps.capturedAt);
-    formData.append("image", preparedImage);
-
-    const response = await fetch(`/api/probe/${token}/submit`, {
-      method: "POST",
-      body: formData,
-    });
-
-    const fallbackMessage = "Senden fehlgeschlagen.";
-    const payload = await readApiPayload<{ submitted_at?: string }>(response, fallbackMessage);
-
-    if (!response.ok) {
-      setError(apiErrorMessage(response, payload, fallbackMessage));
-      setSuccess(null);
+    if (imageFile.size > 2 * 1024 * 1024) {
+      setError(IMAGE_TOO_LARGE_ERROR_MESSAGE);
       return;
     }
 
-    setSuccess(`Erfolgreich eingereicht am ${formatDate(payload.submitted_at ?? null)}.`);
+    const fallbackMessage = "Senden fehlgeschlagen.";
+    setSubmitPhase("preparing");
     setError(null);
+    setSuccess(null);
+
+    try {
+      const preparedImage = await prepareImageForUpload(imageFile);
+
+      const formData = new FormData();
+      formData.set("crop_name", cropName.trim());
+      formData.set("vitality", vitality);
+      formData.set("soil_moisture", soilMoisture);
+      formData.set("gps_lat", String(gps.lat));
+      formData.set("gps_lon", String(gps.lon));
+      formData.set("gps_captured_at", gps.capturedAt);
+      formData.append("image", preparedImage);
+
+      setSubmitPhase("uploading");
+      const response = await fetch(`/api/probe/${token}/submit`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const payload = await readApiPayload<{ submitted_at?: string }>(response, fallbackMessage);
+
+      if (!response.ok) {
+        setError(farmerSubmitErrorMessage(response, payload, fallbackMessage));
+        return;
+      }
+
+      setSuccess(`Erfolgreich eingereicht am ${formatDate(payload.submitted_at ?? null)}.`);
+    } catch (error) {
+      if (error instanceof InvalidImageError) {
+        setError(error.message);
+      } else {
+        setError(fallbackMessage);
+      }
+    } finally {
+      setSubmitPhase(null);
+    }
   }
 
   const identityLine = useMemo(() => {
@@ -1432,6 +1496,8 @@ function FarmerPage({ token }: { token: string }): React.JSX.Element {
           gpsLoading={gpsLoading}
           gps={gps}
           canSubmit={canSubmit}
+          submitting={submitPhase !== null}
+          submitStatusText={submitStatusText}
           onSubmit={handleSubmit}
           onCropNameChange={setCropName}
           onVitalityChange={setVitality}

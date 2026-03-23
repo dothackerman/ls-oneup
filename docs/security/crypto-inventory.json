@@ -1,5 +1,6 @@
 {
-  "reviewed_at": "2026-03-13",
+  "schema_version": 2,
+  "reviewed_at": "2026-03-21",
   "owner": "application-engineering",
   "policy_ref": "docs/security/crypto-policy.md",
   "inventory": [
@@ -10,11 +11,8 @@
       "algorithm": "HMAC-SHA-256",
       "key_source": "TOKEN_HMAC_KEYS_JSON current+legacy key ring in Cloudflare Secrets or local .dev.vars",
       "rotation_policy": "Rotate by introducing a new current key, keep legacy keys for at least the maximum token lifetime, then remove them.",
-      "code_references": [
-        "worker/security.ts",
-        "worker/index.ts",
-        "worker/repository.ts"
-      ],
+      "current_code_references": ["worker/security.ts", "worker/index.ts", "worker/repository.ts"],
+      "provenance_code_references": [],
       "discovery": [
         {
           "marker_id": "webcrypto-subtle-import-key",
@@ -34,9 +32,8 @@
       "algorithm": "Web Crypto getRandomValues",
       "key_source": "none",
       "rotation_policy": "Platform CSPRNG; no application-managed key material.",
-      "code_references": [
-        "worker/security.ts"
-      ],
+      "current_code_references": ["worker/security.ts"],
+      "provenance_code_references": [],
       "discovery": [
         {
           "marker_id": "webcrypto-get-random-values",
@@ -52,12 +49,15 @@
       "algorithm": "AES-256-GCM",
       "key_source": "SUBMISSION_DATA_KEYS_JSON current+legacy key ring in Cloudflare Secrets or local .dev.vars",
       "rotation_policy": "Rotate by introducing a new current key, keep legacy decrypt-only keys until encrypted records are either rewrapped or naturally retired, then remove the legacy key.",
-      "code_references": [
+      "current_code_references": [
         "worker/submission-security.ts",
         "worker/index.ts",
         "worker/repository.ts",
-        "migrations/0003_m1_submission_ciphertext.sql",
         "src/db/schema.ts"
+      ],
+      "provenance_code_references": [
+        "migrations/0002_m1_add_submission_ciphertext.sql",
+        "migrations/0003_m1_submission_ciphertext.sql"
       ],
       "discovery": [
         {
@@ -86,11 +86,12 @@
       "algorithm": "AES-256-GCM",
       "key_source": "SUBMISSION_DATA_KEYS_JSON current+legacy key ring in Cloudflare Secrets or local .dev.vars",
       "rotation_policy": "Rotate by introducing a new current key, keep legacy decrypt-only keys until encrypted objects are either rewrapped or naturally retired, then remove the legacy key.",
-      "code_references": [
+      "current_code_references": [
         "worker/submission-security.ts",
         "worker/index.ts",
         "tests/integration/m1.integration.test.ts"
       ],
+      "provenance_code_references": [],
       "discovery": [
         {
           "marker_id": "webcrypto-get-random-values",
@@ -118,9 +119,8 @@
       "algorithm": "Web Crypto getRandomValues",
       "key_source": "none",
       "rotation_policy": "Not applicable.",
-      "code_references": [
-        "tests/integration/m1.integration.test.ts"
-      ],
+      "current_code_references": ["tests/integration/m1.integration.test.ts"],
+      "provenance_code_references": [],
       "discovery": [
         {
           "marker_id": "webcrypto-get-random-values",

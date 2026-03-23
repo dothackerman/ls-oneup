@@ -1,8 +1,37 @@
 {
-  "generated_at": "2026-03-17T11:38:51.058Z",
-  "changed_count": 0,
+  "generated_at": "2026-03-21T06:23:56Z",
+  "changed_count": 4,
   "new_open_controls": 0,
-  "resolved_open_controls": 0,
-  "severity_changed": 0,
-  "changes": []
+  "resolved_open_controls": 2,
+  "severity_changed": 2,
+  "changes": [
+    {
+      "requirement_id": "V5.2.1",
+      "status_from": "not_reviewed",
+      "status_to": "completed",
+      "severity_from": "low",
+      "severity_to": "none"
+    },
+    {
+      "requirement_id": "V5.2.2",
+      "status_from": "not_reviewed",
+      "status_to": "not_implemented",
+      "severity_from": "low",
+      "severity_to": "low"
+    },
+    {
+      "requirement_id": "V5.2.6",
+      "status_from": "not_reviewed",
+      "status_to": "not_implemented",
+      "severity_from": "high",
+      "severity_to": "high"
+    },
+    {
+      "requirement_id": "V5.3.2",
+      "status_from": "not_reviewed",
+      "status_to": "completed",
+      "severity_from": "low",
+      "severity_to": "none"
+    }
+  ]
 }
