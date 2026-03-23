@@ -7,7 +7,9 @@ import { useAdminOnboarding } from "./features/admin/onboarding/use-admin-onboar
 import {
   FarmerSubmissionForm,
   moistureLabels,
+  type SoilMoistureFieldValue,
   type SoilMoistureValue,
+  type VitalityFieldValue,
   type VitalityValue,
   vitalityLabels,
 } from "./features/farmer/form/farmer-submission-form";
@@ -156,6 +158,14 @@ function getStoredAdminThemePreference(): AdminThemePreference {
   }
 
   return parseThemePreference(window.localStorage.getItem(ADMIN_THEME_STORAGE_KEY));
+}
+
+function isVitalityValue(value: VitalityFieldValue): value is VitalityValue {
+  return value !== "";
+}
+
+function isSoilMoistureValue(value: SoilMoistureFieldValue): value is SoilMoistureValue {
+  return value !== "";
 }
 
 function EditIcon(): React.JSX.Element {
@@ -1252,8 +1262,8 @@ function FarmerPage({ token }: { token: string }): React.JSX.Element {
   const [success, setSuccess] = useState<string | null>(null);
 
   const [cropName, setCropName] = useState("");
-  const [vitality, setVitality] = useState<VitalityValue | undefined>(undefined);
-  const [soilMoisture, setSoilMoisture] = useState<SoilMoistureValue | undefined>(undefined);
+  const [vitality, setVitality] = useState<VitalityFieldValue>("");
+  const [soilMoisture, setSoilMoisture] = useState<SoilMoistureFieldValue>("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [gps, setGps] = useState<{ lat: number; lon: number; capturedAt: string } | null>(null);
   const [gpsLoading, setGpsLoading] = useState(false);
@@ -1362,8 +1372,8 @@ function FarmerPage({ token }: { token: string }): React.JSX.Element {
     online &&
     Boolean(lookup) &&
     cropName.trim().length > 0 &&
-    Boolean(vitality) &&
-    Boolean(soilMoisture) &&
+    isVitalityValue(vitality) &&
+    isSoilMoistureValue(soilMoisture) &&
     Boolean(gps) &&
     Boolean(imageFile) &&
     !gpsLoading &&
@@ -1389,12 +1399,12 @@ function FarmerPage({ token }: { token: string }): React.JSX.Element {
       return;
     }
 
-    if (!vitality) {
+    if (!isVitalityValue(vitality)) {
       setError("Pflanzenvitalität ist obligatorisch.");
       return;
     }
 
-    if (!soilMoisture) {
+    if (!isSoilMoistureValue(soilMoisture)) {
       setError("Bodennässe ist obligatorisch.");
       return;
     }
