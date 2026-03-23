@@ -354,13 +354,12 @@ export function findRejectedSubmissionImage(
   bytes: Uint8Array,
   mime: AllowedImageMime,
 ): SubmissionImageRejectionCategory | null {
-  return mime === "image/jpeg" ? classifyJpegEmbeddedMetadata(bytes) : classifyPngSubmissionIssue(bytes);
+  return mime === "image/jpeg"
+    ? classifyJpegEmbeddedMetadata(bytes)
+    : classifyPngSubmissionIssue(bytes);
 }
 
-export function assertSubmissionImagePolicy(
-  bytes: Uint8Array,
-  mime: AllowedImageMime,
-): void {
+export function assertSubmissionImagePolicy(bytes: Uint8Array, mime: AllowedImageMime): void {
   const rejectionCategory = findRejectedSubmissionImage(bytes, mime);
   if (rejectionCategory) {
     throw new SubmissionImagePolicyError(

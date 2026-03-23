@@ -98,8 +98,8 @@ const PNG_WITH_TRUNCATED_CHUNK_HEADER = Uint8Array.from([
 ]);
 
 const PNG_WITHOUT_IEND = Uint8Array.from([
-  137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 1, 0, 0, 0, 1, 8, 6, 0,
-  0, 0, 31, 21, 196, 137,
+  137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 1, 0, 0, 0, 1, 8, 6, 0, 0,
+  0, 31, 21, 196, 137,
 ]);
 
 const CRYPTO_INVENTORY_FIXTURE = {
@@ -275,9 +275,7 @@ describe("worker/security", () => {
     expect(describeRejectedSubmissionImage(PNG_WITH_HUGE_CHUNK_LENGTH, "image/png")).toEqual({
       category: "png_malformed",
     });
-    expect(
-      describeRejectedSubmissionImage(PNG_WITH_TRUNCATED_CHUNK_HEADER, "image/png"),
-    ).toEqual({
+    expect(describeRejectedSubmissionImage(PNG_WITH_TRUNCATED_CHUNK_HEADER, "image/png")).toEqual({
       category: "png_malformed",
     });
     expect(describeRejectedSubmissionImage(PNG_WITHOUT_IEND, "image/png")).toEqual({
