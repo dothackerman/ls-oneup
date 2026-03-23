@@ -14,6 +14,8 @@ import {
 
 export type VitalityValue = "normal" | "schwach_langsam" | "krankheit_oder_anderes_problem";
 export type SoilMoistureValue = "sehr_trocken" | "trocken" | "normal" | "nass" | "sehr_nass";
+export type VitalityFieldValue = "" | VitalityValue;
+export type SoilMoistureFieldValue = "" | SoilMoistureValue;
 
 export const vitalityLabels: Record<VitalityValue, string> = {
   normal: "normal",
@@ -32,8 +34,8 @@ export const moistureLabels: Record<SoilMoistureValue, string> = {
 type FarmerSubmissionFormProps = {
   identityLine: string;
   cropName: string;
-  vitality: VitalityValue | undefined;
-  soilMoisture: SoilMoistureValue | undefined;
+  vitality: VitalityFieldValue;
+  soilMoisture: SoilMoistureFieldValue;
   gpsLoading: boolean;
   gps: { lat: number; lon: number; capturedAt: string } | null;
   canSubmit: boolean;
@@ -41,8 +43,8 @@ type FarmerSubmissionFormProps = {
   submitStatusText: string | null;
   onSubmit: (event: FormEvent) => void | Promise<void>;
   onCropNameChange: (value: string) => void;
-  onVitalityChange: (value: VitalityValue) => void;
-  onSoilMoistureChange: (value: SoilMoistureValue) => void;
+  onVitalityChange: (value: VitalityFieldValue) => void;
+  onSoilMoistureChange: (value: SoilMoistureFieldValue) => void;
   onImageFileChange: (file: File | null) => void;
   onCaptureGps: () => void | Promise<void>;
 };
