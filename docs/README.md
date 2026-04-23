@@ -17,6 +17,7 @@ Use this lane for production environment setup, guarded releases, and operationa
 1. [Production release setup](./maintainers/production-release.md)
 2. [Security documentation index](./security/README.md)
 3. [M1 security decision record](./requirements/12-m1-security-decision-record.md)
+4. [Operators docs](./operators/README.md)
 
 ## 3) Product and contract references
 
@@ -32,6 +33,10 @@ Use this lane for milestone scope, API behavior, and data contracts.
 1. [Security documentation index](./security/README.md)
 2. [ASVS audit contract and checklist process](./requirements/13-m1-asvs-audit-agent-and-checklist.md)
 3. [Crypto policy](./security/crypto-policy.md)
+
+## 5) Technical debt and deferred hardening
+
+1. [Issue 31: Cloudflare Access agent workflow via `cloudflared` + CLI wrapper](./technical-debt/31-cloudflared-cli-wrapper.md)
 
 ## Notes
 
