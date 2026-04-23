@@ -1,50 +1,50 @@
 {
-    "$schema": "node_modules/wrangler/config-schema.json",
-    "name": "ls-oneup",
-    "main": "worker/index.ts",
-    "compatibility_date": "2025-09-06",
-    "assets": {
-        "binding": "ASSETS",
-        "directory": "./dist/client",
-        "not_found_handling": "single-page-application",
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ls-oneup",
+  "main": "worker/index.ts",
+  "compatibility_date": "2025-09-06",
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./dist/client",
+    "not_found_handling": "single-page-application",
+  },
+  "routes": [
+    {
+      "pattern": "ls-oneup.oriolgut.ch",
+      "custom_domain": true,
+      "zone_name": "oriolgut.ch",
     },
-    "routes": [
-        {
-            "pattern": "ls-oneup.oriolgut.ch",
-            "custom_domain": true,
-            "zone_name": "oriolgut.ch",
-        },
-    ],
-    "vars": {
-        "APP_BASE_URL": "https://ls-oneup.oriolgut.ch",
-        "DEV_BYPASS_ACCESS": "false",
+  ],
+  "vars": {
+    "APP_BASE_URL": "https://ls-oneup.oriolgut.ch",
+    "DEV_BYPASS_ACCESS": "false",
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ls-oneup-db",
+      "database_id": "f811d3ad-7da6-4ddc-a39a-0d5d7115abb7",
     },
-    "d1_databases": [
-        {
-            "binding": "DB",
-            "database_name": "ls-oneup-db",
-            "database_id": "f811d3ad-7da6-4ddc-a39a-0d5d7115abb7"
-        },
-    ],
-    "r2_buckets": [
-        {
-            "binding": "PROBE_IMAGES",
-            "bucket_name": "ls-oneup-bucket",
-        },
-    ],
-    "observability": {
-        "enabled": false,
-        "head_sampling_rate": 1,
-        "logs": {
-            "enabled": true,
-            "head_sampling_rate": 1,
-            "persist": true,
-            "invocation_logs": true
-        },
-        "traces": {
-            "enabled": false,
-            "persist": true,
-            "head_sampling_rate": 1
-        }
-    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "PROBE_IMAGES",
+      "bucket_name": "ls-oneup-bucket",
+    },
+  ],
+  "observability": {
+    "enabled": false,
+    "head_sampling_rate": 1,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "persist": true,
+      "invocation_logs": true,
+    },
+    "traces": {
+      "enabled": false,
+      "persist": true,
+      "head_sampling_rate": 1,
+    },
+  },
 }
