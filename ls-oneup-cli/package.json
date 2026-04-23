@@ -1,0 +1,8 @@
+{
+  "name": "ls-oneup-cli",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "ls-oneup": "./bin/ls-oneup.mjs"
+  }
+}
