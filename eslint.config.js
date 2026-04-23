@@ -7,12 +7,16 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   prettier,
   {
-    files: ["scripts/**/*.mjs"],
+    files: ["scripts/**/*.mjs", "ls-oneup-cli/**/*.mjs"],
     languageOptions: {
       globals: {
+        Buffer: "readonly",
+        URL: "readonly",
+        clearTimeout: "readonly",
         console: "readonly",
         fetch: "readonly",
         process: "readonly",
+        setTimeout: "readonly",
       },
     },
   },
