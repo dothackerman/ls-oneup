@@ -24,7 +24,12 @@ Non-goals:
 
 ## Configure environment
 
-The wrapper reads `ls-oneup-cli/.env`.
+The wrapper reads `LS_ONEUP_BASE_URL` from either:
+
+1. `ls-oneup-cli/.env`
+2. the current process environment
+
+If you want a local file:
 
 1. Copy `ls-oneup-cli/.env.example` to `ls-oneup-cli/.env`.
 2. Set `LS_ONEUP_BASE_URL` to your deployed base URL.
@@ -50,13 +55,13 @@ If login is missing or expired, the CLI returns JSON auth errors and exit code `
 Run the wrapper from repo root:
 
 ```bash
-node ls-oneup-cli/bin/ls-oneup.mjs probes list
+./ls-oneup-cli/ls-oneup probes list
 ```
 
 ### List probes
 
 ```bash
-node ls-oneup-cli/bin/ls-oneup.mjs probes list \
+./ls-oneup-cli/ls-oneup probes list \
   --customer-name ACME \
   --order-number ORD-42 \
   --status offen
@@ -70,7 +75,7 @@ Output contract (stdout JSON):
 ### Fetch probe image
 
 ```bash
-node ls-oneup-cli/bin/ls-oneup.mjs probes image <probe-id> --out ./tmp/probe.jpg
+./ls-oneup-cli/ls-oneup probes image <probe-id> --out ./tmp/probe.jpg
 ```
 
 If `--out` is omitted, file output defaults to:
@@ -96,9 +101,9 @@ Image command output (stdout JSON):
 ## Manual smoke flow
 
 1. `cloudflared access login <LS_ONEUP_BASE_URL>`
-2. `node ls-oneup-cli/bin/ls-oneup.mjs probes list`
+2. `./ls-oneup-cli/ls-oneup probes list`
 3. Pick one `probe_id` from `items`.
-4. `node ls-oneup-cli/bin/ls-oneup.mjs probes image <probe_id>`
+4. `./ls-oneup-cli/ls-oneup probes image <probe_id>`
 5. Confirm JSON response reports `output_path` and file exists.
 
 ## Automated coverage in this slice

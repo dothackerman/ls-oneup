@@ -95,7 +95,7 @@ describe("ls-oneup-cli run()", () => {
           calls.push(new URL(String(input)));
           expect(init?.method).toBe("GET");
           expect(init?.headers).toMatchObject({
-            "Cf-Access-Jwt-Assertion": "jwt-token",
+            "cf-access-token": "jwt-token",
           });
           return new Response(
             JSON.stringify({
@@ -152,6 +152,23 @@ describe("ls-oneup-cli run()", () => {
     expect(result.exitCode).toBe(1);
     expect(result.payload.ok).toBe(false);
     expect(result.payload.error_code).toBe("AUTH_REQUIRED");
+  });
+
+  it("uses process env when .env is absent", async () => {
+    const cliDir = fs.mkdtempSync(path.join(os.tmpdir(), "ls-oneup-cli-envless-"));
+    const result = await run(["probes", "list"], {
+      cliDir,
+      processEnv: { LS_ONEUP_BASE_URL: "https://example.test" },
+      getToken: async () => "jwt-token",
+      fetchImpl: async () =>
+        new Response(JSON.stringify({ items: [] }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
+    });
+
+    expect(result.exitCode).toBe(0);
+    expect(result.payload.ok).toBe(true);
   });
 });
 

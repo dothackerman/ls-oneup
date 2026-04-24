@@ -30,11 +30,7 @@ function parseLine(rawLine) {
 
 export function loadEnvFile(envPath) {
   if (!fs.existsSync(envPath)) {
-    throw new CliError(
-      "ENV_FILE_MISSING",
-      `Missing env file at ${envPath}. Copy .env.example to .env first.`,
-      { env_path: envPath },
-    );
+    return null;
   }
 
   const content = fs.readFileSync(envPath, "utf8");
@@ -51,13 +47,16 @@ export function loadEnvFile(envPath) {
 
 export function resolveConfig({ cliDir, processEnv }) {
   const envPath = path.join(cliDir, ".env");
-  const fromFile = loadEnvFile(envPath);
+  const fromFile = loadEnvFile(envPath) ?? {};
   const merged = { ...fromFile, ...processEnv };
   const missing = REQUIRED_KEYS.filter((key) => !merged[key]);
   if (missing.length > 0) {
+    const message = fromFile
+      ? `Missing required env keys: ${missing.join(", ")}.`
+      : `Missing required env keys: ${missing.join(", ")}. Set them in process env or ${envPath}.`;
     throw new CliError(
       "ENV_INVALID",
-      `Missing required env keys: ${missing.join(", ")}.`,
+      message,
       { env_path: envPath, missing_keys: missing },
     );
   }

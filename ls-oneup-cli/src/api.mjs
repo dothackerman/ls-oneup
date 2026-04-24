@@ -54,7 +54,7 @@ export async function listProbes({
   const response = await fetchImpl(url, {
     method: "GET",
     headers: {
-      "Cf-Access-Jwt-Assertion": token,
+      "cf-access-token": token,
       Accept: "application/json",
     },
   });
@@ -82,7 +82,7 @@ export async function fetchProbeImage({
   const response = await fetchImpl(url, {
     method: "GET",
     headers: {
-      "Cf-Access-Jwt-Assertion": token,
+      "cf-access-token": token,
     },
   });
 
